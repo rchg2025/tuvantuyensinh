@@ -2,17 +2,25 @@
 
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
+import { testDriveAction } from "./actions";
 
 export default function SubmitButtons() {
   const { pending } = useFormStatus();
 
-  const handleTest = () => {
+  const handleTest = async () => {
+    const testPromise = testDriveAction().then(res => {
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      return res.message;
+    });
+
     toast.promise(
-      new Promise((resolve) => setTimeout(resolve, 2000)),
+      testPromise,
       {
-        loading: 'Đang kết nối thử bằng Service Account...',
-        success: <b>Kết nối bị từ chối! Vui lòng lưu cấu hình trước khi Test.</b>,
-        error: <b>Lỗi kết nối.</b>,
+        loading: 'Đang gửi yêu cầu Test kết nối...',
+        success: (msg) => <b>{msg as string}</b>,
+        error: (err) => <b>{err.message}</b>,
       }
     );
   };

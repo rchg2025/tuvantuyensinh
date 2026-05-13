@@ -2,6 +2,11 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { testDriveConnection } from "@/lib/gdrive";
+
+export async function testDriveAction() {
+  return await testDriveConnection();
+}
 
 export async function updateConfigAction(formData: FormData) {
   try {
