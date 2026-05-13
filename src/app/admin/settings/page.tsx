@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
+import SubmitButtons from "./SubmitButtons";
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
@@ -14,6 +16,7 @@ export default async function AdminSettingsPage() {
     "use server";
     const GDRIVE_FOLDER_ID = formData.get("GDRIVE_FOLDER_ID")?.toString() || "";
     const GDRIVE_SERVICE_EMAIL = formData.get("GDRIVE_SERVICE_EMAIL")?.toString() || "";
+    const GDRIVE_PRIVATE_KEY = formData.get("GDRIVE_PRIVATE_KEY")?.toString() || "";
     const SMTP_HOST = formData.get("SMTP_HOST")?.toString() || "";
     const SMTP_PORT = formData.get("SMTP_PORT")?.toString() || "";
     const SMTP_USER = formData.get("SMTP_USER")?.toString() || "";
@@ -22,6 +25,7 @@ export default async function AdminSettingsPage() {
     const settingsToUpdate = [
       { key: "GDRIVE_FOLDER_ID", value: GDRIVE_FOLDER_ID },
       { key: "GDRIVE_SERVICE_EMAIL", value: GDRIVE_SERVICE_EMAIL },
+      { key: "GDRIVE_PRIVATE_KEY", value: GDRIVE_PRIVATE_KEY },
       { key: "SMTP_HOST", value: SMTP_HOST },
       { key: "SMTP_PORT", value: SMTP_PORT },
       { key: "SMTP_USER", value: SMTP_USER },
@@ -49,23 +53,33 @@ export default async function AdminSettingsPage() {
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>📁</span> Cấu hình Google Team Drive (Upload file)
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Thư mục Upload (Folder ID)</label>
-              <input 
-                name="GDRIVE_FOLDER_ID" 
-                defaultValue={configMap["GDRIVE_FOLDER_ID"] || ""}
-                placeholder="VD: 1A2b3C4d5E6f7G..."
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Service Account Email</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Client Email (Email Service Account)</label>
               <input 
                 name="GDRIVE_SERVICE_EMAIL" 
                 defaultValue={configMap["GDRIVE_SERVICE_EMAIL"] || ""}
                 placeholder="VD: service@project.iam.gserviceaccount.com"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Private Key (Có thể copy toàn bộ file JSON vào đây)</label>
+              <textarea 
+                name="GDRIVE_PRIVATE_KEY" 
+                rows={10}
+                defaultValue={configMap["GDRIVE_PRIVATE_KEY"] || ""}
+                placeholder={'{\n  "type": "service_account",\n  "project_id": "...",\n  "private_key": "-----BEGIN PRIVATE KEY-----\\n...",\n  ...\n}'}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm whitespace-pre"
+              ></textarea>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Folder ID (Thư mục lưu ảnh)</label>
+              <input 
+                name="GDRIVE_FOLDER_ID" 
+                defaultValue={configMap["GDRIVE_FOLDER_ID"] || ""}
+                placeholder="VD: 1A2b3C4d5E6f7G..."
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
               />
             </div>
           </div>
@@ -116,9 +130,7 @@ export default async function AdminSettingsPage() {
           </div>
         </div>
 
-        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition-colors shadow-md">
-          Lưu tất cả cấu hình
-        </button>
+        <SubmitButtons />
       </form>
     </div>
   );
