@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 
 export default async function AdminLayout({
   children,
@@ -64,6 +65,7 @@ export default async function AdminLayout({
 
       {/* Main content */}
       <main className="flex-1 p-8 overflow-y-auto">
+        <Toaster position="bottom-right" reverseOrder={false} />
         {children}
       </main>
     </div>
