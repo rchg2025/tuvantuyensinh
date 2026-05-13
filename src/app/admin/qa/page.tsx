@@ -31,9 +31,54 @@ export default async function AdminQaPage() {
     }
   }
 
+  async function createQuestion(formData: FormData) {
+    "use server";
+    const question = formData.get("question")?.toString();
+    const answer = formData.get("answer")?.toString();
+    
+    if (question && answer) {
+      await prisma.question.create({
+        data: {
+          askerName: "Admin/Chuyên gia",
+          question,
+          answer,
+        },
+      });
+      revalidatePath("/admin/qa");
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">Quản lý câu hỏi & Tư vấn</h1>
+
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
+        <h2 className="text-lg font-bold text-slate-800 mb-4">Tạo Q&A nội bộ</h2>
+        <form action={createQuestion} className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Câu hỏi (Tự nhập)</label>
+            <input 
+              name="question" 
+              required 
+              placeholder="VD: Điều kiện xét tuyển học bạ là gì?"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Câu trả lời</label>
+            <textarea 
+              name="answer" 
+              required 
+              rows={3}
+              placeholder="Đội ngũ trả lời sẵn nội dung luôn..."
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg transition-colors">
+            Tạo mới
+          </button>
+        </form>
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-left">

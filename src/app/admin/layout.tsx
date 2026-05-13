@@ -29,11 +29,23 @@ export default async function AdminLayout({
           <Link href="/admin" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             🏠 Bảng điều khiển
           </Link>
+          <Link href="/admin/consultations" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            📞 Đăng ký tư vấn
+          </Link>
           <Link href="/admin/posts" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             📰 Bài viết
           </Link>
           <Link href="/admin/qa" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             💬 Hỏi đáp & Tư vấn
+          </Link>
+          <Link href="/admin/majors" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            🎓 Danh mục ngành nghề
+          </Link>
+          <Link href="/admin/users" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            👥 Quản lý thành viên
+          </Link>
+          <Link href="/admin/settings" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            ⚙️ Cấu hình hệ thống
           </Link>
         </nav>
         <div className="p-4 border-t border-slate-100">

@@ -2,8 +2,23 @@ export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export default async function QaPage() {
+export default async function QaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedParams = await searchParams;
+  const query = resolvedParams?.q?.toString() || "";
+
   const questions = await prisma.question.findMany({
+    where: query
+      ? {
+          OR: [
+            { question: { contains: query, mode: "insensitive" } },
+            { answer: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: { createdAt: "desc" },
   });
 
@@ -62,12 +77,14 @@ export default async function QaPage() {
 
       {/* Q&A List */}
       <div className="space-y-5">
-        <h3 className="text-lg font-bold text-blue-800">{questions.length} câu hỏi</h3>
+        <h3 className="text-lg font-bold text-blue-800">
+          {query ? `Kết quả tìm kiếm cho "${query}" (${questions.length})` : `${questions.length} câu hỏi`}
+        </h3>
 
         {questions.length === 0 ? (
           <div className="bg-white rounded-2xl border border-blue-100 p-12 text-center text-gray-400">
             <div className="text-4xl mb-3">🤔</div>
-            <p>Hãy là người đầu tiên đặt câu hỏi!</p>
+            <p>{query ? "Không tìm thấy câu hỏi nào phù hợp!" : "Hãy là người đầu tiên đặt câu hỏi!"}</p>
           </div>
         ) : (
           questions.map((q) => (
