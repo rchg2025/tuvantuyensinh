@@ -18,11 +18,14 @@ model Question {
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  content      String
+  thumbnailUrl String?
+  categoryId   String?
+  category     Category? @relation(fields: [categoryId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model ConsultationRequest {
@@ -36,20 +39,32 @@ model ConsultationRequest {
   createdAt   DateTime @default(now())
 }
 
-model Major {
-  id          String   @id @default(cuid())
-  name        String   @unique
+enum CategoryType {
+  MAJOR
+  POSITION
+  POST
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String       @unique
   description String?
-  createdAt   DateTime @default(now())
+  type        CategoryType @default(MAJOR)
+  posts       Post[]
+  users       SystemUser[]
+  createdAt   DateTime     @default(now())
 }
 
 model SystemUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      String   @default("ADMIN")
-  createdAt DateTime @default(now())
+  id          String    @id @default(cuid())
+  email       String    @unique
+  phone       String?
+  password    String
+  name        String?
+  role        String    @default("ADMIN")
+  positionId  String?
+  position    Category? @relation(fields: [positionId], references: [id])
+  createdAt   DateTime  @default(now())
 }
 
 model SystemConfig {

@@ -5,19 +5,33 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const users = await prisma.systemUser.findMany({
+    include: { position: true },
     orderBy: { createdAt: "desc" },
+  });
+
+  const positions = await prisma.category.findMany({
+    where: { type: "POSITION" },
   });
 
   async function createUser(formData: FormData) {
     "use server";
     const name = formData.get("name")?.toString();
     const email = formData.get("email")?.toString();
+    const phone = formData.get("phone")?.toString();
+    const positionId = formData.get("positionId")?.toString();
     const password = formData.get("password")?.toString();
     const role = formData.get("role")?.toString() || "ADMIN";
     
     if (email && password) {
       await prisma.systemUser.create({
-        data: { name, email, password, role },
+        data: { 
+          name, 
+          email, 
+          phone, 
+          positionId: positionId || null, 
+          password, 
+          role 
+        },
       });
       revalidatePath("/admin/users");
     }
@@ -49,12 +63,25 @@ export default async function AdminUsersPage() {
               <input name="email" type="email" required placeholder="VD: a@nsg.edu.vn" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại</label>
+              <input name="phone" placeholder="VD: 0987654321" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Chức vụ</label>
+              <select name="positionId" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <option value="">-- Chọn chức vụ --</option>
+                {positions.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Mật khẩu *</label>
               <input name="password" type="password" required placeholder="••••••••" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Vai trò</label>
-              <select name="role" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Quyền / Vai trò</label>
+              <select name="role" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="ADMIN">Quản trị viên (Admin)</option>
                 <option value="CVD">Chuyên viên tư vấn (CVD)</option>
               </select>
@@ -71,8 +98,9 @@ export default async function AdminUsersPage() {
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
               <th className="p-4">Họ Tên</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Vai trò</th>
+              <th className="p-4">Liên hệ</th>
+              <th className="p-4">Chức vụ</th>
+              <th className="p-4">Quyền</th>
               <th className="p-4 text-center">Xóa</th>
             </tr>
           </thead>
@@ -80,7 +108,11 @@ export default async function AdminUsersPage() {
             {users.map((u) => (
               <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                 <td className="p-4 font-bold text-slate-800">{u.name || "Chưa cập nhật"}</td>
-                <td className="p-4 text-slate-600">{u.email}</td>
+                <td className="p-4 text-slate-600">
+                  <p>{u.email}</p>
+                  <p className="text-xs">{u.phone}</p>
+                </td>
+                <td className="p-4 text-slate-600">{u.position?.name || "Chưa có"}</td>
                 <td className="p-4 font-semibold text-indigo-600">{u.role}</td>
                 <td className="p-4 text-center">
                   <form action={deleteUser}>

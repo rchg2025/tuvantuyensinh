@@ -11,7 +11,8 @@ export default async function ConsultationPage({
   const resolvedSearchParams = await searchParams;
   const isSuccess = resolvedSearchParams.success === "1";
   
-  const majors = await prisma.major.findMany({
+  const majors = await prisma.category.findMany({
+    where: { type: "MAJOR" },
     orderBy: { createdAt: "desc" },
   });
 
