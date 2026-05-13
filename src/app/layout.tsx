@@ -20,10 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="vi"
-      className={`${roboto.variable} font-sans h-full antialiased`}
-    >
+    <html lang="vi" className={`${roboto.variable} font-sans h-full antialiased`}>
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#f0f6ff] text-gray-900">
         <header className="bg-blue-700 text-white shadow-lg sticky top-0 z-50">
           <div className="container mx-auto px-4 flex justify-between items-center h-16">
