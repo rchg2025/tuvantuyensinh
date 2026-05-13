@@ -1,78 +1,99 @@
-import prisma from "@/lib/prisma";
+﻿import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function ConsultationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const isSuccess = resolvedSearchParams.success === "1";
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-blue-700 text-center">Đăng Ký Tư Vấn</h2>
-      <p className="text-center text-gray-600 mb-8">Điền thông tin của bạn vào form dưới đây, chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.</p>
-      
-      {isSuccess && (
-        <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md text-center">
-          <p className="font-semibold">Cảm ơn bạn!</p>
-          <p>Yêu cầu tư vấn của bạn đã được gửi thành công. Chúng tôi sẽ sớm liên hệ lại.</p>
-        </div>
-      )}
+    <div className="space-y-8">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md text-center">
+        <h2 className="text-3xl font-extrabold mb-2">📞 Đăng Ký Tư Vấn Miễn Phí</h2>
+        <p className="text-blue-100">Điền thông tin bên dưới — chuyên gia sẽ liên hệ bạn trong 24 giờ.</p>
+      </div>
 
-      <form action={async (formData) => {
-        "use server";
-        const name = formData.get("name") as string;
-        const phone = formData.get("phone") as string;
-        const email = formData.get("email") as string;
-        const program = formData.get("program") as string;
-        const notes = formData.get("notes") as string;
-
-        if (name && phone) {
-          await prisma.consultationRequest.create({
-            data: { name, phone, email, program, notes }
-          });
-          redirect("/consultation?success=1");
-        }
-      }} className="bg-white p-8 rounded-xl shadow-md border space-y-5">
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Họ và tên *</label>
-            <input name="name" required type="text" className="w-full border-gray-300 rounded-md shadow-sm border p-2" placeholder="VD: Nguyễn Văn A" />
+      <div className="max-w-2xl mx-auto w-full">
+        {isSuccess && (
+          <div className="mb-6 flex items-start gap-3 p-5 bg-green-50 border border-green-300 text-green-800 rounded-2xl shadow-sm">
+            <span className="text-2xl">✅</span>
+            <div>
+              <p className="font-bold text-lg">Gửi thành công!</p>
+              <p className="text-sm">Chúng tôi đã nhận yêu cầu của bạn và sẽ liên hệ lại trong thời gian sớm nhất.</p>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại *</label>
-            <input name="phone" required type="tel" className="w-full border-gray-300 rounded-md shadow-sm border p-2" placeholder="0912345678" />
+        )}
+
+        <form
+          action={async (formData) => {
+            "use server";
+            const name = formData.get("name") as string;
+            const phone = formData.get("phone") as string;
+            const email = formData.get("email") as string;
+            const program = formData.get("program") as string;
+            const notes = formData.get("notes") as string;
+            if (name && phone) {
+              await prisma.consultationRequest.create({
+                data: { name, phone, email, program, notes },
+              });
+              redirect("/consultation?success=1");
+            }
+          }}
+          className="bg-white rounded-2xl shadow-md border border-blue-100 p-8 space-y-5"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Họ và tên *</label>
+              <input name="name" required type="text" placeholder="Nguyễn Văn A" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Số điện thoại *</label>
+              <input name="phone" required type="tel" placeholder="0912 345 678" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input name="email" type="email" className="w-full border-gray-300 rounded-md shadow-sm border p-2" placeholder="email@example.com" />
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+            <input name="email" type="email" placeholder="email@example.com" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Chương trình quan tâm</label>
-          <select name="program" className="w-full border-gray-300 rounded-md shadow-sm border p-2 bg-white">
-            <option value="">-- Chọn chương trình --</option>
-            <option value="DaiHocChinhQuy">Đại học chính quy</option>
-            <option value="CaoDang">Cao đẳng</option>
-            <option value="LienThong">Liên thông - Văn bằng 2</option>
-            <option value="ThacSi">Thạc sĩ</option>
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Chương trình quan tâm</label>
+            <select name="program" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+              <option value="">-- Chọn chương trình --</option>
+              <option value="DaiHocChinhQuy">🎓 Đại học chính quy</option>
+              <option value="CaoDang">📚 Cao đẳng</option>
+              <option value="LienThong">🔄 Liên thông - Văn bằng 2</option>
+              <option value="ThacSi">🏆 Thạc sĩ</option>
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú thêm</label>
-          <textarea name="notes" className="w-full border-gray-300 rounded-md shadow-sm border p-2" rows={4} placeholder="Bạn cần hỏi thêm về..."></textarea>
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Ghi chú thêm</label>
+            <textarea name="notes" rows={4} placeholder="Bạn muốn hỏi thêm về điểm chuẩn, học phí, chương trình học..." className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none" />
+          </div>
 
-        <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-md hover:bg-blue-700 transition">
-          Gửi Yêu Cầu
-        </button>
-      </form>
+          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors">
+            Gửi Yêu Cầu Tư Vấn
+          </button>
+        </form>
+
+        <div className="mt-6 grid grid-cols-3 gap-3 text-center text-sm text-gray-500">
+          {[
+            { icon: "🔒", text: "Bảo mật thông tin" },
+            { icon: "⚡", text: "Phản hồi trong 24h" },
+            { icon: "💯", text: "Tư vấn miễn phí" },
+          ].map((b) => (
+            <div key={b.text} className="bg-white border border-blue-100 rounded-xl py-3 px-2">
+              <div className="text-xl mb-1">{b.icon}</div>
+              <div>{b.text}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
