@@ -18,38 +18,38 @@ export default async function Home() {
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent)]" />
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
           <div className="inline-block bg-white/20 backdrop-blur text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-2">
-            🎓 Hệ thống tư vấn tuyển sinh trực tuyến
+            ðŸŽ“ Há»‡ thá»‘ng tÆ° váº¥n tuyá»ƒn sinh trá»±c tuyáº¿n
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Định hướng tương lai — <br />
-            <span className="text-yellow-300">Chọn đúng ngành, đúng trường</span>
+            Äá»‹nh hÆ°á»›ng tÆ°Æ¡ng lai â€” <br />
+            <span className="text-yellow-300">Chá»n Ä‘Ãºng ngÃ nh, Ä‘Ãºng trÆ°á»ng</span>
           </h1>
-          <p className="text-blue-100 text-lg max-w-xl mx-auto">
-            Cung cấp thông tin tuyển sinh chính xác, kịp thời. Đội ngũ chuyên gia luôn sẵn sàng hỗ trợ bạn trong hành trình chọn ngành học phù hợp.
+          <p className="text-blue-100 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+            Äá»™i ngÅ© chuyÃªn gia luÃ´n sáºµn sÃ ng há»— trá»£ báº¡n trong hÃ nh trÃ¬nh chá»n ngÃ nh há»c phÃ¹ há»£p.
           </p>
           
           {/* Smart Search Bar */}
           <div className="max-w-xl mx-auto mt-8">
             <form action="/qa" method="GET" className="relative flex items-center">
-              <span className="absolute left-4 text-gray-400 text-xl">🔍</span>
+              <span className="absolute left-4 text-gray-400 text-xl">ðŸ”</span>
               <input 
                 type="text" 
                 name="q"
-                placeholder="Tìm kiếm câu hỏi tư vấn..." 
+                placeholder="TÃ¬m kiáº¿m cÃ¢u há»i tÆ° váº¥n..." 
                 className="w-full text-gray-900 bg-white shadow-xl rounded-full py-4 pl-12 pr-32 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all text-sm font-medium"
               />
               <button type="submit" className="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold transition-colors">
-                Tìm kiếm
+                TÃ¬m kiáº¿m
               </button>
             </form>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Link href="/consultation" className="bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold py-3 px-8 rounded-xl shadow-lg transition-all hover:scale-105">
-              Đăng ký tư vấn miễn phí →
+              ÄÄƒng kÃ½ tÆ° váº¥n miá»…n phÃ­ â†’
             </Link>
             <Link href="/qa" className="bg-white/15 hover:bg-white/25 border border-white/40 text-white font-semibold py-3 px-8 rounded-xl transition-all">
-              Gửi câu hỏi mới
+              Gá»­i cÃ¢u há»i má»›i
             </Link>
           </div>
         </div>
@@ -58,116 +58,117 @@ export default async function Home() {
       {/* Stats */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Bài viết", value: postCount.toString(), icon: "📰" },
-          { label: "Câu hỏi Q&A", value: questionCount.toString(), icon: "💬" },
-          { label: "Chương trình", value: "4+", icon: "🎯" },
-          { label: "Hỗ trợ", value: "24/7", icon: "🕐" },
-        ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 text-center hover:shadow-md transition-shadow">
+          { label: "BÃ i viáº¿t", value: postCount.toString(), icon: "ðŸ“°" },
+          { label: "CÃ¢u há»i Q&A", value: questionCount.toString(), icon: "ðŸ’¬" },
+          { label: "ChÆ°Æ¡ng trÃ¬nh", value: "4+", icon: "ðŸŽ¯" },
+          { label: "Há»— trá»£", value: "24/7", icon: "ðŸ•’" }
+        ].map((stat, i) => (
+          <div key={i} className="bg-white rounded-2xl shadow-sm border border-blue-50 p-6 text-center hover:-translate-y-1 transition-transform">
             <div className="text-3xl mb-2">{stat.icon}</div>
             <div className="text-3xl font-extrabold text-blue-700">{stat.value}</div>
-            <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+            <div className="text-gray-500 text-sm font-medium mt-1">{stat.label}</div>
           </div>
         ))}
       </section>
 
-      {/* Latest Q&A */}
-      <section className="bg-white rounded-3xl p-8 shadow-sm border border-blue-100">
-        <div className="flex justify-between items-end mb-8">
+      {/* 5 latest Q&A */}
+      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-8">
+        <div className="md:flex justify-between items-end mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Câu hỏi tư vấn mới nhất</h2>
-            <p className="text-gray-500 mt-1">Những thắc mắc thường gặp được giải đáp bởi chuyên gia</p>
+            <h2 className="text-2xl font-extrabold text-blue-900">CÃ¢u há»i tÆ° váº¥n má»›i nháº¥t</h2>
+            <p className="text-gray-500 mt-1">Nhá»¯ng tháº¯c máº¯c thÆ°á»ng gáº·p Ä‘Æ°á»£c giáº£i Ä‘Ã¡p</p>
           </div>
-          <Link href="/qa" className="text-blue-600 font-semibold hover:underline hidden sm:block">
-            Xem tất cả →
+          <Link href="/qa" className="hidden md:inline-flex text-blue-600 font-semibold hover:underline bg-blue-50 rounded-lg px-4 py-2 mt-4 md:mt-0">
+            Xem táº¥t cáº£ cÃ¢u há»i â†’
           </Link>
         </div>
 
-        <div className="space-y-4">
-          {latestQuestions.map((q) => (
-            <div key={q.id} className="p-5 bg-blue-50/50 rounded-2xl hover:bg-blue-50 transition border border-transparent hover:border-blue-100">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold font-serif shrink-0">
-                  {q.askerName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 line-clamp-2 leading-relaxed">
-                    {q.question}
-                  </h3>
-                  <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                    <span>👤 {q.askerName}</span>
-                    <span>🕒 {q.createdAt.toLocaleDateString("vi-VN")}</span>
-                    {q.answer ? (
-                      <span className="text-green-600 font-medium whitespace-nowrap">✓ Đã trả lời</span>
-                    ) : (
-                      <span className="text-orange-500 font-medium whitespace-nowrap">⏳ Chờ duyệt</span>
-                    )}
+        <div className="grid gap-4">
+          {latestQuestions.length > 0 ? (
+            latestQuestions.map((q) => (
+              <Link key={q.id} href={`/qa`} className="group block bg-gray-50 hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 hover:border-blue-200 transition-colors">
+                <div className="flex gap-4">
+                  <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
+                    Q
                   </div>
-                  {q.answer && (
-                    <div className="mt-4 p-4 bg-white rounded-xl text-sm text-gray-700 border border-gray-100 relative">
-                      <div className="absolute -top-2 left-6 w-4 h-4 bg-white border-t border-l border-gray-100 rotate-45"></div>
-                      <span className="font-semibold text-blue-600 mb-1 block">Chuyên gia trả lời:</span>
-                      {q.answer}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors">{q.question}</h3>
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
+                    <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 font-medium">
+                      <span>ðŸ‘¤ {q.askerName}</span>
+                      <span>ðŸ“… {new Date(q.createdAt).toLocaleDateString("vi-VN")}</span>
+                      {q.answer !== null ? (
+                        <span className="text-green-600 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold">ÄÃƒ TRáº¢ Lá»œI</span>
+                      ) : (
+                        <span className="text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded text-[10px] font-bold">CHá»œ DUYá»†T</span>
+                      )}
                     </div>
-                  )}
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+             <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-xl border border-dashed">
+                ChÆ°a cÃ³ cÃ¢u há»i nÃ o.
+             </div>
+          )}
+        </div>
+      </section>
+
+      {/* Main Features */}
+      <section>
+        <h2 className="text-2xl font-extrabold text-blue-900 mb-8 px-2">KhÃ¡m phÃ¡ cÃ¡c chuyÃªn má»¥c</h2>
+        <div className="grid md:grid-cols-3 gap-6 text-left">
+          {[
+            {
+              title: "Tin Tá»©c & BÃ i Viáº¿t",
+              desc: "Cáº­p nháº­t thÃ´ng Ä‘á»‹nh vá» ká»³ thi, hÆ°á»›ng dáº«n chá»n ngÃ nh, chá»n trÆ°á»ng Äáº¡i há»c - Cao Ä‘áº³ng.",
+              link: "/posts",
+              color: "sky",
+              icon: "ðŸ“°",
+            },
+            {
+              title: "Há»i & ÄÃ¡p (Q&A)",
+              desc: "NÆ¡i giáº£i Ä‘Ã¡p má»i tháº¯c máº¯c cá»§a báº¡n vá» quy cháº¿ tuyá»ƒn sinh, Ä‘iá»ƒm chuáº©n, há»“ sÆ¡ nháº­p há»c.",
+              link: "/qa",
+              color: "indigo",
+              icon: "ðŸ’¬",
+            },
+            {
+              title: "ÄÄƒng KÃ½ TÆ° Váº¥n",
+              desc: "Äá»ƒ láº¡i thÃ´ng tin, Ä‘á»™i ngÅ© chuyÃªn gia cá»§a chÃºng tÃ´i sáº½ gá»i láº¡i há»— trá»£ báº¡n trá»±c tiáº¿p.",
+              link: "/consultation",
+              color: "blue",
+              icon: "ðŸ“",
+            },
+          ].map((card) => (
+            <Link href={card.link} key={card.title} className="group block focus:outline-none focus:ring-4 focus:ring-blue-100 rounded-2xl">
+              <div className="h-full bg-white rounded-2xl p-8 border border-blue-50 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1 relative overflow-hidden group-hover:border-blue-200">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110" />
+                <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-3xl mb-6 relative">
+                  {card.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-gray-800">{card.title}</h3>
+                <p className="text-gray-500 leading-relaxed text-sm mb-6">{card.desc}</p>
+                <div className="text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center gap-1">
+                  Xem chi tiáº¿t <span>â†’</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Services */}
-      <section className="grid md:grid-cols-3 gap-6">
-        {[
-          {
-            title: "Tin Tức & Bài Viết",
-            desc: "Cập nhật những thông tin mới nhất về kỳ thi, hướng dẫn chọn ngành, chọn trường hiệu quả.",
-            link: "/posts",
-            color: "blue",
-            icon: "📰",
-          },
-          {
-            title: "Hỏi & Đáp (Q&A)",
-            desc: "Nơi giải đáp mọi thắc mắc của bạn về quy chế tuyển sinh, điểm chuẩn, hồ sơ nhập học.",
-            link: "/qa",
-            color: "indigo",
-            icon: "💬",
-          },
-          {
-            title: "Đăng Ký Tư Vấn",
-            desc: "Để lại thông tin, đội ngũ chuyên gia của chúng tôi sẽ gọi lại hỗ trợ bạn trực tiếp.",
-            link: "/consultation",
-            color: "blue",
-            icon: "📝",
-          },
-        ].map((card) => (
-          <Link href={card.link} key={card.title} className="group block focus:outline-none focus:ring-4 focus:ring-blue-100 rounded-2xl">
-            <div className={+ "h-full bg-white rounded-2xl p-8 border border-blue-50 shadow-sm transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1 relative overflow-hidden group-hover:border--200" + }>
-              <div className={+ "bsolute top-0 right-0 w-32 h-32 bg--50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110" + } />
-              <div className={+ "w-14 h-14 bg--100 text--600 rounded-xl flex items-center justify-center text-3xl mb-6 relative" + }>
-                {card.icon}
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800">{card.title}</h3>
-              <p className="text-gray-500 leading-relaxed text-sm mb-6">{card.desc}</p>
-              <div className={+ "	ext--600 font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center gap-1" + }>
-                Xem chi tiết <span>→</span>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </section>
-
-      {/* CTA */}
-      <section className="bg-blue-900 rounded-3xl p-10 text-center text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+      {/* CTA Bottom */}
+      <section className="bg-yellow-400 rounded-3xl p-8 md:p-12 text-center shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-20 text-6xl">ðŸ””</div>
         <div className="relative z-10">
-          <h2 className="text-3xl font-bold mb-4">Bạn vẫn còn băn khoăn?</h2>
-          <p className="text-blue-200 mb-8 max-w-xl mx-auto">
-            Đừng ngần ngại để lại thông tin. Đội ngũ chuyên gia của chúng tôi sẽ liên hệ lại trong vòng 24 giờ để hỗ trợ bạn hoàn toàn miễn phí.
+          <h2 className="text-3xl font-black text-yellow-950 mb-4">Báº¡n chÆ°a tÃ¬m tháº¥y thÃ´ng tin cáº§n thiáº¿t?</h2>
+          <p className="text-yellow-900 font-medium mb-8 max-w-xl mx-auto">
+            Äá»«ng ngáº§n ngáº¡i Ä‘á»ƒ láº¡i thÃ´ng tin. Äá»™i ngÅ© chuyÃªn gia sáº½ liÃªn há»‡ tÆ° váº¥n vÃ  giáº£i Ä‘Ã¡p tá»«ng trÆ°á»ng há»£p cá»¥ thá»ƒ.
           </p>
-          <Link href="/consultation" className="inline-block bg-white text-blue-900 hover:bg-blue-50 font-bold py-3 px-10 rounded-xl shadow-lg transition-transform hover:-translate-y-1">
-            Nhận Tư Vấn Ngay
+          <Link href="/consultation" className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all inline-block hover:scale-105">
+            ÄÄƒng kÃ½ nháº­n tÆ° váº¥n ngay
           </Link>
         </div>
       </section>
