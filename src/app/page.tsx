@@ -65,7 +65,7 @@ export default async function Home() {
         ].map((stat, i) => (
           <div key={i} className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 text-center hover:-translate-y-2 hover:shadow-xl transition-all duration-300">
             <div className="text-4xl mb-4">{stat.icon}</div>
-            <div className={`div className={`text-4xl font-black ${stat.color} mb-2`}`}>{stat.value}</div>
+            <div className={`text-4xl font-black ${stat.color} mb-2`}>{stat.value}</div>
             <div className="text-slate-500 text-sm font-semibold uppercase tracking-wider">{stat.label}</div>
           </div>
         ))}
