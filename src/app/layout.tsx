@@ -27,6 +27,7 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
+  const authName = cookieStore.get("auth_name")?.value;
   const isLoggedIn = !!token;
 
   const configs = await prisma.systemConfig.findMany({
@@ -73,12 +74,12 @@ export default async function RootLayout({
 
             <div className="flex md:hidden items-center gap-2">
               <Link href={isLoggedIn ? "/admin/posts" : "/login"} className="text-sm font-medium hover:underline text-blue-200">
-                {isLoggedIn ? "Trang TT cá nhân" : "Đăng nhập"}
+                {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
             <div className="hidden md:block">
               <Link href={isLoggedIn ? "/admin/posts" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition ml-4">
-                {isLoggedIn ? "Trang TT cá nhân" : "Đăng nhập"}
+                {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
           </div>

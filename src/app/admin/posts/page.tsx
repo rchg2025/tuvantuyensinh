@@ -43,12 +43,17 @@ export default async function AdminPostsPage() {
                 </td>
                 <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN")}</td>
                 <td className="p-4 align-middle text-center">
-                  <form action={deletePostAction}>
-                    <input type="hidden" name="id" value={post.id} />
-                    <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs">
-                      Xóa
-                    </button>
-                  </form>
+                  <div className="flex items-center justify-center gap-2">
+                    <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
+                      Sửa
+                    </a>
+                    <form action={deletePostAction}>
+                      <input type="hidden" name="id" value={post.id} />
+                      <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs">
+                        Xóa
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

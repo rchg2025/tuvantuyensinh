@@ -72,6 +72,8 @@ model SystemUser {
   role       String    @default("ADMIN")
   positionId String?
   position   Category? @relation(fields: [positionId], references: [id])
+  otp        String?
+  otpExpiry  DateTime?
   createdAt  DateTime  @default(now())
 }
 

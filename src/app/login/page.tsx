@@ -16,7 +16,7 @@ export default async function LoginPage({
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-white shadow-lg mb-2 p-1 relative overflow-hidden">
-            <img src="https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH" alt="Logo" className="w-full h-full object-cover" />
+            <img src="https://drive.google.com/thumbnail?id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH&sz=w256" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-extrabold text-blue-800">Tư Vấn Tuyển Sinh</h1>
           <p className="text-gray-500 text-sm">Đăng nhập vào hệ thống quản trị</p>
@@ -46,7 +46,7 @@ export default async function LoginPage({
 
             if (email === "nguyenluyen@nsg.edu.vn" && password === "Nsg@2026") {
                matched = true;
-               currentName = "Nguyễn Luyện";
+               currentName = "Nguyễn Văn Luyến";
             } else if (dbUser && dbUser.password === password) {
                matched = true;
                currentName = dbUser.name || dbUser.email;
@@ -77,7 +77,7 @@ export default async function LoginPage({
                 name="email"
                 required
                 autoComplete="email"
-                placeholder="nguyenluyen@nsg.edu.vn"
+                placeholder="email@gmail.com"
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
             </div>
@@ -85,7 +85,7 @@ export default async function LoginPage({
             <div>
               <div className="flex justify-between items-center mb-1.5">
                 <label className="block text-sm font-semibold text-gray-700">Mật khẩu</label>
-                <a href="#" className="text-xs text-blue-600 hover:underline">Quên mật khẩu?</a>
+                <Link href="/forgot-password" className="text-xs text-blue-600 hover:underline">Quên mật khẩu?</Link>
               </div>
               <input
                 type="password"
