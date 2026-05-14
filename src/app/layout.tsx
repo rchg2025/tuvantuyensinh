@@ -55,6 +55,14 @@ export default async function RootLayout({
     return acc;
   }, {} as Record<string, string>);
 
+  const headerMenusConfig = await prisma.systemConfig.findUnique({ where: { key: "header_menus" } });
+  let headerMenus: any[] = [];
+  try {
+    if (headerMenusConfig?.value) {
+      headerMenus = JSON.parse(headerMenusConfig.value);
+    }
+  } catch (e) {}
+
   const postCategories = await prisma.category.findMany({
     where: { type: "POST" },
     orderBy: { createdAt: "desc" }
@@ -83,6 +91,14 @@ export default async function RootLayout({
 
             {/* Nav */}
             <nav className="hidden md:flex items-center gap-1 relative z-50">
+              {headerMenus.length > 0 ? (
+                headerMenus.map((menu: any) => (
+                  <Link key={menu.id} href={menu.url} className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">
+                    {menu.title}
+                  </Link>
+                ))
+              ) : (
+                <>
               <div className="group relative">
                 <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1">
                   Bài viết
@@ -103,6 +119,8 @@ export default async function RootLayout({
                 )}
               </div>
               <Link href="/qa" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">Hỏi đáp</Link>
+                </>
+              )}
               <Link href="/consultation" className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg shadow transition">
                 Đăng ký tư vấn
               </Link>

@@ -2,8 +2,40 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const post = await prisma.post.findUnique({
+    where: { id },
+  });
+
+  if (!post) {
+    return {
+      title: "Không tìm thấy bài viết",
+    };
+  }
+
+  const imageUrl = post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl) : undefined;
+
+  return {
+    title: post.title,
+    description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+    openGraph: {
+      title: post.title,
+      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      images: imageUrl ? [imageUrl] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+      images: imageUrl ? [imageUrl] : [],
+    }
+  };
+}
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -48,8 +80,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </h1>
           
           <div 
-             className="post-content text-gray-800 leading-relaxed block overflow-x-hidden" 
-             style={{ wordBreak: "normal", overflowWrap: "anywhere", maxWidth: "100%", width: "100%" }}
+             className="post-content text-gray-800 leading-relaxed block overflow-x-hidden break-normal max-w-full w-full" 
+             style={{ overflowWrap: "anywhere" }}
              dangerouslySetInnerHTML={{ __html: post.content }}
           ></div>
           
