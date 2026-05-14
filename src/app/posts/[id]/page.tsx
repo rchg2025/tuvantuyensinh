@@ -85,14 +85,39 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
              dangerouslySetInnerHTML={{ __html: post.content }}
           ></div>
           
-          {post.attachments && (
-             <div className="mt-10 pt-6 border-t border-gray-100 bg-gray-50 p-6 rounded-xl">
-               <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><span>📎</span> File đính kèm / Tài liệu</h3>
-               <a href={post.attachments} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm">
-                  ⬇️ Tải xuống file đính kèm
-               </a>
-             </div>
-          )}
+          {post.attachments && (() => {
+            let previewUrl = post.attachments;
+            if (post.attachments.includes("drive.google.com/uc?export=view&id=")) {
+              const id = post.attachments.split("id=")[1]?.split("&")[0];
+              if (id) {
+                previewUrl = `https://drive.google.com/file/d/${id}/preview`;
+              }
+            } else if (post.attachments.includes("drive.google.com/file/d/")) {
+              previewUrl = post.attachments.replace(/\/view.*$/, "/preview");
+            } else if (!post.attachments.toLowerCase().endsWith(".pdf") && post.attachments.startsWith("http")) {
+              previewUrl = `https://docs.google.com/gview?url=${encodeURIComponent(post.attachments)}&embedded=true`;
+            }
+
+            return (
+              <div className="mt-10 pt-6 border-t border-gray-100 bg-gray-50 p-6 rounded-xl">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><span>📎</span> File đính kèm / Tài liệu</h3>
+                <a href={post.attachments} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm mb-6">
+                    ⬇️ Tải xuống file đính kèm
+                </a>
+                
+                {previewUrl && (
+                  <div className="w-full rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-white" style={{ height: "600px" }}>
+                    <iframe 
+                      src={previewUrl} 
+                      className="w-full h-full border-0" 
+                      title="File preview"
+                      allow="autoplay"
+                    ></iframe>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
