@@ -19,6 +19,7 @@ export async function updateConfigAction(formData: FormData) {
     const SMTP_PASS = formData.get("SMTP_PASS")?.toString() || "";
 
     const seo_title = formData.get("seo_title")?.toString() || "";
+    const google_site_verification = formData.get("google_site_verification")?.toString() || "";
     const seo_description = formData.get("seo_description")?.toString() || "";
     const logo_url = formData.get("logo_url")?.toString() || "";
     const footer_description = formData.get("footer_description")?.toString() || "";
@@ -35,6 +36,7 @@ export async function updateConfigAction(formData: FormData) {
       { key: "SMTP_USER", value: SMTP_USER },
       { key: "SMTP_PASS", value: SMTP_PASS },
       { key: "seo_title", value: seo_title },
+      { key: "google_site_verification", value: google_site_verification },
       { key: "seo_description", value: seo_description },
       { key: "logo_url", value: logo_url },
       { key: "footer_description", value: footer_description },
