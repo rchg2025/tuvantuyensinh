@@ -1,8 +1,6 @@
 ﻿import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
 export default async function ConsultationPage({
   searchParams,
 }: {
@@ -10,11 +8,6 @@ export default async function ConsultationPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const isSuccess = resolvedSearchParams.success === "1";
-  
-  const majors = await prisma.category.findMany({
-    where: { type: "MAJOR" },
-    orderBy: { createdAt: "desc" },
-  });
 
   return (
     <div className="space-y-8">
@@ -68,14 +61,13 @@ export default async function ConsultationPage({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Ngành/Chương trình quan tâm</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Chương trình quan tâm</label>
             <select name="program" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-              <option value="">-- Chọn ngành học --</option>
-              {majors.map((m) => (
-                <option key={m.id} value={m.name}>
-                  🎓 {m.name}
-                </option>
-              ))}
+              <option value="">-- Chọn chương trình --</option>
+              <option value="DaiHocChinhQuy">🎓 Đại học chính quy</option>
+              <option value="CaoDang">📚 Cao đẳng</option>
+              <option value="LienThong">🔄 Liên thông - Văn bằng 2</option>
+              <option value="ThacSi">🏆 Thạc sĩ</option>
             </select>
           </div>
 

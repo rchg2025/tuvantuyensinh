@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 
 export default async function LoginPage({
   searchParams,
@@ -38,9 +37,7 @@ export default async function LoginPage({
             const password = formData.get("password")?.toString().trim();
             
             if (email === "nguyenluyen@nsg.edu.vn" && password === "Nsg@2026") {
-              const cookieStore = await cookies();
-              cookieStore.set("auth_token", "admin_logged_in", { path: "/" });
-              redirect("/admin");
+              redirect("/");
             } else {
               redirect("/login?error=credentials");
             }
