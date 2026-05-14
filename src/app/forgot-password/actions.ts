@@ -40,7 +40,7 @@ export async function forgotPasswordAction(formData: FormData) {
       html: `<h3>Mã OTP đặt lại mật khẩu</h3><p>Mã của bạn là: <strong>${otp}</strong></p><p>Mã này có hiệu lực trong 15 phút.</p>`
     });
 
-    redirect(\`/forgot-password?step=2&email=\${encodeURIComponent(email)}\`);
+    redirect(`/forgot-password?step=2&email=${encodeURIComponent(email)}`);
   } catch (err) {
     console.error("Forgot pass error:", err);
     redirect("/forgot-password?error=send_failed");
@@ -56,7 +56,7 @@ export async function resetPasswordAction(formData: FormData) {
 
   const user = await prisma.systemUser.findUnique({ where: { email } });
   if (!user || user.otp !== otp || !user.otpExpiry || new Date() > user.otpExpiry) {
-    redirect(\`/forgot-password?step=2&email=\${encodeURIComponent(email)}&error=invalid_otp\`);
+    redirect(`/forgot-password?step=2&email=${encodeURIComponent(email)}&error=invalid_otp`);
   }
 
   try {
