@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import { Metadata } from "next";
+import linkifyHtml from "linkify-html";
 
 export const dynamic = "force-dynamic";
 
@@ -82,7 +83,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           <div 
              className="post-content text-gray-800 leading-relaxed block overflow-x-hidden break-normal max-w-full w-full" 
              style={{ overflowWrap: "anywhere" }}
-             dangerouslySetInnerHTML={{ __html: post.content }}
+             dangerouslySetInnerHTML={{ __html: linkifyHtml(post.content, { defaultProtocol: "https", target: "_blank", rel: "noopener noreferrer", className: "text-blue-600 hover:underline" }) }}
           ></div>
           
           {post.attachments && (() => {
