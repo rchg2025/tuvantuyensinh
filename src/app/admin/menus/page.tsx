@@ -5,7 +5,19 @@ import { cookies } from "next/headers";
 
 export default async function MenusPage() {
   const cookieStore = await cookies();
-  const role = cookieStore.get("auth_role")?.value;
+  const auth = cookieStore.get("auth_token")?.value;
+
+  let role = "ADMIN";
+  if (auth !== "admin_logged_in") {
+    if (!auth) {
+      redirect("/login");
+    }
+    const user = await prisma.systemUser.findUnique({ where: { id: auth } });
+    if (!user) {
+      redirect("/login");
+    }
+    role = user.role;
+  }
 
   if (role !== "ADMIN") {
     redirect("/admin");
