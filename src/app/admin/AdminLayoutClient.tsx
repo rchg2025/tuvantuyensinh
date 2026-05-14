@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AdminLayoutClient({ 
   sidebar, 
@@ -11,10 +11,20 @@ export default function AdminLayoutClient({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const handleToggle = () => setIsOpen(prev => !prev);
+    window.addEventListener("toggleAdminSidebar", handleToggle);
+    const handleClose = () => setIsOpen(false);
+    window.addEventListener("closeAdminSidebar", handleClose);
+    return () => window.removeEventListener("toggleAdminSidebar", handleToggle);
+      window.removeEventListener("closeAdminSidebar", handleClose);
+  }, []);
+
+
   return (
     <div className="flex bg-slate-50 min-h-screen relative w-full overflow-hidden">
       {/* Mobile Header & Toggle */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center px-4 justify-between shadow-sm">
+      <div className="hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center px-4 justify-between shadow-sm">
         <span className="font-bold text-slate-800">Quản trị viên</span>
         <button onClick={() => setIsOpen(!isOpen)} className="p-2 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-600 transition-colors">
           {isOpen ? (
@@ -43,7 +53,7 @@ export default function AdminLayoutClient({
       </div>
 
       {/* Main content */}
-      <main className="flex-1 w-full md:w-auto h-screen overflow-y-auto pt-20 md:pt-8 p-4 md:p-8">
+      <main className="flex-1 w-full md:w-auto h-screen overflow-y-auto pt-4 md:pt-8 p-4 md:p-8">
         {children}
       </main>
     </div>
