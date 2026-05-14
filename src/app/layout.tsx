@@ -14,9 +14,21 @@ const roboto = Roboto({
 export async function generateMetadata(): Promise<Metadata> {
   const titleConf = await prisma.systemConfig.findUnique({ where: { key: "seo_title" } });
   const descConf = await prisma.systemConfig.findUnique({ where: { key: "seo_description" } });
+  const logoConf = await prisma.systemConfig.findUnique({ where: { key: "logo_url" } });
+  
+  let faviconUrl = logoConf?.value || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
+  if (faviconUrl.includes('drive.google.com/uc')) {
+    faviconUrl = faviconUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128');
+  }
+
   return {
     title: titleConf?.value || "Tư Vấn Tuyển Sinh",
     description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+    icons: {
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+      apple: faviconUrl
+    }
   };
 }
 
