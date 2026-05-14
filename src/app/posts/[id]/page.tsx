@@ -27,13 +27,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrl ? [imageUrl] : ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrl ? [imageUrl] : ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
     }
   };
 }
