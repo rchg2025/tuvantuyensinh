@@ -67,6 +67,24 @@ export async function testDriveConnection() {
   }
 }
 
+export function getDirectImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.includes('drive.google.com/uc?export=view&id=')) {
+    const id = url.split('id=')[1]?.split('&')[0];
+    if (id) {
+      // Dùng lh3.googleusercontent.com/d/id giúp lấy link ảnh trực tiếp public rất đáng tin cậy
+      return `https://lh3.googleusercontent.com/d/${id}=w1000`;
+    }
+  }
+  if (url.includes('drive.google.com/thumbnail?id=')) {
+    const id = url.split('id=')[1]?.split('&')[0];
+    if (id) {
+      return `https://lh3.googleusercontent.com/d/${id}=w1000`;
+    }
+  }
+  return url;
+}
+
 export async function uploadToDrive(file: File, fileName: string, mimeType: string) {
   const auth = await getDriveAuth();
   const { folderId } = await getDriveConfig();

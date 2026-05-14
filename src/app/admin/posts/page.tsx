@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import PostForm from "./components/PostForm";
 import { deletePostAction } from "./actions";
+import { getDirectImageUrl } from "@/lib/gdrive";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +47,7 @@ export default async function AdminPostsPage() {
                 <td className="p-4 align-top font-bold text-slate-800">
                   <div className="flex items-center gap-3">
                     {post.thumbnailUrl && (
-                      <img src={post.thumbnailUrl} alt={post.title} className="w-12 h-12 rounded object-cover" />
+                      <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-12 h-12 rounded object-cover" />
                     )}
                     <span>{post.title}</span>
                   </div>
