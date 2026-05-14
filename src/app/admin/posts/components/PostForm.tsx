@@ -19,7 +19,32 @@ export default function PostForm({ defaultValues }: { defaultValues?: any }) {
       language: "vi",
       height: 400,
       uploader: {
-        insertImageAsBase64URI: true,
+        url: "/api/upload",
+        formatAsJSON: true,
+        process: function (resp: any) {
+          return {
+            files: [resp.url],
+            path: resp.url,
+            baseurl: "",
+            error: resp.success ? 0 : 1,
+            msg: resp.error || ""
+          };
+        },
+        defaultHandlerSuccess: function (data: any, resp: any) {
+          const editor = this as any;
+          if (data.files && data.files.length) {
+            data.files.forEach((file: string) => {
+              if (resp.data.isImages[0]) {
+                editor.selection.insertImage(file, null, editor.o.imageDefaultWidth);
+              } else {
+                const node = editor.createInside.element('a');
+                node.setAttribute('href', file);
+                node.innerHTML = resp.data.files[0];
+                editor.selection.insertNode(node);
+              }
+            });
+          }
+        }
       },
     };
   }, []);
