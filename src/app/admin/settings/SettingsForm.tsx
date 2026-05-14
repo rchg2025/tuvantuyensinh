@@ -24,6 +24,84 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
 
   return (
     <form ref={formRef} action={handleSubmit} className="space-y-8">
+      {/* SEO & Logo Config */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span>🌐</span> Thông tin Website (SEO & Logo)
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Tiêu đề Website (SEO Title)</label>
+            <input 
+              name="seo_title" 
+              defaultValue={configMap["seo_title"] || ""}
+              placeholder="VD: Hệ Thống Tư Vấn Tuyển Sinh"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Mô tả Website (SEO Description)</label>
+            <textarea 
+              name="seo_description" 
+              rows={3}
+              defaultValue={configMap["seo_description"] || ""}
+              placeholder="VD: Nền tảng tư vấn hỏi đáp sinh viên..."
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Link Logo</label>
+            <input 
+              name="logo_url" 
+              defaultValue={configMap["logo_url"] || ""}
+              placeholder="VD: https://drive.google.com/uc?export=view&id=..."
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {configMap["logo_url"] && (
+              <img src={configMap["logo_url"]} alt="Logo Preview" className="mt-2 h-10 object-contain rounded border border-gray-200 p-0.5 bg-gray-50" />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Config */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span>📍</span> Thông tin Footer (Cuối trang)
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Giới thiệu ngắn (Mô tả footer)</label>
+            <textarea 
+              name="footer_description"
+              rows={2}
+              defaultValue={configMap["footer_description"] || ""}
+              placeholder="Hệ thống hỗ trợ giải đáp thắc mắc..."
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Email liên hệ</label>
+            <input 
+              name="footer_email"
+              type="email"
+              defaultValue={configMap["footer_email"] || ""}
+              placeholder="nguyenluyen@nsg.edu.vn"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Số điện thoại liên hệ</label>
+            <input 
+              name="footer_phone"
+              defaultValue={configMap["footer_phone"] || ""}
+              placeholder="0123.456.789"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Drive Config */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -71,6 +149,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
             <label className="block text-sm font-semibold text-slate-700 mb-1">SMTP Host</label>
             <input 
               name="SMTP_HOST" 
+              title="SMTP Host"
+              placeholder="smtp.gmail.com"
               defaultValue={configMap["SMTP_HOST"] || "smtp.gmail.com"}
               className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -79,6 +159,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
             <label className="block text-sm font-semibold text-slate-700 mb-1">SMTP Port</label>
             <input 
               name="SMTP_PORT" 
+              title="SMTP Port"
+              placeholder="465"
               defaultValue={configMap["SMTP_PORT"] || "465"}
               className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

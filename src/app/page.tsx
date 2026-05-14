@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import prisma from "@/lib/prisma";
+import LiveSearch from "@/components/LiveSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function Home() {
             🎓 Hệ thống tư vấn tuyển sinh trực tuyến
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Định hướng tương lai — <br />
+            Định hướng tương lai <br />
             <span className="text-yellow-300">Chọn đúng ngành, đúng trường</span>
           </h1>
           <p className="text-blue-100 text-lg md:text-xl font-medium max-w-2xl mx-auto">
@@ -82,13 +83,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0 items-center">
             <form action="/qa" method="GET" className="relative flex items-center">
-              <span className="absolute left-3 text-gray-400 text-sm">🔍</span>
-              <input 
-                type="text" 
-                name="q"
-                placeholder="Tìm kiếm thông minh..." 
-                className="w-full md:w-64 text-gray-900 bg-gray-50 border border-gray-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
-              />
+              <LiveSearch className="w-full md:w-64 text-gray-900 bg-gray-50 border border-gray-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" />
             </form>
             <Link href="/qa" className="inline-flex text-blue-600 font-semibold hover:underline bg-blue-50 rounded-lg px-4 py-2 whitespace-nowrap">
               Xem tất cả câu hỏi →
@@ -135,7 +130,7 @@ export default async function Home() {
           {[
             {
               title: "Tin Tức & Bài Viết",
-              desc: "Cập nhật thông tin về kỳ thi, hướng dẫn chọn ngành, chọn trường Đại học - Cao đẳng.",
+              desc: "Cập nhật thông tin về kỳ thi, hướng dẫn chọn ngành, chọn trường Trung cấp - Cao đẳng.",
               link: "/posts",
               color: "sky",
               icon: "📰",

@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import LiveSearch from "@/components/LiveSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -10,19 +11,17 @@ export default async function QaPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "student";
+  const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "all";
   const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : "";
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
   const pageSize = 10;
-
-  const isFromSchool = tab === "school";
 
   const categories = await prisma.category.findMany({
     where: { type: "MAJOR" },
   });
 
   const queryWhere = {
-    isFromSchool,
+    ...(tab !== "all" ? { isFromSchool: tab === "school" } : {}),
     ...(q ? {
       OR: [
         { question: { contains: q, mode: "insensitive" as const } },
@@ -110,6 +109,7 @@ export default async function QaPage({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Ngành nghề quan tâm</label>
               <select
+                title="Ngành nghề quan tâm"
                 name="categoryId"
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition bg-white"
               >
@@ -127,7 +127,7 @@ export default async function QaPage({
                 name="question"
                 required
                 type="text"
-                placeholder="Điểm chuẩn ngành Y khoa năm nay là bao nhiêu?"
+                placeholder="Học phí ngành Công nghệ kỹ thuật cơ khí năm nay là bao nhiêu?"
                 className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
               />
             </div>
@@ -143,19 +143,27 @@ export default async function QaPage({
 
       {/* Tabs & Search */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-2 rounded-xl shadow-sm border border-blue-50">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/qa?tab=all${q ? `&q=${q}` : ""}`}
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
+              tab === "all" ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Tất cả
+          </Link>
           <Link
             href={`/qa?tab=student${q ? `&q=${q}` : ""}`}
-            className={`px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
-              !isFromSchool ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
+              tab === "student" ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
             }`}
           >
             Q&A của Học viên
           </Link>
           <Link
             href={`/qa?tab=school${q ? `&q=${q}` : ""}`}
-            className={`px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
-              isFromSchool ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
+            className={`px-4 sm:px-6 py-2 rounded-lg font-medium text-sm transition-colors ${
+              tab === "school" ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
             }`}
           >
             Q&A từ nhà trường
@@ -163,15 +171,7 @@ export default async function QaPage({
         </div>
         
         <form action="/qa" method="GET" className="relative flex items-center w-full md:w-auto">
-          <span className="absolute left-3 text-gray-400 text-sm">🔍</span>
-          <input type="hidden" name="tab" value={tab} />
-          <input
-            type="text"
-            name="q"
-            defaultValue={q}
-            placeholder="Tìm kiếm thông minh..."
-            className="w-full md:w-64 text-gray-900 bg-gray-50 border border-gray-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
-          />
+          <LiveSearch additionalParams={{ tab }} />
         </form>
       </div>
 
@@ -214,13 +214,13 @@ export default async function QaPage({
                       TV
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên gia tư vấn</p>
+                      <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên viên tư vấn</p>
                       <p className="text-gray-700 text-sm whitespace-pre-wrap">{q.answer}</p>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-orange-50 border-t border-orange-100 px-5 py-3">
-                    <span className="text-orange-600 text-xs font-medium">⏳ Đang chờ chuyên gia trả lời...</span>
+                    <span className="text-orange-600 text-xs font-medium">⏳ Đang chờ chuyên viên tư vấn trả lời...</span>
                   </div>
                 )}
               </div>

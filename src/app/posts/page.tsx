@@ -26,16 +26,23 @@ export default async function PostsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.map((post) => (
-            <div key={post.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all p-6 flex flex-col gap-3">
-              <div className="flex items-center gap-2 text-xs text-blue-500 font-medium">
-                <span>📅</span>
-                <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+            <div key={post.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all overflow-hidden flex flex-col gap-3">
+              {post.thumbnailUrl && (
+                <img src={post.thumbnailUrl} alt={post.title} className="w-full h-48 object-cover" />
+              )}
+              <div className="p-6 flex flex-col gap-3 flex-grow">
+                <div className="flex items-center gap-2 text-xs text-blue-500 font-medium">
+                  <span>📅</span>
+                  <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 leading-snug">{post.title}</h3>
+                <div className="text-gray-600 text-sm line-clamp-3 mb-4" dangerouslySetInnerHTML={{ __html: post.content }}></div>
+                <div className="mt-auto">
+                  <Link href={`/posts/${post.id}`} className="inline-block bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+                    Đọc tiếp →
+                  </Link>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 leading-snug">{post.title}</h3>
-              <div className="text-gray-600 text-sm line-clamp-3 flex-grow" dangerouslySetInnerHTML={{ __html: post.content }}></div>
-              <Link href={`/posts/${post.id}`} className="self-start bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
-                Đọc tiếp →
-              </Link>
             </div>
           ))}
         </div>

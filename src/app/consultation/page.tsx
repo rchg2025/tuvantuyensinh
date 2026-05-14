@@ -9,6 +9,10 @@ export default async function ConsultationPage({
   const resolvedSearchParams = await searchParams;
   const isSuccess = resolvedSearchParams.success === "1";
 
+  const categories = await prisma.category.findMany({
+    where: { type: "MAJOR" },
+  });
+
   return (
     <div className="space-y-8">
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md text-center">
@@ -62,12 +66,11 @@ export default async function ConsultationPage({
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Chương trình quan tâm</label>
-            <select name="program" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+            <select title="Chương trình quan tâm" name="program" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
               <option value="">-- Chọn chương trình --</option>
-              <option value="DaiHocChinhQuy">🎓 Đại học chính quy</option>
-              <option value="CaoDang">📚 Cao đẳng</option>
-              <option value="LienThong">🔄 Liên thông - Văn bằng 2</option>
-              <option value="ThacSi">🏆 Thạc sĩ</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))}
             </select>
           </div>
 

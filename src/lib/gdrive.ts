@@ -67,3 +67,45 @@ export async function testDriveConnection() {
     return { success: false, message: `Lỗi kết nối: ${error.message}` };
   }
 }
+
+export async function uploadToDrive(file: File, fileName: string, mimeType: string) {
+  const auth = await getDriveAuth();
+  const { folderId } = await getDriveConfig();
+  const drive = google.drive({ version: "v3", auth });
+
+  if (!folderId) {
+    throw new Error("Chưa cấu hình Folder ID");
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const { data } = await drive.files.create({
+    requestBody: {
+      name: fileName,
+      parents: [folderId],
+      mimeType: mimeType,
+    },
+    media: {
+      mimeType: mimeType,
+      body: require("stream").Readable.from(buffer),
+    },
+    fields: "id, webViewLink, webContentLink",
+  });
+
+  if (!data.id) throw new Error("Upload thất bại - không lấy được ID");
+
+  // Make public
+  await drive.permissions.create({
+    fileId: data.id,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+  });
+
+  return {
+    id: data.id,
+    url: `https://drive.google.com/uc?export=view&id=${data.id}`
+  };
+}

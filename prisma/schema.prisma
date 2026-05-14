@@ -3,34 +3,34 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Question {
-  id         String    @id @default(cuid())
-  askerName  String
-  phone      String?
-  email      String?
-  question   String
-  categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-  isFromSchool Boolean @default(false)
-  answer     String?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  askerName    String
+  phone        String?
+  email        String?
+  question     String
+  categoryId   String?
+  category     Category? @relation(fields: [categoryId], references: [id])
+  isFromSchool Boolean   @default(false)
+  answer       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Post {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   title        String
   content      String
   thumbnailUrl String?
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model ConsultationRequest {
@@ -62,15 +62,15 @@ model Category {
 }
 
 model SystemUser {
-  id          String    @id @default(cuid())
-  email       String    @unique
-  phone       String?
-  password    String
-  name        String?
-  role        String    @default("ADMIN")
-  positionId  String?
-  position    Category? @relation(fields: [positionId], references: [id])
-  createdAt   DateTime  @default(now())
+  id         String    @id @default(cuid())
+  email      String    @unique
+  phone      String?
+  password   String
+  name       String?
+  role       String    @default("ADMIN")
+  positionId String?
+  position   Category? @relation(fields: [positionId], references: [id])
+  createdAt  DateTime  @default(now())
 }
 
 model SystemConfig {

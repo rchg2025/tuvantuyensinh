@@ -18,6 +18,13 @@ export async function updateConfigAction(formData: FormData) {
     const SMTP_USER = formData.get("SMTP_USER")?.toString() || "";
     const SMTP_PASS = formData.get("SMTP_PASS")?.toString() || "";
 
+    const seo_title = formData.get("seo_title")?.toString() || "";
+    const seo_description = formData.get("seo_description")?.toString() || "";
+    const logo_url = formData.get("logo_url")?.toString() || "";
+    const footer_description = formData.get("footer_description")?.toString() || "";
+    const footer_email = formData.get("footer_email")?.toString() || "";
+    const footer_phone = formData.get("footer_phone")?.toString() || "";
+
     const settingsToUpdate = [
       { key: "GDRIVE_FOLDER_ID", value: GDRIVE_FOLDER_ID },
       { key: "GDRIVE_SERVICE_EMAIL", value: GDRIVE_SERVICE_EMAIL },
@@ -26,6 +33,12 @@ export async function updateConfigAction(formData: FormData) {
       { key: "SMTP_PORT", value: SMTP_PORT },
       { key: "SMTP_USER", value: SMTP_USER },
       { key: "SMTP_PASS", value: SMTP_PASS },
+      { key: "seo_title", value: seo_title },
+      { key: "seo_description", value: seo_description },
+      { key: "logo_url", value: logo_url },
+      { key: "footer_description", value: footer_description },
+      { key: "footer_email", value: footer_email },
+      { key: "footer_phone", value: footer_phone },
     ];
 
     for (const setting of settingsToUpdate) {

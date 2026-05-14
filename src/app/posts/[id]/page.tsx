@@ -30,6 +30,10 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
         </div>
         
+        {post.thumbnailUrl && (
+          <img src={post.thumbnailUrl} alt={post.title} className="w-full h-auto max-h-[500px] object-cover rounded-xl mt-4 mb-6" />
+        )}
+
         <div 
           className="prose prose-blue max-w-none text-gray-700"
           dangerouslySetInnerHTML={{ __html: post.content }}
