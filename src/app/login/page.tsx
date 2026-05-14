@@ -1,6 +1,7 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import prisma from "@/lib/prisma";
 
 export default async function LoginPage({
   searchParams,
@@ -13,7 +14,6 @@ export default async function LoginPage({
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="w-full max-w-md space-y-6">
-        {/* Logo / Branding */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-white shadow-lg mb-2 p-1 relative overflow-hidden">
             <img src="https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH" alt="Logo" className="w-full h-full object-cover" />
@@ -22,7 +22,6 @@ export default async function LoginPage({
           <p className="text-gray-500 text-sm">Đăng nhập vào hệ thống quản trị</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-blue-100 p-8 space-y-5">
           <h2 className="text-xl font-bold text-gray-800 text-center">Đăng nhập</h2>
 
@@ -37,9 +36,30 @@ export default async function LoginPage({
             const email = formData.get("email")?.toString().trim();
             const password = formData.get("password")?.toString().trim();
             
+            if (!email || !password) redirect("/login?error=credentials");
+
+            const dbUser = await prisma.systemUser.findUnique({ where: { email } });
+            
+            let matched = false;
+            let currentName = "Admin";
+            let currentId = "admin_logged_in";
+
             if (email === "nguyenluyen@nsg.edu.vn" && password === "Nsg@2026") {
+               matched = true;
+               currentName = "Nguyễn Luyện";
+            } else if (dbUser && dbUser.password === password) {
+               matched = true;
+               currentName = dbUser.name || dbUser.email;
+               currentId = dbUser.id;
+            }
+
+            if (matched) {
               const cookieStore = await cookies();
-              cookieStore.set("auth_token", "admin_logged_in", {
+              cookieStore.set("auth_token", currentId, {
+                httpOnly: true,
+                path: "/",
+              });
+              cookieStore.set("auth_name", currentName, {
                 httpOnly: true,
                 path: "/",
               });
@@ -87,7 +107,7 @@ export default async function LoginPage({
         </div>
 
         <p className="text-center text-xs text-gray-400">
-          <Link href="/" className="hover:underline text-blue-500">← Về trang chủ</Link>
+          <Link href="/" className="hover:underline text-blue-500">← trang chủ</Link>
         </p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { google } from "googleapis";
+﻿import { google } from "googleapis";
 import prisma from "@/lib/prisma";
 
 export async function getDriveConfig() {
@@ -24,18 +24,16 @@ export async function getDriveAuth() {
   const { email, privateKey } = await getDriveConfig();
 
   if (!email || !privateKey) {
-    throw new Error("Chưa cấu hình Email hoặc Private Key");
+    throw new Error("Chua cau hinh Email hoac Private Key");
   }
 
   let formattedPrivateKey = privateKey;
-  // If the user pasted the raw JSON instead of just the private key string, we can extract it
   try {
     const parsed = JSON.parse(privateKey);
     if (parsed.private_key) {
       formattedPrivateKey = parsed.private_key;
     }
   } catch (e) {
-    // maybe it is the raw key with \n
     formattedPrivateKey = privateKey.replace(/\\n/g, '\n');
   }
 
@@ -55,16 +53,17 @@ export async function testDriveConnection() {
     const auth = await getDriveAuth();
     const drive = google.drive({ version: "v3", auth });
     
-    // Test list files to see if access is successful
     const res = await drive.files.list({
       pageSize: 1,
       fields: "nextPageToken, files(id, name)",
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
     });
 
-    return { success: true, message: "Kết nối Google Drive thành công!" };
+    return { success: true, message: "Ket noi Google Drive thanh cong!" };
   } catch (error: any) {
-    console.error("Lỗi Google Drive:", error);
-    return { success: false, message: `Lỗi kết nối: ${error.message}` };
+    console.error("Loi Google Drive:", error);
+    return { success: false, message: "Loi ket noi: " + error.message };
   }
 }
 
@@ -74,7 +73,7 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
   const drive = google.drive({ version: "v3", auth });
 
   if (!folderId) {
-    throw new Error("Chưa cấu hình Folder ID");
+    throw new Error("Chua cau hinh Folder ID");
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -91,21 +90,22 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
       body: require("stream").Readable.from(buffer),
     },
     fields: "id, webViewLink, webContentLink",
+    supportsAllDrives: true,
   });
 
-  if (!data.id) throw new Error("Upload thất bại - không lấy được ID");
+  if (!data.id) throw new Error("Upload that bai - khong lay duoc ID");
 
-  // Make public
   await drive.permissions.create({
     fileId: data.id,
     requestBody: {
       role: "reader",
       type: "anyone",
     },
+    supportsAllDrives: true,
   });
 
   return {
     id: data.id,
-    url: `https://drive.google.com/uc?export=view&id=${data.id}`
+    url: "https://drive.google.com/uc?export=view&id=" + data.id
   };
 }
