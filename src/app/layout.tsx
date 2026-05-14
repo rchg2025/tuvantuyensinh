@@ -55,6 +55,11 @@ export default async function RootLayout({
     return acc;
   }, {} as Record<string, string>);
 
+  const postCategories = await prisma.category.findMany({
+    where: { type: "POST" },
+    orderBy: { createdAt: "desc" }
+  });
+
   const logoUrl = configMap["logo_url"] || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
   const siteTitle = configMap["seo_title"] || "Tư Vấn Tuyển Sinh";
   const footerPhone = configMap["footer_phone"] || "0123.456.789";
@@ -77,8 +82,26 @@ export default async function RootLayout({
             </Link>
 
             {/* Nav */}
-            <nav className="hidden md:flex items-center gap-1">
-              <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">Bài viết</Link>
+            <nav className="hidden md:flex items-center gap-1 relative z-50">
+              <div className="group relative">
+                <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1">
+                  Bài viết
+                  <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </Link>
+                {postCategories.length > 0 && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white text-gray-800 rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left -translate-y-2 group-hover:translate-y-0">
+                    <div className="py-2">
+                      {postCategories.map(cat => (
+                        <Link key={cat.id} href={`/posts?categoryId=${cat.id}`} className="block px-4 py-2 text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                          {cat.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
               <Link href="/qa" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">Hỏi đáp</Link>
               <Link href="/consultation" className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg shadow transition">
                 Đăng ký tư vấn

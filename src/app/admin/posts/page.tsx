@@ -15,9 +15,7 @@ export default async function AdminPostsPage() {
 
   const categories = await prisma.category.findMany({
     where: {
-      type: {
-        in: ["POST", "MAJOR"]
-      }
+      type: "POST"
     }
   });
 

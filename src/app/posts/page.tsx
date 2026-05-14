@@ -31,7 +31,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
       include: { category: true }
     }),
     prisma.post.count({ where: whereCondition }),
-    prisma.category.findMany({ where: { type: { in: ["POST", "MAJOR"] } } })
+    prisma.category.findMany({ where: { type: "POST" } })
   ]);
 
   const totalPages = Math.ceil(totalPosts / limit);
