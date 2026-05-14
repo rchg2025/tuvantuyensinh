@@ -28,7 +28,8 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
       const res = await uploadFileAction(formData);
       if (res.success && res.url) {
         // Insert image to content
-        const imageTag = `<img src="${res.url}" alt="image" />`;
+        const finalUrl = res.url.includes('drive.google.com/uc') ? res.url.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w1000') : res.url;
+        const imageTag = `<img src="${finalUrl}" alt="image" />`;
         setContent((prev: string) => prev + imageTag);
         toast.success("Đã chèn ảnh vào bài viết!", { id: toastId });
       } else {

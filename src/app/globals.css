@@ -33,28 +33,32 @@ body {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-.post-content p {
+.post-content p, .jodit-wysiwyg p {
   margin-bottom: 1em;
 }
-.post-content ul {
-  list-style-type: disc;
-  margin-left: 1.5em;
+.post-content ul, .jodit-wysiwyg ul {
+  list-style-type: disc !important;
+  margin-left: 1.5em !important;
+  padding-left: 1.5em !important;
   margin-bottom: 1em;
 }
-.post-content ol {
-  list-style-type: decimal;
-  margin-left: 1.5em;
+.post-content ol, .jodit-wysiwyg ol {
+  list-style-type: decimal !important;
+  margin-left: 1.5em !important;
+  padding-left: 1.5em !important;
   margin-bottom: 1em;
 }
-.post-content table {
+.post-content table, .jodit-wysiwyg table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1em;
 }
-.post-content table, .post-content th, .post-content td {
+.post-content table, .post-content th, .post-content td,
+.jodit-wysiwyg table, .jodit-wysiwyg th, .jodit-wysiwyg td {
   border: 1px solid #e5e7eb;
 }
-.post-content th, .post-content td {
+.post-content th, .post-content td,
+.jodit-wysiwyg th, .jodit-wysiwyg td {
   padding: 0.5rem;
 }
 .post-content a {
