@@ -17,3 +17,51 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+.post-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.post-content p {
+  margin-bottom: 1em;
+}
+.post-content ul {
+  list-style-type: disc;
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+.post-content ol {
+  list-style-type: decimal;
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+.post-content table, .post-content th, .post-content td {
+  border: 1px solid #e5e7eb;
+}
+.post-content th, .post-content td {
+  padding: 0.5rem;
+}
+.post-content a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.post-content h1, .post-content h2, .post-content h3, .post-content h4 {
+  font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--foreground);
+}
+.post-content h2 { font-size: 1.5rem; }
+.post-content h3 { font-size: 1.25rem; }
+
