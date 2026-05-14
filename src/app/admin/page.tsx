@@ -82,7 +82,7 @@ export default async function AdminDashboard() {
           <h3 className="text-lg font-bold text-slate-800">Đăng ký tư vấn gần đây</h3>
           <Link href="/admin/consultations" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả →</Link>
         </div>
-        <table className="w-full text-left">
+        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
               <th className="p-4">Tên</th>
@@ -112,7 +112,7 @@ export default async function AdminDashboard() {
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

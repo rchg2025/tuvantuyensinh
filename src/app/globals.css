@@ -52,6 +52,10 @@ body {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1em;
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .post-content table, .post-content th, .post-content td,
 .jodit-wysiwyg table, .jodit-wysiwyg th, .jodit-wysiwyg td {
@@ -74,3 +78,10 @@ body {
 .post-content h2 { font-size: 1.5rem; }
 .post-content h3 { font-size: 1.25rem; }
 
+
+.post-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

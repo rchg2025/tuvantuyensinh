@@ -108,7 +108,7 @@ export default function CategoryManager({ initialCategories }: { initialCategori
         </div>
 
         <div className="overflow-x-auto rounded-lg border border-slate-100">
-          <table className="w-full text-left">
+          <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
             <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
               <tr>
                 <th className="p-4">Tên danh mục</th>
@@ -162,7 +162,7 @@ export default function CategoryManager({ initialCategories }: { initialCategori
                 <tr><td colSpan={4} className="p-8 text-center text-slate-500">Không tìm thấy danh mục nào.</td></tr>
               )}
             </tbody>
-          </table>
+          </table></div>
         </div>
 
         {/* Pagination logic */}

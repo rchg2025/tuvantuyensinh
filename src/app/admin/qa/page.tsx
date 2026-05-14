@@ -123,7 +123,7 @@ export default async function AdminQaPage({
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-left">
+        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
               <th className="p-4">Người hỏi</th>
@@ -149,7 +149,7 @@ export default async function AdminQaPage({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
         
         {/* Pagination */}
         {totalPages > 1 && (

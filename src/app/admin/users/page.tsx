@@ -103,7 +103,7 @@ export default async function AdminUsersPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <table className="w-full text-left">
+        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
               <th className="p-4">Họ Tên</th>
@@ -132,7 +132,7 @@ export default async function AdminUsersPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );
