@@ -4,6 +4,7 @@ import { useRef } from "react";
 import toast from "react-hot-toast";
 import { updateConfigAction } from "./actions";
 import SubmitButtons from "./SubmitButtons";
+import DragDropUpload from "@/components/DragDropUpload";
 
 export default function SettingsForm({ configMap }: { configMap: Record<string, string> }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -51,15 +52,7 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
           </div>
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Link Logo</label>
-            <input 
-              name="logo_url" 
-              defaultValue={configMap["logo_url"] || ""}
-              placeholder="VD: https://drive.google.com/uc?export=view&id=..."
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {configMap["logo_url"] && (
-              <img src={configMap["logo_url"]} alt="Logo Preview" className="mt-2 h-10 object-contain rounded border border-gray-200 p-0.5 bg-gray-50" />
-            )}
+            <DragDropUpload name="logo_url" defaultValue={configMap["logo_url"] || ""} accept="image/*" label="Kéo thả logo vào đây (hoặc click để chọn)" />
           </div>
         </div>
       </div>
