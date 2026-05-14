@@ -48,7 +48,7 @@ export async function generateMetadata(): Promise<Metadata> {
     
     ...(googleVerification?.value ? {
       verification: {
-        google: googleVerification.value,
+        google: googleVerification.value.replace(/.*content=["']([^"']+)["'].*/, '$1').replace('google-site-verification=', '').trim(),
       }
     } : {}),
     icons: {
