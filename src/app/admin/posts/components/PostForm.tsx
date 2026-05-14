@@ -5,12 +5,42 @@ import toast from "react-hot-toast";
 import dynamic from "next/dynamic";
 import { createPostAction } from "../actions";
 import DragDropUpload from "@/components/DragDropUpload";
+import { uploadFileAction } from "@/app/admin/uploadAction";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 export default function PostForm({ defaultValues, categories = [] }: { defaultValues?: any, categories?: any[] }) {
   const [content, setContent] = useState(defaultValues?.content || "");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    const toastId = toast.loading("Đang tải ảnh lên Google Drive...");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const res = await uploadFileAction(formData);
+      if (res.success && res.url) {
+        // Insert image to content
+        const imageTag = `<img src="${res.url}" alt="image" />`;
+        setContent((prev: string) => prev + imageTag);
+        toast.success("Đã chèn ảnh vào bài viết!", { id: toastId });
+      } else {
+        toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
+      }
+    } catch (error) {
+      toast.error("Đã xảy ra lỗi khi tải ảnh!", { id: toastId });
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (formData: FormData) => {
     formData.set("content", content);
@@ -77,7 +107,32 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-1">Nội dung</label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-semibold text-slate-700">Nội dung</label>
+            <div>
+              <input 
+                type="file" 
+                title="Tải ảnh lên"
+                ref={fileInputRef}
+                className="hidden" 
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+              <button 
+                type="button"
+                disabled={isUploadingImage}
+                onClick={() => {
+                  if (!isUploadingImage) fileInputRef.current?.click();
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 rounded bg-white transition-colors disabled:opacity-50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                {isUploadingImage ? "Đang tải..." : "Thêm tệp"}
+              </button>
+            </div>
+          </div>
           <div className="border border-slate-200 rounded-lg overflow-hidden prose-sm max-w-none">
              <JoditEditor
                 value={content}
