@@ -42,6 +42,7 @@ export default async function AdminQaPage() {
           askerName: "Admin/Chuyên gia",
           question,
           answer,
+          isFromSchool: true,
         },
       });
       revalidatePath("/admin/qa");

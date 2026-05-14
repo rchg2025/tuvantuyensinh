@@ -9,12 +9,17 @@ datasource db {
 }
 
 model Question {
-  id        String   @id @default(cuid())
-  askerName String
-  question  String
-  answer    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String    @id @default(cuid())
+  askerName  String
+  phone      String?
+  email      String?
+  question   String
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  isFromSchool Boolean @default(false)
+  answer     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Post {
@@ -52,6 +57,7 @@ model Category {
   type        CategoryType @default(MAJOR)
   posts       Post[]
   users       SystemUser[]
+  questions   Question[]
   createdAt   DateTime     @default(now())
 }
 
