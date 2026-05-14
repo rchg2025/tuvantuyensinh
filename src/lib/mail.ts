@@ -4,7 +4,7 @@ import prisma from './prisma';
 export async function getMailer() {
   const configs = await prisma.systemConfig.findMany({
     where: {
-      key: { in: ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'mail_from'] }
+      key: { in: ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS'] }
     }
   });
 
@@ -13,11 +13,11 @@ export async function getMailer() {
     return acc;
   }, {} as Record<string, string>);
 
-  const host = configMap['smtp_host'];
-  const port = parseInt(configMap['smtp_port'] || '465');
-  const user = configMap['smtp_user'];
-  const pass = configMap['smtp_pass'];
-  const from = configMap['mail_from'] || user;
+  const host = configMap['SMTP_HOST'];
+  const port = parseInt(configMap['SMTP_PORT'] || '465');
+  const user = configMap['SMTP_USER'];
+  const pass = configMap['SMTP_PASS'];
+  const from = user;
 
   if (!host || !user || !pass) {
     console.warn("SMTP settings are missing. Mail will not be sent.");
