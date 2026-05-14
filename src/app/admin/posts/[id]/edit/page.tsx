@@ -8,6 +8,14 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   const post = await prisma.post.findUnique({ where: { id } });
   
   if (!post) notFound();
+
+  const categories = await prisma.category.findMany({
+    where: {
+      type: {
+        in: ["POST", "MAJOR"]
+      }
+    }
+  });
   
   return (
     <div className="space-y-6">
@@ -15,7 +23,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         <h1 className="text-2xl font-bold text-slate-800">Chỉnh sửa bài viết</h1>
         <Link href="/admin/posts" className="text-blue-600 hover:underline">Quay lại danh sách</Link>
       </div>
-      <PostForm defaultValues={post} />
+      <PostForm defaultValues={post} categories={categories} />
     </div>
   );
 }

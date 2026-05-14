@@ -9,6 +9,8 @@ export async function createPostAction(formData: FormData) {
   const content = formData.get("content")?.toString() || "";
   const thumbnailUrl = formData.get("thumbnailUrl")?.toString() || null;
   const attachments = formData.get("attachments")?.toString() || null;
+  const categoryIdStr = formData.get("categoryId")?.toString() || "";
+  const categoryId = categoryIdStr === "" ? null : categoryIdStr;
   
   if (!title || !content) {
     return { success: false, message: "Tiêu đề và Nội dung là bắt buộc!" };
@@ -17,13 +19,13 @@ export async function createPostAction(formData: FormData) {
   if (id) {
     await prisma.post.update({
       where: { id },
-      data: { title, content, thumbnailUrl, attachments },
+      data: { title, content, thumbnailUrl, attachments, categoryId },
     });
     revalidatePath("/admin/posts");
     return { success: true, message: "Cập nhật thành công!" };
   } else {
     await prisma.post.create({
-      data: { title, content, thumbnailUrl, attachments },
+      data: { title, content, thumbnailUrl, attachments, categoryId },
     });
     revalidatePath("/admin/posts");
     return { success: true, message: "Đăng bài viết thành công!" };

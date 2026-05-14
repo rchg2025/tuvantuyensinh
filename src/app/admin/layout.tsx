@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
+import prisma from "@/lib/prisma";
 
 export default async function AdminLayout({
   children,
@@ -14,6 +15,20 @@ export default async function AdminLayout({
   if (auth !== "admin_logged_in") {
     redirect("/login");
   }
+
+  // Fetch pending counts
+  const pendingConsultations = await prisma.consultationRequest.count({
+    where: { isProcessed: false }
+  });
+
+  const pendingQuestions = await prisma.question.count({
+    where: { 
+      OR: [
+        { answer: null },
+        { answer: "" }
+      ]
+    }
+  });
 
   return (
     <div className="flex bg-slate-50 min-h-screen">
@@ -30,14 +45,20 @@ export default async function AdminLayout({
           <Link href="/admin" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             🏠 Bảng điều khiển
           </Link>
-          <Link href="/admin/consultations" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-            📞 Đăng ký tư vấn
+          <Link href="/admin/consultations" className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between">
+            <span>📞 Đăng ký tư vấn</span>
+            {pendingConsultations > 0 && (
+              <span className="bg-red-100 text-red-600 text-xs py-0.5 px-2 rounded-full">{pendingConsultations}</span>
+            )}
           </Link>
           <Link href="/admin/posts" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             📰 Bài viết
           </Link>
-          <Link href="/admin/qa" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-            💬 Hỏi đáp & Tư vấn
+          <Link href="/admin/qa" className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between">
+            <span>💬 Hỏi đáp & Tư vấn</span>
+            {pendingQuestions > 0 && (
+              <span className="bg-red-100 text-red-600 text-xs py-0.5 px-2 rounded-full">{pendingQuestions}</span>
+            )}
           </Link>
           <Link href="/admin/categories" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             🗂️ Danh mục hệ thống

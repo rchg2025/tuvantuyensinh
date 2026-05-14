@@ -1,20 +1,37 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import LiveSearch from "@/components/LiveSearch";
 
 export const dynamic = "force-dynamic";
 
-export default async function PostsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default async function PostsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; categoryId?: string }> }) {
   const resolvedParams = await searchParams;
   const page = parseInt(resolvedParams.page || "1", 10);
+  const q = resolvedParams.q || "";
+  const categoryId = resolvedParams.categoryId || "";
   const limit = 12;
 
-  const [posts, totalPosts] = await Promise.all([
+  const whereCondition: any = {};
+  if (q) {
+    whereCondition.OR = [
+      { title: { contains: q, mode: "insensitive" } },
+      { content: { contains: q, mode: "insensitive" } }
+    ];
+  }
+  if (categoryId) {
+    whereCondition.categoryId = categoryId;
+  }
+
+  const [posts, totalPosts, categories] = await Promise.all([
     prisma.post.findMany({
+      where: whereCondition,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      include: { category: true }
     }),
-    prisma.post.count()
+    prisma.post.count({ where: whereCondition }),
+    prisma.category.findMany({ where: { type: { in: ["POST", "MAJOR"] } } })
   ]);
 
   const totalPages = Math.ceil(totalPosts / limit);
@@ -22,9 +39,32 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md">
-        <h2 className="text-3xl font-extrabold mb-2">📰 Tin tức & Bài viết</h2>
-        <p className="text-blue-100">Cập nhật thông tin tuyển sinh, thông báo mới nhất từ các trường đại học.</p>
+      <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md flex justify-between flex-wrap gap-4 items-center">
+        <div>
+          <h2 className="text-3xl font-extrabold mb-2">📰 Tin tức & Bài viết</h2>
+          <p className="text-blue-100">Cập nhật thông tin tuyển sinh, thông báo mới nhất từ các trường đại học.</p>
+        </div>
+        <form action="/posts" method="GET" className="flex items-center gap-2 bg-white/20 p-2 rounded-xl backdrop-blur-md">
+          <input
+            type="text"
+            name="q"
+            defaultValue={q}
+            placeholder="Tìm kiếm bài viết..."
+            className="w-full sm:w-64 bg-white text-gray-900 placeholder:text-gray-500 px-4 py-2 rounded-lg border-transparent focus:ring-2 focus:ring-blue-300 outline-none"
+          />
+          <select
+            name="categoryId"
+            defaultValue={categoryId}
+            title="Danh mục"
+            className="bg-white text-gray-900 border-transparent px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none max-w-40"
+          >
+            <option value="">Tất cả danh mục</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+            Tìm
+          </button>
+        </form>
       </div>
 
       {/* Posts Grid */}
@@ -65,17 +105,20 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
 
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-12 pb-8">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <Link
-                  key={p}
-                  href={`/posts?page=${p}`}
-                  className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-all ${
-                    page === p ? "bg-blue-600 text-white shadow-md cursor-default pointer-events-none" : "bg-white text-gray-700 hover:bg-blue-50 border border-gray-200"
-                  }`}
-                >
-                  {p}
-                </Link>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
+                const searchStr = new URLSearchParams({ page: p.toString(), ...(q ? { q } : {}), ...(categoryId ? { categoryId } : {}) }).toString();
+                return (
+                  <Link
+                    key={p}
+                    href={`/posts?${searchStr}`}
+                    className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-all ${
+                      page === p ? "bg-blue-600 text-white shadow-md cursor-default pointer-events-none" : "bg-white text-gray-700 hover:bg-blue-50 border border-gray-200"
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </>

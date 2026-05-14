@@ -34,7 +34,8 @@ export async function POST(req: NextRequest) {
         isImages: [file.type.startsWith("image/")],
         code: 220,
         path: "",
-        files: [file.name]
+        files: [file.name],
+        mimetype: file.type
       },
       file: finalUrl,
       url: finalUrl,

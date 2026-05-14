@@ -48,7 +48,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           
           <div 
              className="post-content text-gray-800 leading-relaxed block overflow-x-hidden" 
-             style={{ wordWrap: "break-word", overflowWrap: "break-word", maxWidth: "100%", width: "100%" }}
+             style={{ wordBreak: "normal", overflowWrap: "anywhere", maxWidth: "100%", width: "100%" }}
              dangerouslySetInnerHTML={{ __html: post.content }}
           ></div>
           

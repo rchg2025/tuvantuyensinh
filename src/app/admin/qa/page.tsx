@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
+import QaRow from "./QaRow";
 
 export const dynamic = "force-dynamic";
 
@@ -36,27 +37,19 @@ export default async function AdminQaPage({
 
   const totalPages = Math.ceil(totalQuestions / pageSize);
 
-  async function updateAnswer(formData: FormData) {
+  async function updateAnswerWrapper(id: string, answer: string) {
     "use server";
-    const id = formData.get("id")?.toString();
-    const answer = formData.get("answer")?.toString() || null;
-    
-    if (id) {
-      await prisma.question.update({
-        where: { id },
-        data: { answer },
-      });
-      revalidatePath("/admin/qa");
-    }
+    await prisma.question.update({
+      where: { id },
+      data: { answer },
+    });
+    revalidatePath("/admin/qa");
   }
 
-  async function deleteQuestion(formData: FormData) {
+  async function deleteQuestionWrapper(id: string) {
     "use server";
-    const id = formData.get("id")?.toString();
-    if (id) {
-      await prisma.question.delete({ where: { id } });
-      revalidatePath("/admin/qa");
-    }
+    await prisma.question.delete({ where: { id } });
+    revalidatePath("/admin/qa");
   }
 
   async function createQuestion(formData: FormData) {
@@ -126,35 +119,12 @@ export default async function AdminQaPage({
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
             {questions.map((q) => (
-              <tr key={q.id} className="hover:bg-slate-50/50 transition-colors group">
-                <td className="p-4 align-top font-medium text-slate-800">{q.askerName}</td>
-                <td className="p-4 align-top text-slate-600">
-                  <p className="line-clamp-3">{q.question}</p>
-                  <p className="text-xs text-slate-400 mt-2">{new Date(q.createdAt).toLocaleDateString("vi-VN")}</p>
-                </td>
-                <td className="p-4 align-top">
-                  <form action={updateAnswer} className="flex flex-col gap-2">
-                    <input type="hidden" name="id" value={q.id} />
-                    <textarea 
-                      name="answer"
-                      defaultValue={q.answer || ""}
-                      placeholder="Nhập câu trả lời..."
-                      className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 min-h-[80px]"
-                    />
-                    <button type="submit" className="self-end px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold text-xs transition-colors">
-                      {q.answer ? "Cập nhật" : "Trả lời"}
-                    </button>
-                  </form>
-                </td>
-                <td className="p-4 align-top text-center justify-center">
-                  <form action={deleteQuestion}>
-                    <input type="hidden" name="id" value={q.id} />
-                    <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs mt-2">
-                      Xóa
-                    </button>
-                  </form>
-                </td>
-              </tr>
+              <QaRow
+                key={q.id}
+                question={q}
+                onUpdate={updateAnswerWrapper}
+                onDelete={deleteQuestionWrapper}
+              />
             ))}
             {questions.length === 0 && (
               <tr>

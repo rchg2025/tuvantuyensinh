@@ -8,6 +8,15 @@ export const dynamic = "force-dynamic";
 export default async function AdminPostsPage() {
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
+    include: { category: true }
+  });
+
+  const categories = await prisma.category.findMany({
+    where: {
+      type: {
+        in: ["POST", "MAJOR"]
+      }
+    }
   });
 
   return (
@@ -19,13 +28,14 @@ export default async function AdminPostsPage() {
         </div>
       </div>
 
-      <PostForm />
+      <PostForm categories={categories} />
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
               <th className="p-4 w-1/3">Tiêu đề</th>
+              <th className="p-4">Danh mục</th>
               <th className="p-4">Ngày đăng</th>
               <th className="p-4 text-center">Hành động</th>
             </tr>
@@ -41,6 +51,7 @@ export default async function AdminPostsPage() {
                     <span>{post.title}</span>
                   </div>
                 </td>
+                <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
                 <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN")}</td>
                 <td className="p-4 align-middle text-center">
                   <div className="flex items-center justify-center gap-2">

@@ -18,8 +18,13 @@ body {
   color: var(--foreground);
 }
 .post-content {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.jodit-wysiwyg {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
 }
 .post-content img {
   max-width: 100%;
