@@ -102,6 +102,9 @@ export default async function AdminLayout({
               <Link href="/admin/users" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                 👥 Quản lý thành viên
               </Link>
+              <Link href="/admin/menus" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                📝 Quản lý Menu
+              </Link>
               <Link href="/admin/settings" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                 ⚙️ Cấu hình hệ thống
               </Link>
