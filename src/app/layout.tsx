@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import "./globals.css";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
@@ -156,16 +157,56 @@ export default async function RootLayout({
               </Link>
             </nav>
 
-            <div className="flex md:hidden items-center gap-2">
-              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm font-medium hover:underline text-blue-200">
-                {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
-              </Link>
-            </div>
             <div className="hidden md:block">
               <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition ml-4">
                 {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
+          </div>
+
+          {/* Mobile Secondary Menu Row */}
+          <div className="md:hidden flex justify-between items-center px-4 py-2 bg-blue-800 border-t border-blue-600">
+            {/* Sidebar menu toggler icon */}
+            <button className="text-white p-1 hover:bg-blue-700 rounded transition" title="Menu Sidebar">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+              </svg>
+            </button>
+
+            {/* Center User Info */}
+            <div className="flex-1 text-center text-sm font-medium px-2">
+              {isLoggedIn ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Link href="/admin" className="truncate text-white hover:text-blue-200 transition">
+                    {authName ? decodeURIComponent(authName) : "Trang cá nhân"}
+                  </Link>
+                  <form action={async () => {
+                    "use server";
+                    const cookieStore = await cookies();
+                    cookieStore.delete("auth_token");
+                    cookieStore.delete("auth_name");
+                    redirect("/login");
+                  }}>
+                    <button type="submit" className="text-red-300 hover:text-red-100 p-1 bg-red-900/30 rounded-full transition" title="Thoát đăng nhập">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" x2="9" y1="12" y2="12"></line>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <Link href="/login" className="text-blue-200 hover:text-white transition">Đăng nhập</Link>
+              )}
+            </div>
+
+            {/* Header menu toggler icon */}
+            <button className="text-white p-1 hover:bg-blue-700 rounded transition" title="Menu Header">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
           </div>
         </header>
         
