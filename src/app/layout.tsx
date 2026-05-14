@@ -63,6 +63,18 @@ export default async function RootLayout({
     }
   } catch (e) {}
 
+  // Convert flat menu to tree
+  const menuTree: any[] = [];
+  headerMenus.forEach((menu) => {
+    if (menu.isSubmenu && menuTree.length > 0) {
+      const parent = menuTree[menuTree.length - 1];
+      if (!parent.children) parent.children = [];
+      parent.children.push(menu);
+    } else {
+      menuTree.push({ ...menu, children: [] });
+    }
+  });
+
   const postCategories = await prisma.category.findMany({
     where: { type: "POST" },
     orderBy: { createdAt: "desc" }
@@ -91,11 +103,29 @@ export default async function RootLayout({
 
             {/* Nav */}
             <nav className="hidden md:flex items-center gap-1 relative z-50">
-              {headerMenus.length > 0 ? (
-                headerMenus.map((menu: any) => (
-                  <Link key={menu.id} href={menu.url} className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">
-                    {menu.title}
-                  </Link>
+              {menuTree.length > 0 ? (
+                menuTree.map((menu: any) => (
+                  <div key={menu.id} className="group relative">
+                    <Link href={menu.url} className={`px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 ${menu.children?.length > 0 ? "pr-3" : ""}`}>
+                      {menu.title}
+                      {menu.children?.length > 0 && (
+                        <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
+                    </Link>
+                    {menu.children?.length > 0 && (
+                      <div className="absolute top-full left-0 mt-1 w-48 bg-white text-gray-800 rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left -translate-y-2 group-hover:translate-y-0">
+                        <div className="py-2">
+                          {menu.children.map((child: any) => (
+                            <Link key={child.id} href={child.url} className="block px-4 py-2 text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                              {child.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))
               ) : (
                 <>

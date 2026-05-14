@@ -4,30 +4,52 @@ import toast from "react-hot-toast";
 import { saveMenusAction } from "./actions";
 
 export default function MenuManager({ initialMenus, categories, posts }: { initialMenus: any[], categories: any[], posts: any[] }) {
-  const [menus, setMenus] = useState<any[]>(initialMenus);
+  const [menus, setMenus] = useState<any[]>(initialMenus || []);
   
   // Drag and drop state
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragStartX, setDragStartX] = useState<number>(0);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIdx(index);
+    setDragStartX(e.clientX);
     if(e.dataTransfer) {
       e.dataTransfer.effectAllowed = "move";
+      // This helps with dragging visuals but we mainly use it for state
       e.dataTransfer.setData("text/html", e.currentTarget.innerHTML);
     }
   };
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
-    if (draggedIdx === null || draggedIdx === index) return;
+    if (draggedIdx === null) return;
     
-    // swap items directly inside the array while dragging
-    const newMenus = [...menus];
-    const draggedItem = newMenus[draggedIdx];
-    newMenus.splice(draggedIdx, 1);
-    newMenus.splice(index, 0, draggedItem);
-    setDraggedIdx(index);
-    setMenus(newMenus);
+    // Check horizontal movement relative to start
+    const deltaX = e.clientX - dragStartX;
+
+    let newMenus = [...menus];
+    
+    // Vertical Reordering
+    if (draggedIdx !== index) {
+      const draggedItem = newMenus[draggedIdx];
+      newMenus.splice(draggedIdx, 1);
+      newMenus.splice(index, 0, draggedItem);
+      setDraggedIdx(index);
+      // Reset startX to avoid jumping indent right after reorder
+      setDragStartX(e.clientX); 
+    }
+
+    // Horizontal Indentation (kéo vô 1 bậc)
+    // Only items index > 0 can be submenu
+    if (draggedIdx === index) {
+      if (deltaX > 40 && index > 0) {
+        newMenus[index].isSubmenu = true;
+        setMenus(newMenus);
+      } else if (deltaX < -30) {
+        newMenus[index].isSubmenu = false;
+        setMenus(newMenus);
+      }
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -62,8 +84,14 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
   };
 
   const handleSave = async () => {
+    // Sanitize: index 0 cannot be submenu
+    const sanitized = menus.map((m, i) => {
+      if (i === 0) return { ...m, isSubmenu: false };
+      return m;
+    });
+
     const t = toast.loading("Đang lưu menu...");
-    const res = await saveMenusAction(menus);
+    const res = await saveMenusAction(sanitized);
     if(res.success) toast.success("Lưu thành công", {id: t});
     else toast.error("Lỗi khi lưu: " + res.message, {id: t});
   };
@@ -87,13 +115,15 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
               onDragStart={(e) => handleDragStart(e, idx)}
               onDragOver={(e) => handleDragOver(e, idx)}
               onDragEnd={handleDrop}
-              className={`flex items-center gap-4 bg-slate-50 border p-3 rounded-xl cursor-move transition-transform ${draggedIdx === idx ? "opacity-50 border-blue-400" : "border-slate-200"}`}
+              className={`flex items-center gap-4 bg-slate-50 border p-3 rounded-xl cursor-move transition-all duration-200 ${
+                draggedIdx === idx ? "opacity-50 border-blue-400" : "border-slate-200"
+              } ${menu.isSubmenu ? "ml-8 border-l-4 border-l-blue-400 bg-blue-50/30" : ""}`}
             >
-              <div className="text-slate-400 cursor-move" title="Kéo để di chuyển">
+              <div className="text-slate-400 cursor-move" title="Kéo ngang để tạo menu con">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" /></svg>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-slate-800">{menu.title}</div>
+                <div className="font-bold text-slate-800">{menu.title} {menu.isSubmenu && <span className="text-xs font-normal text-blue-500 bg-blue-100 px-2 py-0.5 rounded ml-2">Menu con</span>}</div>
                 <div className="text-xs text-blue-600 truncate">{menu.url}</div>
               </div>
               <button 

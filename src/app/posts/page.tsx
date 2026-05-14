@@ -43,7 +43,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md flex justify-between flex-wrap gap-4 items-center">
         <div>
           <h2 className="text-3xl font-extrabold mb-2">📰 Tin tức & Bài viết</h2>
-          <p className="text-blue-100">Cập nhật thông tin tuyển sinh, thông báo mới nhất từ các trường đại học.</p>
+          <p className="text-blue-100">Cập nhật thông tin tuyển sinh, thông báo mới của Khoa Cơ khí - Trường Cao đẳng Bách khoa Nam Sài Gòn.</p>
         </div>
         <form action="/posts" method="GET" className="flex items-center gap-2 bg-white/20 p-2 rounded-xl backdrop-blur-md">
           <input
