@@ -59,7 +59,7 @@ export default async function LoginPage({
                 httpOnly: true,
                 path: "/",
               });
-              cookieStore.set("auth_name", currentName, {
+              cookieStore.set("auth_name", encodeURIComponent(currentName), {
                 httpOnly: true,
                 path: "/",
               });

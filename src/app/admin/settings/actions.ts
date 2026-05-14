@@ -24,6 +24,7 @@ export async function updateConfigAction(formData: FormData) {
     const footer_description = formData.get("footer_description")?.toString() || "";
     const footer_email = formData.get("footer_email")?.toString() || "";
     const footer_phone = formData.get("footer_phone")?.toString() || "";
+    const zalo_oa_widget = formData.get("zalo_oa_widget")?.toString() || "";
 
     const settingsToUpdate = [
       { key: "GDRIVE_FOLDER_ID", value: GDRIVE_FOLDER_ID },
@@ -39,6 +40,7 @@ export async function updateConfigAction(formData: FormData) {
       { key: "footer_description", value: footer_description },
       { key: "footer_email", value: footer_email },
       { key: "footer_phone", value: footer_phone },
+      { key: "zalo_oa_widget", value: zalo_oa_widget },
     ];
 
     for (const setting of settingsToUpdate) {

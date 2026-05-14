@@ -1,9 +1,18 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
+  const cookieStore = await cookies();
+  const auth = cookieStore.get("auth_token")?.value;
+  if (auth && auth !== "admin_logged_in") {
+    const user = await prisma.systemUser.findUnique({ where: { id: auth } });
+    if (user && user.role !== "ADMIN") redirect("/admin");
+  }
+
   const users = await prisma.systemUser.findMany({
     include: { position: true },
     orderBy: { createdAt: "desc" },
@@ -68,7 +77,7 @@ export default async function AdminUsersPage() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Chức vụ</label>
-              <select name="positionId" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <select name="positionId" title="Chức danh" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="">-- Chọn chức vụ --</option>
                 {positions.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -81,7 +90,7 @@ export default async function AdminUsersPage() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Quyền / Vai trò</label>
-              <select name="role" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <select name="role" title="Phân quyền" className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="ADMIN">Quản trị viên (Admin)</option>
                 <option value="CVD">Chuyên viên tư vấn (CVD)</option>
               </select>

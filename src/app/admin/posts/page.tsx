@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import PostForm from "./components/PostForm";
 import { deletePostAction } from "./actions";
@@ -6,6 +8,13 @@ import { deletePostAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPostsPage() {
+  const cookieStore = await cookies();
+  const auth = cookieStore.get("auth_token")?.value;
+  if (auth && auth !== "admin_logged_in") {
+    const user = await prisma.systemUser.findUnique({ where: { id: auth } });
+    if (user && user.role !== "ADMIN") redirect("/admin");
+  }
+
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
     include: { category: true }

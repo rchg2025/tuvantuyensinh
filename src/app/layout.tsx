@@ -45,7 +45,7 @@ export default async function RootLayout({
   const configs = await prisma.systemConfig.findMany({
     where: {
       key: {
-        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title"]
+        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget"]
       }
     }
   });
@@ -60,6 +60,7 @@ export default async function RootLayout({
   const footerPhone = configMap["footer_phone"] || "0123.456.789";
   const footerEmail = configMap["footer_email"] || "nguyenluyen@nsg.edu.vn";
   const footerDesc = configMap["footer_description"] || "Hệ thống hỗ trợ giải đáp thắc mắc và tuyển sinh trực tuyến nhanh chóng, chính xác.";
+  const zaloOaWidget = configMap["zalo_oa_widget"] || "";
 
   return (
     <html
@@ -85,12 +86,12 @@ export default async function RootLayout({
             </nav>
 
             <div className="flex md:hidden items-center gap-2">
-              <Link href={isLoggedIn ? "/admin/posts" : "/login"} className="text-sm font-medium hover:underline text-blue-200">
+              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm font-medium hover:underline text-blue-200">
                 {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
             <div className="hidden md:block">
-              <Link href={isLoggedIn ? "/admin/posts" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition ml-4">
+              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition ml-4">
                 {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
@@ -130,6 +131,9 @@ export default async function RootLayout({
             &copy; {new Date().getFullYear()} {siteTitle}.
           </div>
         </footer>
+        {zaloOaWidget && (
+          <div dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
+        )}
       </body>
     </html>
   );

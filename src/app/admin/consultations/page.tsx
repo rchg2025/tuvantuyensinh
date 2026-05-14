@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import ExportExcelButton from "./ExportExcelButton";
 
 export const dynamic = "force-dynamic";
 
@@ -31,8 +32,13 @@ export default async function AdminConsultationsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-800">Thông tin liên hệ & Tư vấn</h1>
-      <p className="text-slate-500 mb-6">Danh sách học viên để lại thông tin cần tư vấn hoặc gọi điện lại.</p>
+      <div className="flex justify-between items-center sm:items-start flex-col sm:flex-row gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Thông tin liên hệ & Tư vấn</h1>
+          <p className="text-slate-500">Danh sách học viên để lại thông tin cần tư vấn hoặc gọi điện lại.</p>
+        </div>
+        <ExportExcelButton data={requests} />
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-left">

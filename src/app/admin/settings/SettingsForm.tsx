@@ -181,6 +181,26 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
         </div>
       </div>
 
+      {/* Widget/Script Config */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span>💬</span> Mã nhúng (Widget / Script)
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-1">Mã Zalo OA Chat Widget</label>
+            <textarea 
+              name="zalo_oa_widget"
+              rows={4}
+              defaultValue={configMap["zalo_oa_widget"] || ""}
+              placeholder="<!-- Zalo Chat Widget -->&#10;<div class='zalo-chat-widget'...></div>&#10;<script src='...'></script>"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm whitespace-pre"
+            ></textarea>
+            <p className="text-xs text-slate-500 mt-1">Đoạn mã này sẽ được tự động chèn vào trước thẻ đóng &lt;/body&gt; để hiển thị khung chat trên toàn website.</p>
+          </div>
+        </div>
+      </div>
+
       <SubmitButtons />
     </form>
   );
