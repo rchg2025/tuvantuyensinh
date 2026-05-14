@@ -37,17 +37,22 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
       setDraggedIdx(index);
       // Reset startX to avoid jumping indent right after reorder
       setDragStartX(e.clientX); 
+      setMenus(newMenus);
     }
 
     // Horizontal Indentation (kéo vô 1 bậc)
     // Only items index > 0 can be submenu
     if (draggedIdx === index) {
       if (deltaX > 40 && index > 0) {
-        newMenus[index].isSubmenu = true;
-        setMenus(newMenus);
+        if (!newMenus[index].isSubmenu) {
+          newMenus[index].isSubmenu = true;
+          setMenus(newMenus);
+        }
       } else if (deltaX < -30) {
-        newMenus[index].isSubmenu = false;
-        setMenus(newMenus);
+        if (newMenus[index].isSubmenu) {
+          newMenus[index].isSubmenu = false;
+          setMenus(newMenus);
+        }
       }
     }
   };
