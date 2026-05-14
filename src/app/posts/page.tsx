@@ -86,9 +86,21 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                   </Link>
                 )}
                 <div className="p-5 flex flex-col flex-grow">
-                  <div className="flex items-center gap-2 text-xs text-blue-500 font-medium mb-2">
-                    <span>📅</span>
-                    <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-blue-500 font-medium mb-2">
+                    <div className="flex items-center gap-1">
+                      <span className="text-gray-400">📅</span>
+                      <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+                    </div>
+                    {post.category && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-400">🏷️</span>
+                        <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{post.category.name}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1 text-gray-500 ml-auto">
+                      <span>👁️</span>
+                      <span>{post.viewCount || 0}</span>
+                    </div>
                   </div>
                   <Link href={`/posts/${post.id}`} className="block mb-2 group">
                     <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2" title={post.title}>{post.title}</h3>
