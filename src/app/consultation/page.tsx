@@ -1,5 +1,6 @@
 ﻿import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { notifyNewConsultation } from "@/lib/mail";
 
 export default async function ConsultationPage({
   searchParams,
@@ -43,6 +44,8 @@ export default async function ConsultationPage({
               await prisma.consultationRequest.create({
                 data: { name, phone, email, program, notes },
               });
+              // Send notification silently
+              notifyNewConsultation({ name, phone, email, program, notes }).catch(console.error);
               redirect("/consultation?success=1");
             }
           }}

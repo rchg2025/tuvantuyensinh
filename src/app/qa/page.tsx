@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
+import { notifyNewQuestion } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,7 @@ export default async function QaPage({
     const question = formData.get("question") as string;
     
     if (askerName && question) {
-      await prisma.question.create({
+      const q = await prisma.question.create({
         data: {
           askerName,
           phone: phone || null,
@@ -60,7 +61,11 @@ export default async function QaPage({
           question,
           isFromSchool: false,
         },
+        include: { category: true }
       });
+      // Gửi mail thông báo
+      notifyNewQuestion({ qId: q.id, askerName, question, categoryName: q.category?.name }).catch(console.error);
+
       revalidatePath("/qa");
     }
   }

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import QaRow from "./QaRow";
+import { notifyStudentQuestionAnswered } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +40,19 @@ export default async function AdminQaPage({
 
   async function updateAnswerWrapper(id: string, answer: string) {
     "use server";
-    await prisma.question.update({
+    const q = await prisma.question.update({
       where: { id },
       data: { answer },
     });
+
+    if (q.email && answer.trim()) {
+      notifyStudentQuestionAnswered(q.email, {
+        askerName: q.askerName,
+        question: q.question,
+        answer
+      }).catch(console.error);
+    }
+
     revalidatePath("/admin/qa");
   }
 
