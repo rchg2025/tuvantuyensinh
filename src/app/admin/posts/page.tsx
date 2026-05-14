@@ -54,7 +54,7 @@ export default async function AdminPostsPage() {
                   </div>
                 </td>
                 <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN")}</td>
+                <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle text-center">
                   <div className="flex items-center justify-center gap-2">
                     <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">

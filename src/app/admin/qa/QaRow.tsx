@@ -48,7 +48,7 @@ export default function QaRow({
       <td className="p-4 align-top font-medium text-slate-800">{question.askerName}</td>
       <td className="p-4 align-top text-slate-600">
         <p className="line-clamp-3">{question.question}</p>
-        <p className="text-xs text-slate-400 mt-2">{new Date(question.createdAt).toLocaleDateString("vi-VN")}</p>
+        <p className="text-xs text-slate-400 mt-2">{new Date(question.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</p>
       </td>
       <td className="p-4 align-top">
         {!isEditing ? (

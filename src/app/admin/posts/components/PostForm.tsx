@@ -2,40 +2,15 @@
 
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Editor } from "@tinymce/tinymce-react";
+import dynamic from "next/dynamic";
 import { createPostAction } from "../actions";
 import DragDropUpload from "@/components/DragDropUpload";
+
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 export default function PostForm({ defaultValues, categories = [] }: { defaultValues?: any, categories?: any[] }) {
   const [content, setContent] = useState(defaultValues?.content || "");
   const formRef = useRef<HTMLFormElement>(null);
-
-  const handleEditorChange = (newContent: string) => {
-    setContent(newContent);
-  };
-
-  const imagesUploadHandler = async (blobInfo: any): Promise<string> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const formData = new FormData();
-        formData.append("file", blobInfo.blob(), blobInfo.filename());
-
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await res.json();
-        if (data.success) {
-          resolve(data.url);
-        } else {
-          reject(data.error || "Lỗi tải ảnh lên Drive");
-        }
-      } catch (err: any) {
-        reject("Lỗi hệ thống khi tải ảnh: " + err.message);
-      }
-    });
-  };
 
   const handleSubmit = async (formData: FormData) => {
     formData.set("content", content);
@@ -104,52 +79,17 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
         <div>
           <label className="block text-sm font-semibold text-slate-700 mb-1">Nội dung</label>
           <div className="border border-slate-200 rounded-lg overflow-hidden prose-sm max-w-none">
-             <Editor
-                apiKey="no-api-key"
+             <JoditEditor
                 value={content}
-                onEditorChange={handleEditorChange}
-                init={{
+                config={{
+                  readonly: false,
                   height: 500,
-                  menubar: false,
-                  language: "vi",
-                  plugins: [
-                    "advlist", "autolink", "lists", "link", "image", "media", "charmap",
-                    "preview", "anchor", "searchreplace", "visualblocks", "code", "fullscreen",
-                    "insertdatetime", "media", "table", "help", "wordcount"
-                  ],
-                  toolbar:
-                    "undo redo | blocks | " +
-                    "bold italic forecolor | alignleft aligncenter " +
-                    "alignright alignjustify | bullist numlist outdent indent | " +
-                    "image media link | removeformat | help",
-                  content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:14px; word-break: normal; overflow-wrap: anywhere; }",
-                  images_upload_handler: imagesUploadHandler,
-                  file_picker_types: "file image media",
-                  file_picker_callback: function(callback: any, value: any, meta: any) {
-                    const input = document.createElement("input");
-                    input.setAttribute("type", "file");
-                    input.setAttribute("accept", meta.filetype === "image" ? "image/*" : meta.filetype === "media" ? "video/*,audio/*" : "*/*");
-                    input.onchange = async function(e: any) {
-                       const file = e.target.files[0];
-                       const formData = new FormData();
-                       formData.append("file", file);
-                       toast.loading("Đang đồng bộ File lên Drive...", { id: "uploadDrive" });
-                       try {
-                         const res = await fetch("/api/upload", { method: "POST", body: formData });
-                         const data = await res.json();
-                         if (data.success) {
-                           toast.success("Đã đồng bộ Drive thành công!", { id: "uploadDrive" });
-                           callback(data.url, { text: file.name });
-                         } else {
-                           toast.error(data.error || "Lỗi tải file", { id: "uploadDrive" });
-                         }
-                       } catch (err: any) {
-                         toast.error("Lỗi: " + err.message, { id: "uploadDrive" });
-                       }
-                    };
-                    input.click();
-                  }
+                  uploader: {
+                    insertImageAsBase64URI: true, // we will just use base64 for simplicity if needed, or implement file upload
+                  },
+                  language: 'vi'
                 }}
+                onBlur={newContent => setContent(newContent)}
              />
           </div>
         </div>

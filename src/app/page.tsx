@@ -104,7 +104,7 @@ export default async function Home() {
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
                     <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
-                      <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN")}</span>
+                      <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
                       {q.answer !== null ? (
                         <span className="text-green-600 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold">ĐÃ TRẢ LỜI</span>
                       ) : (

@@ -96,7 +96,7 @@ export default async function AdminDashboard() {
               <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                 <td className="p-4 align-top font-bold text-slate-800">{c.name}</td>
                 <td className="p-4 align-middle text-slate-600">{c.phone}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN")}</td>
+                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle">
                   {c.isProcessed ? (
                     <span className="bg-green-100 text-green-700 font-semibold px-2 py-1 rounded text-xs">Đã xử lý</span>

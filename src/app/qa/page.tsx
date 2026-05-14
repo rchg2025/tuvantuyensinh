@@ -206,7 +206,7 @@ export default async function QaPage({
                       <span className="font-semibold text-gray-900 text-sm">{q.askerName}</span>
                       <span className="text-gray-400 text-xs">·</span>
                       <span className="text-gray-400 text-xs">
-                        {q.createdAt.toLocaleDateString("vi-VN")}
+                        {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                       </span>
                     </div>
                     <p className="text-gray-800">{q.question}</p>

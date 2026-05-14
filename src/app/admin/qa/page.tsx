@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import LiveSearch from "@/components/LiveSearch";
 import QaRow from "./QaRow";
 import { notifyStudentQuestionAnswered } from "@/lib/mail";
@@ -68,9 +69,13 @@ export default async function AdminQaPage({
     const answer = formData.get("answer")?.toString();
     
     if (question && answer) {
+      const cookieStore = await cookies();
+      const authNameEncoded = cookieStore.get("auth_name")?.value;
+      const currentUserName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "Admin";
+
       await prisma.question.create({
         data: {
-          askerName: "Admin",
+          askerName: currentUserName,
           question,
           answer,
           isFromSchool: true,
