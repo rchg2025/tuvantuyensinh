@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function PostsPage() {
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
@@ -30,10 +32,10 @@ export default async function PostsPage() {
                 <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 leading-snug">{post.title}</h3>
-              <p className="text-gray-600 text-sm line-clamp-3 flex-grow">{post.content}</p>
-              <button className="self-start bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
+              <div className="text-gray-600 text-sm line-clamp-3 flex-grow" dangerouslySetInnerHTML={{ __html: post.content }}></div>
+              <Link href={`/posts/${post.id}`} className="self-start bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors">
                 Đọc tiếp →
-              </button>
+              </Link>
             </div>
           ))}
         </div>
