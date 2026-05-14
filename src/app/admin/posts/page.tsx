@@ -8,13 +8,6 @@ import { deletePostAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPostsPage() {
-  const cookieStore = await cookies();
-  const auth = cookieStore.get("auth_token")?.value;
-  if (auth && auth !== "admin_logged_in") {
-    const user = await prisma.systemUser.findUnique({ where: { id: auth } });
-    if (user && user.role !== "ADMIN") redirect("/admin");
-  }
-
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
     include: { category: true }

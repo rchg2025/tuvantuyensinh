@@ -71,11 +71,12 @@ export default async function AdminLayout({
             )}
           </Link>
           
+          <Link href="/admin/posts" className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between">
+            <span>📰 Bài viết</span>
+          </Link>
+
           {role === "ADMIN" && (
             <>
-              <Link href="/admin/posts" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                📰 Bài viết
-              </Link>
               <Link href="/admin/categories" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                 🗂️ Danh mục hệ thống
               </Link>
