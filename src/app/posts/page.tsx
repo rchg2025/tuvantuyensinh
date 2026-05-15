@@ -130,7 +130,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-12 pb-8">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
-                const searchStr = new URLSearchParams({ page: p.toString(), ...(q ? { q } : {}), ...(categoryId ? { categoryId } : {}) }).toString();
+                const searchStr = new URLSearchParams({ page: p.toString(), ...(q ? { q } : {}), ...(categorySlug ? { categorySlug } : {}) }).toString();
                 return (
                   <Link
                     key={p}
