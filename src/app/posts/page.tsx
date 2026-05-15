@@ -101,19 +101,19 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                         <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{post.category.name}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-1 text-gray-500 ml-auto">
-                      <span>👁️</span>
-                      <span>{post.viewCount || 0}</span>
-                    </div>
                   </div>
                   <Link href={`/posts/${post.id}`} className="block mb-2 group">
                     <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2" title={post.title}>{post.title}</h3>
                   </Link>
                   <div className="text-gray-600 text-sm line-clamp-3 mb-4 overflow-hidden break-words flex-grow" dangerouslySetInnerHTML={{ __html: post.content.replace(/<[^>]+>/g, '') }}></div>
-                  <div className="mt-auto">
+                  <div className="mt-auto flex items-center justify-between">
                     <Link href={`/posts/${post.id}`} className="inline-block text-blue-600 font-semibold text-sm hover:underline">
                       Đọc tiếp →
                     </Link>
+                    <div className="flex items-center gap-1 text-gray-400 text-xs font-medium bg-gray-50 px-2 py-1 rounded-full">
+                      <span>👁️</span>
+                      <span>{post.viewCount || 0}</span>
+                    </div>
                   </div>
                 </div>
               </div>
