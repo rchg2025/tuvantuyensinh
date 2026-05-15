@@ -109,7 +109,7 @@ export default function QaRow({
       </td>
       <td className="p-4 align-top text-center justify-center">
         <button
-          onClick={boolean | any ? handleDelete : handleDelete}
+          onClick={handleDelete}
           className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs mt-2"
         >
           Xóa
