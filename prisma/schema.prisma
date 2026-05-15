@@ -18,6 +18,8 @@ model Question {
   category     Category? @relation(fields: [categoryId], references: [id])
   isFromSchool Boolean   @default(false)
   answer       String?
+  answeredBy   String?
+  answeredAt   DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }

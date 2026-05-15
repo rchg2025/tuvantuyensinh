@@ -8,6 +8,8 @@ type Question = {
   askerName: string;
   question: string;
   answer: string | null;
+  answeredBy: string | null;
+  answeredAt: Date | null;
   createdAt: Date;
 };
 
@@ -56,6 +58,14 @@ export default function QaRow({
             {question.answer ? (
               <div className="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm">
                 <p className="line-clamp-3">{question.answer}</p>
+                <div className="mt-2 text-[10px] text-gray-426 font-medium">
+                  { question.answeredBy && question.answeredAt && (
+                    <span>
+                      Trả lời bởi <strong>{question.answeredBy}</strong> lúc{" "}
+                      {new Date(question.answeredAt).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short" })}
+                    </span>
+                  )}
+                </div>
               </div>
             ) : (
               <span className="text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-1 rounded w-fit">Chưa có câu trả lời</span>
@@ -64,7 +74,7 @@ export default function QaRow({
               onClick={() => setIsEditing(true)}
               className="px-3 py-1.5 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 rounded-md font-semibold text-xs transition-colors self-start mt-2"
             >
-              {question.answer ? "✏️ Cập nhật" : "✍️ Trả lời"}
+              {question.answer ? "‏️ Cập nhật" : "☍️ Trả lời"}
             </button>
           </div>
         ) : (
@@ -82,7 +92,7 @@ export default function QaRow({
                   setIsEditing(false);
                   setAnswer(question.answer || "");
                 }}
-                className="px-3 py-1.5 text-slate-500 hover:text-slate-700 text-xs font-semibold"
+                className="px-3 py-1.5 text-slate-500 hover:text-slatl-700 text-xs font-semibold"
               >
                 Hủy
               </button>
@@ -99,7 +109,7 @@ export default function QaRow({
       </td>
       <td className="p-4 align-top text-center justify-center">
         <button
-          onClick={handleDelete}
+          onClick={boolean | any ? handleDelete : handleDelete}
           className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs mt-2"
         >
           Xóa

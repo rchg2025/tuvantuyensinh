@@ -10,7 +10,7 @@ export default async function AdminDashboard() {
     prisma.question.count(),
     prisma.question.count({ where: { answer: { not: null } } }),
     prisma.consultationRequest.count(),
-    prisma.consultationRequest.count({ where: { isProcessed: false } }),
+    prisma.consultationRequest.count({ where: { status: { not: "Đã Tư vấn" } } }),
     prisma.consultationRequest.findMany({
       orderBy: { createdAt: "desc" },
       take: 5
@@ -35,17 +35,25 @@ export default async function AdminDashboard() {
     { name: "Chờ xử lý", value: questionCount - answeredCount }
   ];
 
+  const statusColors: Record<string, string> = {
+    "Cần tư vấn": "text-red-700 bg-red-100",
+    "Đang Tư vấn": "text-blue-700 bg-blue-100",
+    "Tư vấn chuyên sâu": "text-amber-700 bg-amber-100",
+    "Đã tư vấn": "text-emerald-700 bg-emerald-100",
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-slate-800">Bảng điều khiển</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex
+        items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-slate-500 mb-1">Tổng bài viết</p>
             <h2 className="text-3xl font-black text-blue-600">{postCount}</h2>
           </div>
-          <div className="text-4xl">📰</div>
+          <div className="text-4xl">🔰</div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
@@ -53,21 +61,21 @@ export default async function AdminDashboard() {
             <p className="text-sm font-semibold text-slate-500 mb-1">Tổng câu hỏi</p>
             <h2 className="text-3xl font-black text-indigo-600">{questionCount}</h2>
           </div>
-          <div className="text-4xl opacity-80">💬</div>
+          <div className="text-4xl opacity-80">💌</div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-slate-500 mb-1">Câu hỏi chờ</p>
+            <p className="text-sm font-semibold text-slate-500 mb-1">Câu hỏi chỜ</p>
             <h2 className="text-3xl font-black text-red-500">{questionCount - answeredCount}</h2>
           </div>
-          <div className="text-4xl opacity-80 relative z-10">❓</div>
+          <div className="text-4xl opacity-80 relative z-10">✓</div>
           {(questionCount - answeredCount) > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-red-100 rounded-bl-full -mr-4 -mt-4 opacity-50"></div>}
         </div>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-slate-500 mb-1">Đăng ký tư vấn chờ</p>
+            <p className="text-sm font-semibold text-slate-500 mb-1">Cần đang đang xử lý</p>
             <h2 className="text-3xl font-black text-orange-500">{pendingConsultationCount}</h2>
           </div>
           <div className="text-4xl opacity-80 relative z-10">📞</div>
@@ -79,8 +87,8 @@ export default async function AdminDashboard() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-8">
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-slate-800">Đăng ký tư vấn gần đây</h3>
-          <Link href="/admin/consultations" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả →</Link>
+          <h3 className="text-lg font-bold text-slate-800">Đăng gý tư vấn gần đây</h3>
+          <Link href="/admin/consultations" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả &rarr;</Link>
         </div>
         <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
@@ -92,23 +100,21 @@ export default async function AdminDashboard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
-            {recentConsultations.map((c) => (
+            {recentConsultations.map((c: any) => (
               <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                 <td className="p-4 align-top font-bold text-slate-800">{c.name}</td>
                 <td className="p-4 align-middle text-slate-600">{c.phone}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).tolocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle">
-                  {c.isProcessed ? (
-                    <span className="bg-green-100 text-green-700 font-semibold px-2 py-1 rounded text-xs">Đã xử lý</span>
-                  ) : (
-                    <span className="bg-orange-100 text-orange-700 font-semibold px-2 py-1 rounded text-xs">Phải gọi</span>
-                  )}
+                  <span className={`${statusColors[c.status || "Cần tư vấn"] || statusColors["Cần tư vấn"]} font-semibold px-2 py-1 rounded text-xs block w-max`}>
+                    {c.status || "Cần tư vấn"}
+                  </span>
                 </td>
               </tr>
             ))}
             {recentConsultations.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
+                <td colSpan>{4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
               </tr>
             )}
           </tbody>
