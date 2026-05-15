@@ -42,10 +42,10 @@ const styles = `
   .content { padding: 40px; color: #334155; line-height: 1.6; font-size: 16px; }
   .content h2 { color: #1e293b; margin-top: 0; font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 25px; }
   .info-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 25px 0; }
-  .info-row { margin-bottom: 15px; display: flex; flex-direction: column; }
+  .info-row { margin-bottom: 15px; }
   .info-row:last-child { margin-bottom: 0; }
-  .info-label { font-weight: 600; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-  .info-value { color: #0f172a; font-weight: 500; word-break: break-word; }
+  .info-label { font-weight: 600; color: #64748b; font-size: 14px; margin-bottom: 6px; display: block; }
+  .info-value { color: #0f172a; font-weight: 500; font-size: 16px; word-break: break-word; display: block; margin-left: 10px; }
   .footer { background-color: #f1f5f9; padding: 25px 40px; text-align: center; color: #64748b; font-size: 14px; border-top: 1px solid #e2e8f0; }
   .button-container { text-align: center; margin-top: 35px; }
   .button { display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px; transition: background-color 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2); }
@@ -97,27 +97,27 @@ export async function notifyNewConsultation(data: { name: string, phone: string,
             <p>Hệ thống vừa nhận được một yêu cầu tư vấn tuyển sinh mới từ Học viên:</p>
             <div class="info-box">
               <div class="info-row">
-                <span class="info-label">Họ và tên</span>
-                <span class="info-value">${data.name}</span>
+                <div class="info-label">Họ và tên:</div>
+                <div class="info-value">${data.name}</div>
               </div>
               <div class="info-row">
-                <span class="info-label">Số điện thoại</span>
-                <span class="info-value" style="color: #2563eb; font-weight: 700;">${data.phone}</span>
+                <div class="info-label">Số điện thoại:</div>
+                <div class="info-value" style="color: #2563eb; font-weight: 700;">${data.phone}</div>
               </div>
               ${data.email ? `
               <div class="info-row">
-                <span class="info-label">Email</span>
-                <span class="info-value"><a href="mailto:${data.email}" style="color: #2563eb; text-decoration: none;">${data.email}</a></span>
+                <div class="info-label">Email:</div>
+                <div class="info-value"><a href="mailto:${data.email}" style="color: #2563eb; text-decoration: none;">${data.email}</a></div>
               </div>` : ''}
               ${data.program ? `
               <div class="info-row">
-                <span class="info-label">Ngành quan tâm</span>
-                <span class="info-value">${data.program}</span>
+                <div class="info-label">Ngành quan tâm:</div>
+                <div class="info-value">${data.program}</div>
               </div>` : ''}
               ${data.notes ? `
               <div class="info-row">
-                <span class="info-label">Nội dung / Ghi chú</span>
-                <span class="info-value" style="font-style: italic;">"${data.notes}"</span>
+                <div class="info-label">Nội dung / Ghi chú:</div>
+                <div class="info-value" style="font-style: italic;">"${data.notes}"</div>
               </div>` : ''}
             </div>
             <div class="button-container">
@@ -153,17 +153,17 @@ export async function notifyNewQuestion(data: { qId: string, askerName: string, 
             <p>Hệ thống vừa nhận được một câu hỏi mới đang chờ giải đáp:</p>
             <div class="info-box">
               <div class="info-row">
-                <span class="info-label">Người hỏi</span>
-                <span class="info-value">${data.askerName}</span>
+                <div class="info-label">Người hỏi:</div>
+                <div class="info-value">${data.askerName}</div>
               </div>
               ${data.categoryName ? `
               <div class="info-row">
-                <span class="info-label">Lĩnh vực / Ngành</span>
-                <span class="info-value">${data.categoryName}</span>
+                <div class="info-label">Lĩnh vực / Ngành:</div>
+                <div class="info-value">${data.categoryName}</div>
               </div>` : ''}
-              <div class="info-row" style="margin-top: 10px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
-                <span class="info-label">Nội dung câu hỏi</span>
-                <span class="info-value" style="font-size: 16px; font-weight: 500; font-style: italic; color: #0f172a;">"${data.question}"</span>
+              <div class="info-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
+                <div class="info-label">Nội dung câu hỏi:</div>
+                <div class="info-value" style="font-size: 16px; font-weight: 500; font-style: italic; color: #0f172a;">"${data.question}"</div>
               </div>
             </div>
             <div class="button-container">

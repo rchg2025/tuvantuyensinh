@@ -62,13 +62,32 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
   };
 
   // adding new menu state
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [type, setType] = useState<"link" | "category" | "post">("link");
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [catId, setCatId] = useState("");
   const [postId, setPostId] = useState("");
 
-  const addMenu = () => {
+  const editMenu = (id: string) => {
+    const menu = menus.find(m => m.id === id);
+    if (!menu) return;
+    setEditingId(id);
+    setTitle(menu.title);
+    
+    if (menu.url.startsWith("/posts?categoryId=")) {
+      setType("category");
+      setCatId(menu.url.split("categoryId=")[1]);
+    } else if (menu.url.startsWith("/posts/") && menu.url.split("/").length === 3) {
+      setType("post");
+      setPostId(menu.url.split("/")[2]);
+    } else {
+      setType("link");
+      setUrl(menu.url);
+    }
+  };
+
+  const handleAddOrUpdate = () => {
     if (!title) return toast.error("Vui lòng nhập tiêu đề");
     let finalUrl = "";
     if (type === "link") finalUrl = url;
@@ -77,10 +96,20 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
 
     if (!finalUrl) return toast.error("Vui lòng chọn hoặc nhập đường dẫn chính xác!");
 
-    const newItem = { id: Date.now().toString(), title, url: finalUrl };
-    setMenus([...menus, newItem]);
+    if (editingId) {
+      setMenus(menus.map(m => m.id === editingId ? { ...m, title, url: finalUrl } : m));
+      setEditingId(null);
+    } else {
+      const newItem = { id: Date.now().toString(), title, url: finalUrl };
+      setMenus([...menus, newItem]);
+    }
     
     // reset fields
+    setTitle(""); setUrl(""); setCatId(""); setPostId("");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
     setTitle(""); setUrl(""); setCatId(""); setPostId("");
   };
 
@@ -131,12 +160,20 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
                 <div className="font-bold text-slate-800">{menu.title} {menu.isSubmenu && <span className="text-xs font-normal text-blue-500 bg-blue-100 px-2 py-0.5 rounded ml-2">Menu con</span>}</div>
                 <div className="text-xs text-blue-600 truncate">{menu.url}</div>
               </div>
-              <button 
-                onClick={() => deleteMenu(menu.id)} 
-                className="text-red-500 px-3 py-1 bg-white border border-red-100 uppercase hover:bg-red-50 rounded-lg text-xs font-bold transition-colors"
-              >
-                Xóa
-              </button>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => editMenu(menu.id)} 
+                  className="text-blue-500 px-3 py-1 bg-white border border-blue-100 uppercase hover:bg-blue-50 rounded-lg text-xs font-bold transition-colors"
+                >
+                  Sửa
+                </button>
+                <button 
+                  onClick={() => deleteMenu(menu.id)} 
+                  className="text-red-500 px-3 py-1 bg-white border border-red-100 uppercase hover:bg-red-50 rounded-lg text-xs font-bold transition-colors"
+                >
+                  Xóa
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -149,9 +186,9 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
         </button>
       </div>
 
-      {/* Form Add Panel */}
+      {/* Form Add/Edit Panel */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-max">
-        <h2 className="text-xl font-bold text-slate-800 mb-6">Thêm mới Menu</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-6">{editingId ? "Chỉnh sửa Menu" : "Thêm mới Menu"}</h2>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">Tiêu đề (Tên hiển thị) *</label>
@@ -214,13 +251,21 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
             </div>
           )}
 
-          <div className="pt-4">
+          <div className="pt-4 flex gap-2">
             <button 
-              onClick={addMenu}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 rounded-lg transition-colors w-full"
+              onClick={handleAddOrUpdate}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 rounded-lg transition-colors flex-1"
             >
-              + Thêm vào danh sách
+              {editingId ? "Cập nhật Menu" : "+ Thêm vào danh sách"}
             </button>
+            {editingId && (
+              <button 
+                onClick={cancelEdit}
+                className="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2 rounded-lg transition-colors"
+              >
+                Hủy
+              </button>
+            )}
           </div>
         </div>
       </div>
