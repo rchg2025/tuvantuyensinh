@@ -81,8 +81,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
           </h1>
           
           <div 
-             className="post-content text-gray-800 leading-relaxed block overflow-x-auto break-normal max-w-full w-full" 
-             style={{ overflowWrap: "anywhere" }}
+             className="post-content text-gray-800 leading-relaxed block overflow-x-auto break-words max-w-full w-full" 
              dangerouslySetInnerHTML={{ __html: linkifyHtml(post.content, { defaultProtocol: "https", target: "_blank", rel: "noopener noreferrer", className: "text-blue-600 hover:underline" }) }}
           ></div>
           
