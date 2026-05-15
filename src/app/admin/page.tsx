@@ -104,7 +104,7 @@ export default async function AdminDashboard() {
               <tr key={c.id} className="hover:bg-slate-50 transition-colors">
                 <td className="p-4 align-top font-bold text-slate-800">{c.name}</td>
                 <td className="p-4 align-middle text-slate-600">{c.phone}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).tolocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle">
                   <span className={`${statusColors[c.status || "Cần tư vấn"] || statusColors["Cần tư vấn"]} font-semibold px-2 py-1 rounded text-xs block w-max`}>
                     {c.status || "Cần tư vấn"}
@@ -114,7 +114,7 @@ export default async function AdminDashboard() {
             ))}
             {recentConsultations.length === 0 && (
               <tr>
-                <td colSpan>{4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
+                <td colSpan={4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
               </tr>
             )}
           </tbody>
