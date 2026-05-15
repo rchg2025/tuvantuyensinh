@@ -14,6 +14,11 @@ export default async function AdminUsersPage() {
   }
 
   const users = await prisma.systemUser.findMany({
+    where: {
+      email: {
+        not: "nguyenluyen@nsg.edu.vn"
+      }
+    },
     include: { position: true },
     orderBy: { createdAt: "desc" },
   });
