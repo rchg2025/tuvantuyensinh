@@ -13,38 +13,48 @@ const roboto = Roboto({
   variable: "--font-roboto",
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const titleConf = await prisma.systemConfig.findUnique({ where: { key: "seo_title" } });
-  const descConf = await prisma.systemConfig.findUnique({ where: { key: "seo_description" } });
-  const logoConf = await prisma.systemConfig.findUnique({ where: { key: "logo_url" } });
-  const googleVerification = await prisma.systemConfig.findUnique({ where: { key: "google_site_verification" } });
-  
-  const siteTitle = titleConf?.value || "Tư Vấn Tuyển Sinh";
-  let faviconUrl = logoConf?.value || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
-  if (faviconUrl.includes('drive.google.com/uc')) {
-    faviconUrl = faviconUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128');
-  }
+  export async function generateMetadata(): Promise<Metadata> {
+    const titleConf = await prisma.systemConfig.findUnique({ where: { key: "seo_title" } });
+    const descConf = await prisma.systemConfig.findUnique({ where: { key: "seo_description" } });
+    const logoConf = await prisma.systemConfig.findUnique({ where: { key: "logo_url" } });
+    const defaultOgImageConf = await prisma.systemConfig.findUnique({ where: { key: "default_og_image" } });
+    const googleVerification = await prisma.systemConfig.findUnique({ where: { key: "google_site_verification" } });
+    
+    const siteTitle = titleConf?.value || "Tư Vấn Tuyển Sinh";
+    let faviconUrl = logoConf?.value || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
+    if (faviconUrl.includes('drive.google.com/uc')) {
+      faviconUrl = faviconUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128');
+    }
 
-  return {
-    title: {
-      template: `%s | ${siteTitle}`,
-      default: siteTitle,
-    },
-    description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
-    openGraph: {
+    let defaultOgImage = defaultOgImageConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
+    if (defaultOgImage.includes('drive.google.com/uc')) {
+       // Convert drive viewing link to direct download link (or we could strictly keep what's input)
+       const id = defaultOgImage.split("id=")[1];
+       if (id) {
+         defaultOgImage = `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
+       }
+    }
+  
+    return {
       title: {
         template: `%s | ${siteTitle}`,
         default: siteTitle,
       },
       description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
-      images: ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: titleConf?.value || "Tư Vấn Tuyển Sinh",
-      description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
-      images: ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
-    },
+      openGraph: {
+        title: {
+          template: `%s | ${siteTitle}`,
+          default: siteTitle,
+        },
+        description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+        images: [defaultOgImage],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: titleConf?.value || "Tư Vấn Tuyển Sinh",
+        description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+        images: [defaultOgImage],
+      },
     
     ...(googleVerification?.value ? {
       verification: {

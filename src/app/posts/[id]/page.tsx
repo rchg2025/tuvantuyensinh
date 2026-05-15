@@ -20,6 +20,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   const imageUrl = post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl) : undefined;
+  
+  const siteConfig = await prisma.systemConfig.findUnique({ where: { key: "default_og_image" }});
+  const defaultOgImage = siteConfig?.value ? getDirectImageUrl(siteConfig.value) : "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
+  const finalImageUrl = imageUrl || defaultOgImage;
 
   return {
     title: post.title,
@@ -27,13 +31,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-      images: imageUrl ? [imageUrl] : ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
+      images: [finalImageUrl],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-      images: imageUrl ? [imageUrl] : ["https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg"],
+      images: [finalImageUrl],
     }
   };
 }
