@@ -75,7 +75,12 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
     setEditingId(id);
     setTitle(menu.title);
     
-    if (menu.url.startsWith("/posts?categoryId=")) {
+    if (menu.url.startsWith("/posts?categorySlug=")) {
+      setType("category");
+      const slug = menu.url.split("categorySlug=")[1];
+      const cat = categories.find((c: any) => c.slug === slug || c.id === slug);
+      if (cat) setCatId(cat.slug || cat.id);
+    } else if (menu.url.startsWith("/posts?categoryId=")) {
       setType("category");
       setCatId(menu.url.split("categoryId=")[1]);
     } else if (menu.url.startsWith("/posts/") && menu.url.split("/").length === 3) {
@@ -91,7 +96,7 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
     if (!title) return toast.error("Vui lòng nhập tiêu đề");
     let finalUrl = "";
     if (type === "link") finalUrl = url;
-    if (type === "category") finalUrl = `/posts?categoryId=${catId}`;
+    if (type === "category") finalUrl = `/posts?categorySlug=${catId}`;
     if (type === "post") finalUrl = `/posts/${postId}`;
 
     if (!finalUrl) return toast.error("Vui lòng chọn hoặc nhập đường dẫn chính xác!");
@@ -232,7 +237,7 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Chọn danh mục --</option>
-                {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {categories.map((c: any) => <option key={c.id} value={c.slug || c.id}>{c.name}</option>)}
               </select>
             </div>
           )}
@@ -246,7 +251,7 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Chọn bài viết --</option>
-                {posts.map((p: any) => <option key={p.id} value={p.id}>{p.title}</option>)}
+                {posts.map((p: any) => <option key={p.id} value={p.slug || p.id}>{p.title}</option>)}
               </select>
             </div>
           )}

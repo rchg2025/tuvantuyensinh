@@ -69,7 +69,7 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
                 </div>
               )}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent p-4 md:p-6">
-                <Link href={`/posts/${post.id}`}>
+                <Link href={`/posts/${post.slug || post.id}`}>
                   <h3 className="text-lg md:text-xl font-bold text-white hover:text-blue-300 transition-colors line-clamp-2">
                     {post.title}
                   </h3>

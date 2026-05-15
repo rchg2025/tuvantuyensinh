@@ -47,7 +47,7 @@ export default async function AdminPostsPage() {
             {posts.map((post) => (
               <tr key={post.id} className="hover:bg-slate-50 transition-colors">
                 <td className="p-4 align-top font-bold text-slate-800">
-                  <Link href={`/posts/${post.id}`} target="_blank" className="flex items-center gap-3 hover:text-blue-600 transition-colors">
+                  <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="flex items-center gap-3 hover:text-blue-600 transition-colors">
                     {post.thumbnailUrl && (
                       <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-12 h-12 rounded object-cover" />
                     )}
@@ -59,7 +59,7 @@ export default async function AdminPostsPage() {
                 <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle text-center">
                   <div className="flex items-center justify-center gap-2">
-                    <Link href={`/posts/${post.id}`} target="_blank" className="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition text-xs">Xem</Link>                                        <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
+                    <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition text-xs">Xem</Link>                                        <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
                       Sửa
                     </a>
                     <form action={deletePostAction}>

@@ -26,6 +26,7 @@ model Question {
 
 model Post {
   id           String    @id @default(cuid())
+  slug         String?   @unique
   title        String
   content      String
   thumbnailUrl String?
@@ -59,6 +60,7 @@ enum CategoryType {
 
 model Category {
   id          String       @id @default(cuid())
+  slug        String?      @unique
   name        String       @unique
   description String?
   type        CategoryType @default(MAJOR)

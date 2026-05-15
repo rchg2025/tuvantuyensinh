@@ -7,10 +7,10 @@ import linkifyHtml from "linkify-html";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const post = await prisma.post.findUnique({
-    where: { id },
+    where: { slug },
   });
 
   if (!post) {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
       images: [finalImageUrl],
       type: "article",
-      url: `/posts/${id}`,
+      url: `/posts/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
@@ -44,11 +44,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function PostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   
   const post = await prisma.post.findUnique({
-    where: { id },
+    where: { slug },
   });
 
   if (!post) {
@@ -57,7 +57,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
 
   // Update view count
   await prisma.post.update({
-    where: { id },
+    where: { id: post.id },
     data: { viewCount: post.viewCount + 1 }
   });
 

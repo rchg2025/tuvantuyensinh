@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { generateUniqueSlug } from "@/lib/unique-slug";
 
 export async function createPostAction(formData: FormData) {
   const id = formData.get("id")?.toString();
@@ -22,15 +23,17 @@ export async function createPostAction(formData: FormData) {
   const authorName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "Admin";
 
   if (id) {
+    const slug = await generateUniqueSlug(title, "Post", id);
     await prisma.post.update({
       where: { id },
-      data: { title, content, thumbnailUrl, attachments, categoryId },
+      data: { title, content, thumbnailUrl, attachments, categoryId, slug },
     });
     revalidatePath("/admin/posts");
     return { success: true, message: "Cập nhật thành công!" };
   } else {
+    const slug = await generateUniqueSlug(title, "Post");
     await prisma.post.create({
-      data: { title, content, thumbnailUrl, attachments, categoryId, authorName },
+      data: { title, content, thumbnailUrl, attachments, categoryId, authorName, slug },
     });
     revalidatePath("/admin/posts");
     return { success: true, message: "Đăng bài viết thành công!" };

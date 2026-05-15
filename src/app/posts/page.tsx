@@ -5,11 +5,11 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 
 export const dynamic = "force-dynamic";
 
-export default async function PostsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; categoryId?: string }> }) {
+export default async function PostsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; categorySlug?: string }> }) {
   const resolvedParams = await searchParams;
   const page = parseInt(resolvedParams.page || "1", 10);
   const q = resolvedParams.q || "";
-  const categoryId = resolvedParams.categoryId || "";
+  const categorySlug = resolvedParams.categorySlug || "";
   const limit = 12;
 
   const whereCondition: any = {};
@@ -19,8 +19,15 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
       { content: { contains: q, mode: "insensitive" } }
     ];
   }
-  if (categoryId) {
-    whereCondition.categoryId = categoryId;
+  if (categorySlug) {
+    const category = await prisma.category.findUnique({
+      where: { slug: categorySlug }
+    });
+    if (category) {
+      whereCondition.categoryId = category.id;
+    } else {
+      whereCondition.category = { slug: categorySlug }; // this may or may not match
+    }
   }
 
   const [posts, totalPosts, categories] = await Promise.all([
@@ -81,7 +88,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
             {posts.map((post) => (
               <div key={post.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col h-full overflow-hidden">
                 {post.thumbnailUrl && (
-                  <Link href={`/posts/${post.id}`} className="block w-full h-48 flex-shrink-0">
+                  <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-48 flex-shrink-0">
                     <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105" />
                   </Link>
                 )}
@@ -102,12 +109,12 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                       </div>
                     )}
                   </div>
-                  <Link href={`/posts/${post.id}`} className="block mb-2 group">
+                  <Link href={`/posts/${post.slug || post.id}`} className="block mb-2 group">
                     <h3 className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2" title={post.title}>{post.title}</h3>
                   </Link>
                   <div className="text-gray-600 text-sm line-clamp-3 mb-4 overflow-hidden break-words flex-grow" dangerouslySetInnerHTML={{ __html: post.content.replace(/<[^>]+>/g, '') }}></div>
                   <div className="mt-auto flex items-center justify-between">
-                    <Link href={`/posts/${post.id}`} className="inline-block text-blue-600 font-semibold text-sm hover:underline">
+                    <Link href={`/posts/${post.slug || post.id}`} className="inline-block text-blue-600 font-semibold text-sm hover:underline">
                       Đọc tiếp →
                     </Link>
                     <div className="flex items-center gap-1 text-gray-400 text-xs font-medium bg-gray-50 px-2 py-1 rounded-full">
