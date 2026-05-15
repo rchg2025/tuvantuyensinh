@@ -20,9 +20,9 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 md:space-y-16">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white rounded-3xl overflow-hidden shadow-2xl px-8 py-20 text-center">
+      <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white rounded-3xl overflow-hidden shadow-2xl px-5 py-12 md:px-8 md:py-20 text-center">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent)]" />
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
           <div className="inline-block bg-white/20 backdrop-blur text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-2">
@@ -80,7 +80,7 @@ export default async function Home() {
       </section>
 
       {/* Slider Latest Posts */}
-      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-8">
+      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-5 md:p-8">
         <div className="md:flex justify-between items-end mb-6">
           <div>
             <h2 className="text-2xl font-extrabold text-blue-900">Bài viết mới nhất</h2>
@@ -96,7 +96,7 @@ export default async function Home() {
       </section>
 
       {/* 5 latest Q&A */}
-      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-8">
+      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-5 md:p-8">
         <div className="md:flex justify-between items-end mb-6">
           <div>
             <h2 className="text-2xl font-extrabold text-blue-900">Câu hỏi tư vấn mới nhất</h2>
@@ -121,8 +121,8 @@ export default async function Home() {
                     Q
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors">{q.question}</h3>
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
+                    <h3 className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words">{q.question}</h3>
+                    <p className="text-sm text-gray-600 mt-2 line-clamp-2 break-words">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
                     <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
                       <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
