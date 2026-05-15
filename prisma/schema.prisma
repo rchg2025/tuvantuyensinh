@@ -43,6 +43,8 @@ model ConsultationRequest {
   program     String?
   notes       String?
   isProcessed Boolean  @default(false)
+  status      String   @default("Cần tư vấn")
+  history     String?  @db.Text
   createdAt   DateTime @default(now())
 }
 
