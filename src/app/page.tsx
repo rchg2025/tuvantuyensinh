@@ -120,10 +120,10 @@ export default async function Home() {
                   <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
                     Q
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors">{q.question}</h3>
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
-                    <div className="flex items-center gap-4 mt-3 text-xs text-gray-500 font-medium">
+                    <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
                       <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
                       {q.answer !== null ? (
