@@ -11,9 +11,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
 
   const categories = await prisma.category.findMany({
     where: {
-      type: {
-        in: ["POST", "MAJOR"]
-      }
+      type: "POST"
     }
   });
   
