@@ -28,7 +28,7 @@ const roboto = Roboto({
 
     let defaultOgImage = defaultOgImageConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
     if (defaultOgImage.includes('drive.google.com/uc')) {
-       // Convert drive viewing link to direct download link (or we could strictly keep what's input)
+       // Convert drive viewing link to direct download link
        const id = defaultOgImage.split("id=")[1];
        if (id) {
          defaultOgImage = `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
@@ -36,6 +36,7 @@ const roboto = Roboto({
     }
   
     return {
+      metadataBase: new URL('https://ts26.nsg.edu.vn'),
       title: {
         template: `%s | ${siteTitle}`,
         default: siteTitle,
@@ -48,6 +49,7 @@ const roboto = Roboto({
         },
         description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
         images: [defaultOgImage],
+        type: "website",
       },
       twitter: {
         card: "summary_large_image",

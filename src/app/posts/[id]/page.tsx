@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
       images: [finalImageUrl],
+      type: "article",
+      url: `/posts/${id}`,
     },
     twitter: {
       card: "summary_large_image",

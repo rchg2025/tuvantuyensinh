@@ -1,6 +1,17 @@
 ﻿import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { notifyNewConsultation } from "@/lib/mail";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Đăng ký Tư vấn Miễn phí",
+  description: "Điền thông tin — chuyên viên tư vấn tuyển sinh sẽ liên hệ bạn trong 24 giờ.",
+  openGraph: {
+    title: "Đăng ký Tư vấn Miễn phí",
+    description: "Điền thông tin — chuyên viên tư vấn tuyển sinh sẽ liên hệ bạn trong 24 giờ.",
+    url: "/consultation",
+  }
+};
 
 export default async function ConsultationPage({
   searchParams,
