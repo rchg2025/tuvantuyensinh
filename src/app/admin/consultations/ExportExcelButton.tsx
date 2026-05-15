@@ -21,13 +21,13 @@ export default function ExportExcelButton({ data }: { data: any[] }) {
         }
 
         return {
-          "Ho Kà Tên": Item.name,
+          "Họ và Tên": item.name,
           "Số điện thoại": item.phone,
           "Email": item.email || "",
           "Ngành quan tâm": item.program || "Chưa xác định",
           "Ghi chú": item.notes || "",
           "Trạng thái": item.status || "Cần tư vấn",
-          "LËch sử tư vấn": historyStr,
+          "Lịch sử tư vấn": historyStr,
           "Ngày đăng ký": new Date(item.createdAt).toLocaleString("vi-VN")
         };
       });
