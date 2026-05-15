@@ -75,7 +75,7 @@ export async function sendEmail({ to, subject, html }: { to: string | string[], 
 }
 
 function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://ts26.nsg.edu.vn';
 }
 
 export async function notifyNewConsultation(data: { name: string, phone: string, email?: string | null, program?: string | null, notes?: string | null }) {
