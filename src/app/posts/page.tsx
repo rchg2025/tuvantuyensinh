@@ -61,13 +61,13 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
             className="w-full sm:w-64 bg-white text-gray-900 placeholder:text-gray-500 px-4 py-2 rounded-lg border-transparent focus:ring-2 focus:ring-blue-300 outline-none"
           />
           <select
-            name="categoryId"
-            defaultValue={categoryId}
+            name="categorySlug"
+            defaultValue={categorySlug}
             title="Danh mục"
             className="bg-white text-gray-900 border-transparent px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none max-w-40"
           >
             <option value="">Tất cả danh mục</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {categories.map(c => <option key={c.id} value={c.slug || c.id}>{c.name}</option>)}
           </select>
           <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
             Tìm
