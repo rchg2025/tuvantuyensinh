@@ -2,11 +2,12 @@
 import prisma from "@/lib/prisma";
 import LiveSearch from "@/components/LiveSearch";
 import PostSlider from "@/components/PostSlider";
+import { getDirectImageUrl } from "@/lib/gdrive";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [postCount, questionCount, latestQuestions, latestPosts] = await Promise.all([
+  const [postCount, questionCount, latestQuestions, rawLatestPosts] = await Promise.all([
     prisma.post.count(),
     prisma.question.count(),
     prisma.question.findMany({
@@ -18,6 +19,11 @@ export default async function Home() {
       take: 12,
     }),
   ]);
+
+  const latestPosts = rawLatestPosts.map(post => ({
+    ...post,
+    thumbnailUrl: post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl) : null
+  }));
 
   return (
     <div className="space-y-12 md:space-y-16">
