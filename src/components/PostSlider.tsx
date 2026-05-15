@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Post {
   id: string;
@@ -13,67 +14,83 @@ interface Post {
 
 export default function PostSlider({ posts }: { posts: Post[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setItemsPerPage(4);
+      else if (window.innerWidth >= 768) setItemsPerPage(2);
+      else setItemsPerPage(1);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
+
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % posts.length);
+    setCurrentIndex((prev) => (prev + 1) % totalPages);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + posts.length) % posts.length);
+    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
   useEffect(() => {
-    if (posts.length <= 1) return;
-    timerRef.current = setInterval(nextSlide, 3000);
+    if (totalPages <= 1) return;
+    timerRef.current = setInterval(nextSlide, 4000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [posts.length]);
+  }, [totalPages]);
 
   if (posts.length === 0) return null;
 
   return (
-    <div className="relative group overflow-hidden rounded-2xl shadow-sm border border-blue-50 bg-white">
+    <div className="relative group overflow-hidden -mx-2">
       <div 
-        className="flex transition-transform duration-500 ease-in-out h-64 md:h-80"
+        className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {posts.map((post) => (
-          <div key={post.id} className="w-full flex-shrink-0 relative">
-            {post.thumbnailUrl ? (
-              <img 
-                src={post.thumbnailUrl} 
-                alt={post.title} 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-300 font-bold text-6xl">
-                📝
-              </div>
-            )}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent p-6">
-              <Link href={`/posts/${post.id}`}>
-                <h3 className="text-xl md:text-2xl font-bold text-white hover:text-blue-300 transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-              </Link>
-              <div className="text-gray-300 text-sm mt-2">
-                {new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+          <div key={post.id} className="w-full md:w-1/2 lg:w-1/4 flex-shrink-0 px-2">
+            <div className="relative h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-blue-50 bg-white">
+              {post.thumbnailUrl ? (
+                <img 
+                  src={post.thumbnailUrl} 
+                  alt={post.title} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-300 font-bold text-6xl">
+                  📝
+                </div>
+              )}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent p-4 md:p-6">
+                <Link href={`/posts/${post.id}`}>
+                  <h3 className="text-lg md:text-xl font-bold text-white hover:text-blue-300 transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                </Link>
+                <div className="text-gray-300 text-xs md:text-sm mt-2">
+                  {new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {posts.length > 1 && (
+      {totalPages > 1 && (
         <>
           <button 
             onClick={() => {
               if (timerRef.current) clearInterval(timerRef.current);
               prevSlide();
             }} 
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur hover:bg-white/80 flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-all font-bold"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
           >
             &#10094;
           </button>
@@ -82,7 +99,7 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
               if (timerRef.current) clearInterval(timerRef.current);
               nextSlide();
             }} 
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 backdrop-blur hover:bg-white/80 flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-all font-bold"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
           >
             &#10095;
           </button>
