@@ -17,8 +17,8 @@ export default async function ConsultationPage({
   return (
     <div className="space-y-8">
       <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white rounded-2xl px-8 py-10 shadow-md text-center">
-        <h2 className="text-3xl font-extrabold mb-2">📞 Đăng Ký Tư Vấn Miễn Phí</h2>
-        <p className="text-blue-100">Điền thông tin bên dưới — chuyên gia sẽ liên hệ bạn trong 24 giờ.</p>
+        <h2 className="text-3xl font-extrabold mb-2">📞 Đăng ký Tư vấn Miễn phí</h2>
+        <p className="text-blue-100">Điền thông tin bên dưới — chuyên viên tư vấn tuyển sinh sẽ liên hệ bạn trong 24 giờ.</p>
       </div>
 
       <div className="max-w-2xl mx-auto w-full">
@@ -78,7 +78,7 @@ export default async function ConsultationPage({
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Ghi chú thêm</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Nội dung cần tư vấn</label>
             <textarea name="notes" rows={4} placeholder="Bạn muốn hỏi thêm về điểm chuẩn, học phí, chương trình học..." className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none" />
           </div>
 

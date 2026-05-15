@@ -56,7 +56,7 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
 
       <form ref={formRef} action={handleSubmit} className="space-y-8 bg-white border border-slate-200 rounded-b-lg rounded-tr-lg p-6 shadow-sm -mt-6">
         {/* SEO & Logo Config */}
-        {activeTab === "seo" && (
+        <div className={activeTab === "seo" ? "block" : "hidden"}>
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>🌐</span> Thông tin Website (SEO & Logo)
@@ -102,11 +102,9 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               </div>
             </div>
           </div>
-        </div>
-        )}
-
+        </div></div>
         {/* Footer Config */}
-        {activeTab === "footer" && (
+        <div className={activeTab === "footer" ? "block" : "hidden"}>
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>📍</span> Thông tin Footer (Cuối trang)
@@ -142,11 +140,9 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div>
-        )}
-
+        </div></div>
         {/* Drive Config */}
-        {activeTab === "drive" && (
+        <div className={activeTab === "drive" ? "block" : "hidden"}>
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>📁</span> Cấu hình Google Team Drive (Upload file)
@@ -181,11 +177,9 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div>
-        )}
-
+        </div></div>
         {/* SMTP Config */}
-        {activeTab === "smtp" && (
+        <div className={activeTab === "smtp" ? "block" : "hidden"}>
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>📧</span> Cấu hình SMTP Gmail (Gửi thư thông báo)
@@ -232,11 +226,9 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div>
-        )}
-
+        </div></div>
         {/* Widget/Script Config */}
-        {activeTab === "scripts" && (
+        <div className={activeTab === "scripts" ? "block" : "hidden"}>
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span>💬</span> Mã nhúng (Widget / Script)
@@ -254,9 +246,7 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               <p className="text-xs text-slate-500 mt-1">Đoạn mã này sẽ được tự động chèn vào trước thẻ đóng &lt;/body&gt; để hiển thị khung chat trên toàn website.</p>
             </div>
           </div>
-        </div>
-        )}
-
+        </div></div>
         <div className="pt-6 border-t border-slate-100 flex justify-end">
           <SubmitButtons />
         </div>

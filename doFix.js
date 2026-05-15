@@ -1,0 +1,11 @@
+const fs = require('fs');
+const txt = fs.readFileSync('b64.txt', 'utf8').trim();
+const code = Buffer.from(txt, 'base64').toString('utf8');
+let repl = code;
+repl = repl.replace(/\{\/\* SEO & Logo Config \*\/\}\r?\n\s*\{activeTab === "seo" && \(/g, '{/* SEO & Logo Config */}\n        <div className={activeTab === "seo" ? "block" : "hidden"}>');
+repl = repl.replace(/\{\/\* Footer Config \*\/\}\r?\n\s*\{activeTab === "footer" && \(/g, '{/* Footer Config */}\n        <div className={activeTab === "footer" ? "block" : "hidden"}>');
+repl = repl.replace(/\{\/\* Drive Config \*\/\}\r?\n\s*\{activeTab === "drive" && \(/g, '{/* Drive Config */}\n        <div className={activeTab === "drive" ? "block" : "hidden"}>');
+repl = repl.replace(/\{\/\* SMTP Config \*\/\}\r?\n\s*\{activeTab === "smtp" && \(/g, '{/* SMTP Config */}\n        <div className={activeTab === "smtp" ? "block" : "hidden"}>');
+repl = repl.replace(/\{\/\* Widget\/Script Config \*\/\}\r?\n\s*\{activeTab === "scripts" && \(/g, '{/* Widget/Script Config */}\n        <div className={activeTab === "scripts" ? "block" : "hidden"}>');
+repl = repl.replace(/^(\s*)\)}\s*$/gm, '\</div>');
+fs.writeFileSync('src/app/admin/settings/SettingsForm.tsx', repl);
