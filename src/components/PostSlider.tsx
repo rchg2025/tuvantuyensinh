@@ -6,6 +6,7 @@ import Image from "next/image";
 
 interface Post {
   id: string;
+  slug?: string | null;
   title: string;
   content: string;
   thumbnailUrl: string | null;
