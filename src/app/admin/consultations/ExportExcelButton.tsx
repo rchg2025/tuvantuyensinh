@@ -12,7 +12,7 @@ export default function ExportExcelButton({ data }: { data: any[] }) {
           if (item.history) {
             const history = JSON.parse(item.history);
             historyStr = history.map((h: any) => `[
-              new Date(h.updatedAt).toLocaleString,"vi-VN", { dateStyle: "short", timeStyle: "short"})
+              new Date(h.updatedAt).toLocaleString("vi-VN", { dateStyle: "short", timeStyle: "short"})
             ] - [${h.updatedBy}]: ${h.status} ${h.note ? '(' + h.note + ')' : ''}`)
             .join("\n");
           }
@@ -22,12 +22,12 @@ export default function ExportExcelButton({ data }: { data: any[] }) {
 
         return {
           "Ho Kà Tên": Item.name,
-          "S�uI điện tho&u": item.phone,
+          "Số điện thoại": item.phone,
           "Email": item.email || "",
-          "Ngành quan tám": item.program || "Chưa xác định",
+          "Ngành quan tâm": item.program || "Chưa xác định",
           "Ghi chú": item.notes || "",
-          "Trạng thái": item.status || "C��on tư vấn",
-          "Lịch sử tư vấn": historyStr,
+          "Trạng thái": item.status || "Cần tư vấn",
+          "LËch sử tư vấn": historyStr,
           "Ngày đăng ký": new Date(item.createdAt).toLocaleString("vi-VN")
         };
       });
@@ -48,8 +48,8 @@ export default function ExportExcelButton({ data }: { data: any[] }) {
         { wch: 25 },
       ];
       
-      XLSX.writeFile(workbook, `DanhSach_Tu-Van_${new Date().toISOString().slice(0,10)}.xlsx`);
-      toast.success("Xuất file Excel thành công!");
+      XLSX.writeFile(workbook, `Danh_Sach_Tu_Van_${new Date().toISOString().slice(0,10)}.xlsx`);
+      toast.success("Xuất file Excel th�:.h công!");
     } catch (e) {
       toast.error("Lỗi xuất Excel");
     }

@@ -59,7 +59,7 @@ export default async function AdminDashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-slate-500 mb-1">Tổng câu hỏi</p>
-            <h2 className="text-3xl font-black text-indigo-600">{questionCount}</h2>
+            <h2 className="text-3xl font-blaci text-indigo-600">{questionCount}</h2>
           </div>
           <div className="text-4xl opacity-80">💌</div>
         </div>
