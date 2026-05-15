@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
 export async function createPostAction(formData: FormData) {
   const id = formData.get("id")?.toString();
@@ -16,6 +17,10 @@ export async function createPostAction(formData: FormData) {
     return { success: false, message: "Tiêu đề và Nội dung là bắt buộc!" };
   }
 
+  const cookieStore = await cookies();
+  const authNameEncoded = cookieStore.get("auth_name")?.value;
+  const authorName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "Admin";
+
   if (id) {
     await prisma.post.update({
       where: { id },
@@ -25,7 +30,7 @@ export async function createPostAction(formData: FormData) {
     return { success: true, message: "Cập nhật thành công!" };
   } else {
     await prisma.post.create({
-      data: { title, content, thumbnailUrl, attachments, categoryId },
+      data: { title, content, thumbnailUrl, attachments, categoryId, authorName },
     });
     revalidatePath("/admin/posts");
     return { success: true, message: "Đăng bài viết thành công!" };

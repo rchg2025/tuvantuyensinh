@@ -36,8 +36,9 @@ export default async function AdminPostsPage() {
         <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
             <tr>
-              <th className="p-4 w-1/3">Tiêu đề</th>
+              <th className="p-4 w-1/4">Tiêu đề</th>
               <th className="p-4">Danh mục</th>
+              <th className="p-4">Người đăng</th>
               <th className="p-4">Ngày đăng</th>
               <th className="p-4 text-center">Hành động</th>
             </tr>
@@ -54,6 +55,7 @@ export default async function AdminPostsPage() {
                   </Link>
                 </td>
                 <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
+                <td className="p-4 align-middle text-slate-500">{(post as any).authorName || "Không có"}</td>
                 <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
                 <td className="p-4 align-middle text-center">
                   <div className="flex items-center justify-center gap-2">

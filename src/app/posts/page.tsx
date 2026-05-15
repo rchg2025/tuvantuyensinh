@@ -91,6 +91,10 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                       <span className="text-gray-400">📅</span>
                       <span>{post.createdAt.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                     </div>
+                    <div className="flex items-center gap-1 text-gray-500">
+                      <span className="text-gray-400">✍️</span>
+                      <span>{(post as any).authorName || "Admin"}</span>
+                    </div>
                     {post.category && (
                       <div className="flex items-center gap-1">
                         <span className="text-gray-400">🏷️</span>

@@ -33,6 +33,7 @@ model Post {
   viewCount    Int       @default(0)
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id])
+  authorName   String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
