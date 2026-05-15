@@ -1,16 +1,21 @@
 ﻿import Link from "next/link";
 import prisma from "@/lib/prisma";
 import LiveSearch from "@/components/LiveSearch";
+import PostSlider from "@/components/PostSlider";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [postCount, questionCount, latestQuestions] = await Promise.all([
+  const [postCount, questionCount, latestQuestions, latestPosts] = await Promise.all([
     prisma.post.count(),
     prisma.question.count(),
     prisma.question.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
+    }),
+    prisma.post.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 12,
     }),
   ]);
 
@@ -72,6 +77,22 @@ export default async function Home() {
             <div className="text-gray-500 text-sm font-medium mt-1">{stat.label}</div>
           </div>
         ))}
+      </section>
+
+      {/* Slider Latest Posts */}
+      <section className="bg-white rounded-2xl shadow-sm border border-blue-50 p-8">
+        <div className="md:flex justify-between items-end mb-6">
+          <div>
+            <h2 className="text-2xl font-extrabold text-blue-900">Bài viết mới nhất</h2>
+            <p className="text-gray-500 mt-1">Cập nhật thông tin tuyển sinh mới nhất</p>
+          </div>
+          <div className="mt-4 md:mt-0">
+            <Link href="/posts" className="inline-flex text-blue-600 font-semibold hover:underline bg-blue-50 rounded-lg px-4 py-2 whitespace-nowrap pt">
+              Xem tất cả bài viết →
+            </Link>
+          </div>
+        </div>
+        <PostSlider posts={latestPosts} />
       </section>
 
       {/* 5 latest Q&A */}
