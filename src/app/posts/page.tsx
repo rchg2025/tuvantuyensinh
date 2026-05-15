@@ -20,13 +20,18 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
     ];
   }
   if (categorySlug) {
-    const category = await prisma.category.findUnique({
-      where: { slug: categorySlug }
+    const category = await prisma.category.findFirst({
+      where: { 
+        OR: [
+          { slug: categorySlug },
+          { id: categorySlug }
+        ]
+      }
     });
     if (category) {
       whereCondition.categoryId = category.id;
     } else {
-      whereCondition.category = { slug: categorySlug }; // this may or may not match
+      whereCondition.categoryId = "not-found";
     }
   }
 
