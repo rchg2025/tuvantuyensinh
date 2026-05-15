@@ -188,7 +188,7 @@ export default async function RootLayout({
                   <div className="absolute top-full left-0 mt-1 w-48 bg-white text-gray-800 rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-left -translate-y-2 group-hover:translate-y-0">
                     <div className="py-2">
                       {postCategories.map(cat => (
-                        <Link key={cat.id} href={`/posts?categoryId=${cat.id}`} className="block px-4 py-2 text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                        <Link key={cat.id} href={`/posts?categorySlug=${cat.slug || cat.id}`} className="block px-4 py-2 text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors">
                           {cat.name}
                         </Link>
                       ))}

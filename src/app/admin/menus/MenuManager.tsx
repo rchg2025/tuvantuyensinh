@@ -97,7 +97,10 @@ export default function MenuManager({ initialMenus, categories, posts }: { initi
     let finalUrl = "";
     if (type === "link") finalUrl = url;
     if (type === "category") finalUrl = `/posts?categorySlug=${catId}`;
-    if (type === "post") finalUrl = `/posts/${postId}`;
+    if (type === "post") {
+      const selectedPost = posts.find((p: any) => p.slug === postId || p.id === postId);
+      finalUrl = `/posts/${selectedPost?.slug || postId}`;
+    }
 
     if (!finalUrl) return toast.error("Vui lòng chọn hoặc nhập đường dẫn chính xác!");
 

@@ -117,7 +117,7 @@ export default function MobileHeaderClient({
                   {postCategories.map(cat => (
                     <Link 
                       key={cat.id} 
-                      href={`/posts?categoryId=${cat.id}`} 
+                      href={`/posts?categorySlug=${cat.slug || cat.id}`} 
                       className="block px-10 py-3 text-blue-100 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 text-sm"
                       onClick={() => setIsHeaderMenuOpen(false)}
                     >
