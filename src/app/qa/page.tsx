@@ -6,6 +6,25 @@ import { notifyNewQuestion } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
+function LinkifyText({ text }: { text: string }) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              {part}
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 export default async function QaPage({
   searchParams,
 }: {
@@ -209,7 +228,7 @@ export default async function QaPage({
                         {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                       </span>
                     </div>
-                    <p className="text-gray-800">{q.question}</p>
+                    <p className="text-gray-800"><LinkifyText text={q.question} /></p>
                   </div>
                 </div>
 
@@ -221,7 +240,7 @@ export default async function QaPage({
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên viên tư vấn</p>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap">{q.answer}</p>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap"><LinkifyText text={q.answer} /></p>
                     </div>
                   </div>
                 ) : (
