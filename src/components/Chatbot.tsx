@@ -188,8 +188,13 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           className="text-white rounded-full p-3 shadow-lg transition-transform transform hover:scale-105 flex items-center justify-center h-14 w-14"
           style={{ backgroundColor: color }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 14.25h7.5M8.25 9.75h7.5m-11.25 6H3c-1.242 0-2.25-1.008-2.25-2.25V6C.75 4.758 1.758 3.75 3 3.75h18c1.242 0 2.25 1.008 2.25 2.25v9.75C23.25 16.992 22.242 18 21 18h-1.5m-15 0v3.375c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18m-12 0h12" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
+            <path d="M12 8V4H8"/>
+            <rect width="16" height="12" x="4" y="8" rx="2"/>
+            <path d="M2 14h2"/>
+            <path d="M20 14h2"/>
+            <path d="M15 13v2"/>
+            <path d="M9 13v2"/>
           </svg>
         </button>
       )}
