@@ -20,29 +20,57 @@ export async function POST(req: Request) {
       apiKey: apiKey,
     });
 
-    // Fetch Q&A data to use as context
-    // In a real production app, limit this or use RAG if the dataset is huge.
+    // 1. Fetch Q&A data to use as context
     const questionsList = await prisma.question.findMany({
       where: {
-        answer: {
-          not: null,
-        }
+        answer: { not: null },
       },
       select: {
         question: true,
         answer: true,
       },
-      take: 50, // Limit to 50 for context size
+      orderBy: { createdAt: 'desc' },
+      take: 100, // Tăng thêm câu hỏi đáp
     });
 
-    const contextContext = questionsList.map((q: any) => `Q: ${q.question}\nA: ${q.answer}`).join('\n\n');
+    const qaContext = questionsList.map((q: any) => `Hỏi: ${q.question}\nĐáp: ${q.answer}`).join('\n\n');
 
-    const systemPrompt = `Bạn là một trợ lý ảo hỗ trợ tuyển sinh của trường đại học/cao đẳng. 
-Dưới đây là một số câu hỏi và câu trả lời thường gặp từ bộ dữ liệu của chúng tôi:
+    // 2. Lấy dữ liệu bài đăng (Thông tin tuyển sinh, tin tức, ngành nghề)
+    const postsList = await prisma.post.findMany({
+      select: {
+        title: true,
+        content: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 20, // Giới hạn số lượng bài để không làm tràn token
+    });
 
-${contextContext}
+    // Hàm loại bỏ HTML tag khỏi bài viết để tiết kiệm dung lượng context token
+    const stripHtml = (html: string) => html.replace(/<[^>]*>?/gm, '');
 
-Hãy dựa vào thông tin trên để trả lời câu hỏi của người dùng. Nếu câu hỏi không nằm trong thông tin được cung cấp, hãy trả lời một cách lịch sự, thân thiện và hướng dẫn họ liên hệ trực tiếp với trường qua số điện thoại hoặc email. Luôn trả lời bằng tiếng Việt.`;
+    const postContext = postsList.map((p: any) => {
+      // Chỉ lấy tối đa 1500 ký tự đầu tiên của mỗi nội dung bài đăng
+      const cleanContent = stripHtml(p.content).substring(0, 1500); 
+      return `Bài viết: ${p.title}\nNội dung: ${cleanContent}...`;
+    }).join('\n\n');
+
+
+    const systemPrompt = `Bạn là một chuyên viên/trợ lý ảo tư vấn tuyển sinh chuyên nghiệp của trường. Nhiệm vụ của bạn là giải đáp tất cả các thắc mắc cho học sinh, phụ huynh một cách chính xác dựa trên nguồn dữ liệu Hỏi & Đáp và các Bài viết trên website của nhà trường do tôi cung cấp bên dưới.
+
+NẾU THÔNG TIN CÓ TRONG KHO DỮ LIỆU:
+Hãy tổng hợp, phân tích thông tin từ phần Hỏi & Đáp và Bài viết để trả lời một cách chính xác, thân thiện, súc tích và dễ hiểu.
+
+NẾU THÔNG TIN KHÔNG CÓ HOẶC KHÔNG CHẮC CHẮN NẰM TRONG CÁC DỮ LIỆU BÊN DƯỚI:
+Tuyệt đối không tự bịa đặt, sáng tạo ra thông tin về điểm chuẩn, ngành học hay học phí sai lệch! Hãy xin lỗi một cách lịch sự, nói rằng bạn hiện tại chưa cập nhật thông tin này và vui lòng hướng dẫn họ gửi câu hỏi qua trang "Hỏi đáp" của website hoặc liên hệ trực tiếp với Phòng Tư vấn theo hotline/email cung cấp dưới chân trang.
+
+Hãy luôn trả lời bằng Tiếng Việt. Xưng hô thân thiện, chuyên nghiệp (ví dụ như: bạn - mình, hoặc em - ban tư vấn/nhà trường). Dùng Markdown để in đậm từ khoá quan trọng, tạo danh sách khi cần thiết.
+
+================ KHỞI ĐẦU DỮ LIỆU HỎI ĐÁP (Q&A) ================
+${qaContext}
+
+================ KHỞI ĐẦU DỮ LIỆU BÀI VIẾT ================
+${postContext}
+`;
 
     const result = streamText({
       model: google('gemini-2.5-flash'), // or gemini-2.5-pro for better reasoning
