@@ -78,6 +78,38 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
     setInput(e.target.value);
   };
 
+  const formatChatContent = (text: string) => {
+    let html = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  
+    const links: string[] = [];
+    
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, title, url) => {
+      links.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:opacity-80">${title}</a>`);
+      return `__LINK_${links.length - 1}__`;
+    });
+  
+    html = html.replace(/(https?:\/\/[^\s]+)/g, (match) => {
+      links.push(`<a href="${match}" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:opacity-80">${match}</a>`);
+      return `__LINK_${links.length - 1}__`;
+    });
+  
+    html = html.replace(/0\d{2,3}[\s.-]?\d{3}[\s.-]?\d{3,4}/g, (match) => {
+      const cleanNumber = match.replace(/[\s.-]/g, '');
+      return `<a href="tel:${cleanNumber}" class="underline font-bold hover:opacity-80 text-blue-600">${match}</a>`;
+    });
+  
+    html = html.replace(/__LINK_(\d+)__/g, (match, index) => {
+      return links[parseInt(index, 10)];
+    });
+  
+    return html;
+  };
+
   const posClass = position === "left" ? "left-4" : "right-4";
 
   return (
@@ -114,9 +146,8 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
                   }`}
                   style={m.role === 'user' ? { backgroundColor: color } : {}}
-                >
-                  {m.content}
-                </div>
+                  dangerouslySetInnerHTML={{ __html: formatChatContent(m.content) }}
+                />
               </div>
             ))}
             {isLoading && (
