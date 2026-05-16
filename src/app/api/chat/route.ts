@@ -30,7 +30,6 @@ export async function POST(req: Request) {
         answer: true,
       },
       orderBy: { createdAt: 'desc' },
-      take: 100, // Tăng thêm câu hỏi đáp
     });
 
     const qaContext = questionsList.map((q: any) => `Hỏi: ${q.question}\nĐáp: ${q.answer}`).join('\n\n');
