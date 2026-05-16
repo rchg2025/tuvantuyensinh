@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export default function ZaloWidget({ html }: { html: string }) {
+export default function ZaloWidget({ html, position }: { html: string, position: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,5 +27,21 @@ export default function ZaloWidget({ html }: { html: string }) {
     });
   }, [html]);
 
-  return <div ref={containerRef} suppressHydrationWarning className="zalo-widget-container" />;
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .zalo-pos-left .zalo-chat-widget {
+             left: 20px !important;
+             right: auto !important;
+          }
+          .zalo-pos-right .zalo-chat-widget {
+             right: 20px !important;
+             left: auto !important;
+          }
+        `
+      }} />
+      <div ref={containerRef} suppressHydrationWarning className={`zalo-widget-container zalo-pos-${position}`} />
+    </>
+  );
 }

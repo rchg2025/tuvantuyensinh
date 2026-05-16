@@ -84,7 +84,7 @@ export default async function RootLayout({
   const configs = await prisma.systemConfig.findMany({
     where: {
       key: {
-        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "chatbot_enabled", "chatbot_color", "chatbot_position", "chatbot_width", "chatbot_height"]
+        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "zalo_enabled", "zalo_position", "chatbot_enabled", "chatbot_color", "chatbot_position", "chatbot_width", "chatbot_height", "fb_app_id"]
       }
     }
   });
@@ -125,6 +125,8 @@ export default async function RootLayout({
   const footerEmail = configMap["footer_email"] || "nguyenluyen@nsg.edu.vn";
   const footerDesc = configMap["footer_description"] || "Hệ thống hỗ trợ giải đáp thắc mắc và tuyển sinh trực tuyến nhanh chóng, chính xác.";
   const zaloOaWidget = configMap["zalo_oa_widget"] || "";
+  const zaloEnabled = configMap["zalo_enabled"] !== "false";
+  const zaloPosition = configMap["zalo_position"] || "right";
   
   const chatbotEnabled = configMap["chatbot_enabled"] !== "false";
   const chatbotColor = configMap["chatbot_color"] || "#2563eb";
@@ -259,8 +261,8 @@ export default async function RootLayout({
             &copy; {new Date().getFullYear()} {siteTitle}.
           </div>
         </footer>
-        {zaloOaWidget && (
-          <ZaloWidget html={zaloOaWidget} />
+        {zaloEnabled && zaloOaWidget && (
+          <ZaloWidget html={zaloOaWidget} position={zaloPosition} />
         )}
         {chatbotEnabled && (
           <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} />

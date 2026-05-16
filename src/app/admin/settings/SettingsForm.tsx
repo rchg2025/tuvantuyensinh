@@ -250,6 +250,23 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               ></textarea>
               <p className="text-xs text-slate-500 mt-1">Đoạn mã này sẽ được tự động chèn vào trước thẻ đóng &lt;/body&gt; để hiển thị khung chat trên toàn website.</p>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Bật/Tắt Zalo Widget</label>
+                <select name="zalo_enabled" defaultValue={configMap["zalo_enabled"] === "false" ? "false" : "true"} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="true">Bật</option>
+                  <option value="false">Tắt</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Vị trí hiển thị Zalo</label>
+                <select name="zalo_position" defaultValue={configMap["zalo_position"] || "right"} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="right">Góc phải</option>
+                  <option value="left">Góc trái</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 </div>
