@@ -5,6 +5,26 @@ import { NextResponse } from 'next/server';
 
 export const maxDuration = 30;
 
+// Enable CORS for external widgets
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'OPTIONS, POST',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
@@ -13,7 +33,7 @@ export async function POST(req: Request) {
     const apiKey = config?.value || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
     if (!apiKey) {
-      return NextResponse.json({ error: 'Gemini API Key is not configured' }, { status: 400 });
+      return NextResponse.json({ error: 'Gemini API Key is not configured' }, { status: 400, headers: corsHeaders() });
     }
 
     const google = createGoogleGenerativeAI({
@@ -85,9 +105,14 @@ ${postContext}
       messages,
     });
 
-    return result.toTextStreamResponse();
+    const response = result.toTextStreamResponse();
+    // Add CORS headers to the response Stream
+    for (const [key, value] of Object.entries(corsHeaders())) {
+      response.headers.set(key, value);
+    }
+    return response;
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500, headers: corsHeaders() });
   }
 }

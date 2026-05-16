@@ -361,6 +361,31 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
+          <div className="mt-8 pt-6 border-t border-slate-100">
+            <h4 className="text-sm font-semibold text-slate-800 mb-2">Mã nhúng (Widget) chèn vào website khác</h4>
+            <p className="text-sm text-slate-500 mb-4">Để hiển thị Chatbot AI trên một trang web khác, bạn hãy sao chép đoạn mã dưới đây và dán vào trước thẻ <code className="bg-slate-100 px-1 rounded">&lt;/body&gt;</code> của trang web đó.</p>
+            <div className="relative">
+              <textarea 
+                readOnly
+                className="w-full h-32 px-4 py-3 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={`<!-- AI Chatbot Widget -->\n<script src="https://ts26.nsg.edu.vn/chatbot-widget.js"\n  data-color="${configMap["chatbot_color"] || "#2563eb"}"\n  data-position="${configMap["chatbot_position"] || "right"}"\n  data-title="Tư vấn tuyển sinh"\n  data-logo="https://ts26.nsg.edu.vn/next.svg"\n></script>\n<!-- End AI Chatbot Widget -->`}
+              />
+              <button 
+                type="button"
+                className="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded transition-colors"
+                onClick={(e) => {
+                  const target = e.currentTarget.previousElementSibling as HTMLTextAreaElement;
+                  if (target) {
+                    target.select();
+                    document.execCommand("copy");
+                    alert("Đã copy mã nhúng!");
+                  }
+                }}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
         </div>
 </div>
         <div className="pt-6 border-t border-slate-100 flex justify-end">
