@@ -7,6 +7,7 @@ import Link from "next/link";
 import MobileHeaderClient from "./MobileHeaderClient";
 import prisma from "@/lib/prisma";
 import Chatbot from "@/components/Chatbot";
+import ZaloWidget from "@/components/ZaloWidget";
 import { getDirectImageUrl } from "@/lib/gdrive";
 
 const roboto = Roboto({
@@ -259,7 +260,7 @@ export default async function RootLayout({
           </div>
         </footer>
         {zaloOaWidget && (
-          <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
+          <ZaloWidget html={zaloOaWidget} />
         )}
         {chatbotEnabled && (
           <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} />
