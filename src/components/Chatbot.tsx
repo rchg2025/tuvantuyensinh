@@ -49,16 +49,7 @@ export default function Chatbot({ color = "#2563eb", position = "right" }: { col
         done = doneReading;
         if (value) {
           const chunk = decoder.decode(value);
-          // Simple parsing if using Vercel AI SDK toTextStreamResponse (starts with 0:...)
-          // If it's pure text stream:
-          const lines = chunk.split('\n');
-          for (const line of lines) {
-             if (line.startsWith('0:')) {
-                try {
-                   assistantContent += JSON.parse(line.substring(2));
-                } catch(e) {}
-             }
-          }
+          assistantContent += chunk;
 
           setMessages(prev => {
             const newMessages = [...prev];
