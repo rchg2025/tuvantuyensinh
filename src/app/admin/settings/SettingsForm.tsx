@@ -368,7 +368,7 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               <textarea 
                 readOnly
                 className="w-full h-32 px-4 py-3 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={`<!-- AI Chatbot Widget -->\n<script charset="utf-8" src="https://ts26.nsg.edu.vn/chatbot-widget.js"\n  data-color="${configMap["chatbot_color"] || "#2563eb"}"\n  data-position="${configMap["chatbot_position"] || "right"}"\n  data-title="Tư vấn tuyển sinh"\n></script>\n<!-- End AI Chatbot Widget -->`}
+                value={`<!-- AI Chatbot Widget -->\n<script charset="utf-8" src="https://ts26.nsg.edu.vn/chatbot-widget.js?v=${new Date().getTime()}"\n  data-color="${configMap["chatbot_color"] || "#2563eb"}"\n  data-position="${configMap["chatbot_position"] || "right"}"\n  data-title="Tư vấn tuyển sinh"\n></script>\n<!-- End AI Chatbot Widget -->`}
               />
               <button 
                 type="button"
