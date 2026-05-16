@@ -89,18 +89,18 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
     const links: string[] = [];
     
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, title, url) => {
-      links.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:opacity-80">${title}</a>`);
+      links.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline font-bold text-blue-600 hover:opacity-80" style="pointer-events: auto; cursor: pointer;">${title}</a>`);
       return `__LINK_${links.length - 1}__`;
     });
   
-    html = html.replace(/(https?:\/\/[^\s]+)/g, (match) => {
-      links.push(`<a href="${match}" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:opacity-80">${match}</a>`);
+    html = html.replace(/(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g, (match) => {
+      links.push(`<a href="${match}" target="_blank" rel="noopener noreferrer" class="underline font-bold text-blue-600 hover:opacity-80" style="pointer-events: auto; cursor: pointer;">${match}</a>`);
       return `__LINK_${links.length - 1}__`;
     });
   
-    html = html.replace(/0\d{2,3}[\s.-]?\d{3}[\s.-]?\d{3,4}/g, (match) => {
+    html = html.replace(/(0\d{2,3}[\s.-]?\d{3}[\s.-]?\d{3,4})/g, (match) => {
       const cleanNumber = match.replace(/[\s.-]/g, '');
-      return `<a href="tel:${cleanNumber}" class="underline font-bold hover:opacity-80 text-blue-600">${match}</a>`;
+      return `<a href="tel:${cleanNumber}" class="underline font-bold text-blue-600 hover:opacity-80" style="pointer-events: auto; cursor: pointer;">${match}</a>`;
     });
   
     html = html.replace(/__LINK_(\d+)__/g, (match, index) => {
