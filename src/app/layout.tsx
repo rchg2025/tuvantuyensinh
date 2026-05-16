@@ -259,7 +259,7 @@ export default async function RootLayout({
           </div>
         </footer>
         {zaloOaWidget && (
-          <div dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
+          <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
         )}
         {chatbotEnabled && (
           <Chatbot color={chatbotColor} position={chatbotPosition} />

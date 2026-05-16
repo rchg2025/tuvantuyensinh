@@ -48,7 +48,7 @@ export default function Chatbot({ color = "#2563eb", position = "right" }: { col
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         if (value) {
-          const chunk = decoder.decode(value);
+          const chunk = decoder.decode(value, { stream: true });
           assistantContent += chunk;
 
           setMessages(prev => {
@@ -58,9 +58,17 @@ export default function Chatbot({ color = "#2563eb", position = "right" }: { col
           });
         }
       }
+
+      if (!assistantContent) {
+        throw new Error("Empty response");
+      }
     } catch (error) {
        console.error(error);
-       setMessages(prev => [...prev, { role: 'assistant', content: 'Xin lỗi, đã có lỗi xảy ra. Hãy thử lại sau!' }]);
+       setMessages(prev => {
+         const newMessages = [...prev];
+         newMessages[newMessages.length - 1].content = 'Xin lỗi, tôi không thể gọi API vào lúc này. Có thể API Key đã hết hạn hoặc bị từ chối truy cập (Lỗi 403 / Hết Quota). Vui lòng kiểm tra lại cấu hình API Key!';
+         return newMessages;
+       });
     } finally {
       setIsLoading(false);
     }
