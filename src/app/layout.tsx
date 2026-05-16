@@ -85,7 +85,7 @@ export default async function RootLayout({
   const configs = await prisma.systemConfig.findMany({
     where: {
       key: {
-        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "chatbot_enabled", "chatbot_color", "chatbot_position"]
+        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "chatbot_enabled", "chatbot_color", "chatbot_position", "chatbot_width", "chatbot_height"]
       }
     }
   });
@@ -130,6 +130,8 @@ export default async function RootLayout({
   const chatbotEnabled = configMap["chatbot_enabled"] !== "false";
   const chatbotColor = configMap["chatbot_color"] || "#2563eb";
   const chatbotPosition = configMap["chatbot_position"] || "right";
+  const chatbotWidth = configMap["chatbot_width"] || "360px";
+  const chatbotHeight = configMap["chatbot_height"] || "500px";
 
   async function handleLogout() {
     "use server";
@@ -262,7 +264,7 @@ export default async function RootLayout({
           <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
         )}
         {chatbotEnabled && (
-          <Chatbot color={chatbotColor} position={chatbotPosition} />
+          <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} />
         )}
       </body>
     </html>

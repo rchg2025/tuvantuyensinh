@@ -16,7 +16,8 @@ export async function updateConfigAction(formData: FormData) {
       "seo_title", "google_site_verification", "seo_description",
       "logo_url", "default_og_image", "footer_description", "footer_email",
       "footer_phone", "zalo_oa_widget",
-      "chatbot_gemini_key", "chatbot_color", "chatbot_position"
+      "chatbot_gemini_key", "chatbot_color", "chatbot_position",
+      "chatbot_width", "chatbot_height"
     ];
 
     for (const key of ALLOWED_KEYS) {

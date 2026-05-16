@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function Chatbot({ color = "#2563eb", position = "right" }: { color?: string; position?: string }) {
+export default function Chatbot({ color = "#2563eb", position = "right", width = "360px", height = "500px" }: { color?: string; position?: string; width?: string; height?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [input, setInput] = useState('');
@@ -81,9 +81,12 @@ export default function Chatbot({ color = "#2563eb", position = "right" }: { col
   const posClass = position === "left" ? "left-4" : "right-4";
 
   return (
-    <div className={`fixed bottom-4 ${posClass} z-50`}>
+    <div className={`fixed bottom-4 ${posClass} z-[9999]`}>
       {isOpen ? (
-        <div className="w-80 h-96 bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden">
+        <div 
+          className="bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
+          style={{ width: width, height: height }}
+        >
           <div className="text-white p-3 flex justify-between items-center" style={{ backgroundColor: color }}>
             <h3 className="font-semibold text-sm">Trợ lý ảo Tư vấn Tuyển sinh</h3>
             <button 
@@ -105,7 +108,7 @@ export default function Chatbot({ color = "#2563eb", position = "right" }: { col
             {messages.map((m, index) => (
               <div key={index} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div 
-                  className={`max-w-[85%] rounded-lg p-2 text-sm ${
+                  className={`max-w-[85%] rounded-lg p-2 text-sm whitespace-pre-wrap ${
                     m.role === 'user' 
                       ? 'text-white rounded-br-none' 
                       : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
