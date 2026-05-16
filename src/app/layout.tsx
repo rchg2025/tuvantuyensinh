@@ -7,6 +7,7 @@ import Link from "next/link";
 import MobileHeaderClient from "./MobileHeaderClient";
 import prisma from "@/lib/prisma";
 import Chatbot from "@/components/Chatbot";
+import { getDirectImageUrl } from "@/lib/gdrive";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700", "900"],
@@ -20,21 +21,14 @@ const roboto = Roboto({
     const logoConf = await prisma.systemConfig.findUnique({ where: { key: "logo_url" } });
     const defaultOgImageConf = await prisma.systemConfig.findUnique({ where: { key: "default_og_image" } });
     const googleVerification = await prisma.systemConfig.findUnique({ where: { key: "google_site_verification" } });
+    const fbAppIdConf = await prisma.systemConfig.findUnique({ where: { key: "fb_app_id" } });
     
     const siteTitle = titleConf?.value || "Tư Vấn Tuyển Sinh";
     let faviconUrl = logoConf?.value || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
-    if (faviconUrl.includes('drive.google.com/uc')) {
-      faviconUrl = faviconUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128');
-    }
+    faviconUrl = getDirectImageUrl(faviconUrl);
 
-    let defaultOgImage = defaultOgImageConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
-    if (defaultOgImage.includes('drive.google.com/uc')) {
-       // Convert drive viewing link to direct download link
-       const id = defaultOgImage.split("id=")[1];
-       if (id) {
-         defaultOgImage = `https://drive.google.com/thumbnail?id=${id}&sz=w1200`;
-       }
-    }
+    let defaultOgImage = defaultOgImageConf?.value || logoConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
+    defaultOgImage = getDirectImageUrl(defaultOgImage, true);
   
     return {
       metadataBase: new URL('https://ts26.nsg.edu.vn'),
@@ -51,12 +45,16 @@ const roboto = Roboto({
         description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
         images: [defaultOgImage],
         type: "website",
+        url: "https://ts26.nsg.edu.vn/",
       },
       twitter: {
         card: "summary_large_image",
         title: titleConf?.value || "Tư Vấn Tuyển Sinh",
         description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
         images: [defaultOgImage],
+      },
+      other: {
+        ...(fbAppIdConf?.value ? { "fb:app_id": fbAppIdConf.value } : { "fb:app_id": "1000000000000000" }), // Giá trị mặc định hoặc từ cấu hình
       },
     
     ...(googleVerification?.value ? {

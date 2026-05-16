@@ -19,10 +19,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const imageUrl = post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl) : undefined;
+  const imageUrl = post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl, true) : undefined;
   
   const siteConfig = await prisma.systemConfig.findUnique({ where: { key: "default_og_image" }});
-  const defaultOgImage = siteConfig?.value ? getDirectImageUrl(siteConfig.value) : "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
+  const defaultOgImage = siteConfig?.value ? getDirectImageUrl(siteConfig.value, true) : "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
   const finalImageUrl = imageUrl || defaultOgImage;
 
   return {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
       images: [finalImageUrl],
       type: "article",
-      url: `/posts/${slug}`,
+      url: `https://ts26.nsg.edu.vn/posts/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
