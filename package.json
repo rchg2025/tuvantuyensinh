@@ -10,6 +10,10 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.74",
+    "@ai-sdk/react": "^3.0.185",
+    "@google/genai": "^2.3.0",
+    "ai": "^6.0.183",
     "googleapis": "^171.4.0",
     "jodit-react": "^5.3.21",
     "linkify-html": "^4.3.3",

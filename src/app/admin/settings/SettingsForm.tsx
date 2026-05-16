@@ -8,7 +8,7 @@ import DragDropUpload from "@/components/DragDropUpload";
 
 export default function SettingsForm({ configMap }: { configMap: Record<string, string> }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [activeTab, setActiveTab] = useState<"seo" | "footer" | "drive" | "smtp" | "scripts">("seo");
+  const [activeTab, setActiveTab] = useState<"seo" | "footer" | "drive" | "smtp" | "scripts" | "chatbot">("seo");
 
   const handleSubmit = async (formData: FormData) => {
     const loadingToast = toast.loading("Đang lưu cấu hình...");
@@ -29,7 +29,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
     { id: "footer", label: "📍 Footer" },
     { id: "drive", label: "📁 Google Drive" },
     { id: "smtp", label: "📧 SMTP Email" },
-    { id: "scripts", label: "💬 Mã nhúng" }
+    { id: "scripts", label: "💬 Mã nhúng" },
+    { id: "chatbot", label: "🤖 AI Chatbot" }
   ] as const;
 
   return (
@@ -102,7 +103,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               </div>
             </div>
           </div>
-        </div></div>
+        </div>
+</div>
         {/* Footer Config */}
         <div className={activeTab === "footer" ? "block" : "hidden"}>
         <div className="space-y-4">
@@ -140,7 +142,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div></div>
+        </div>
+</div>
         {/* Drive Config */}
         <div className={activeTab === "drive" ? "block" : "hidden"}>
         <div className="space-y-4">
@@ -177,7 +180,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div></div>
+        </div>
+</div>
         {/* SMTP Config */}
         <div className={activeTab === "smtp" ? "block" : "hidden"}>
         <div className="space-y-4">
@@ -226,7 +230,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-        </div></div>
+        </div>
+</div>
         {/* Widget/Script Config */}
         <div className={activeTab === "scripts" ? "block" : "hidden"}>
         <div className="space-y-4">
@@ -246,7 +251,81 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               <p className="text-xs text-slate-500 mt-1">Đoạn mã này sẽ được tự động chèn vào trước thẻ đóng &lt;/body&gt; để hiển thị khung chat trên toàn website.</p>
             </div>
           </div>
-        </div></div>
+        </div>
+</div>
+        {/* Chatbot Config */}
+        <div className={activeTab === "chatbot" ? "block" : "hidden"}>
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <span>🤖</span> Cấu hình AI Chatbot
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer w-fit p-2 hover:bg-slate-50 rounded">
+                <input 
+                  type="checkbox" 
+                  name="chatbot_enabled" 
+                  defaultChecked={configMap["chatbot_enabled"] !== "false"} 
+                  value="true"
+                  className="w-4 h-4 text-blue-600 rounded cursor-pointer" 
+                />
+                Kích hoạt Chatbot AI
+              </label>
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Gemini API Key</label>
+              <input 
+                name="chatbot_gemini_key" 
+                type="password"
+                defaultValue={configMap["chatbot_gemini_key"] || ""}
+                placeholder="AIzaSy..."
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              />
+              <p className="text-xs text-slate-500 mt-1">Lấy tại Google AI Studio. Có thể để trống nếu đã cấu hình trong .env .</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Màu sắc chủ đạo</label>
+              <div className="flex gap-2">
+                <input 
+                  type="color" 
+                  id="color_picker"
+                  defaultValue={configMap["chatbot_color"] || "#2563eb"}
+                  onChange={(e) => {
+                    const input = document.getElementById("chatbot_color_input") as HTMLInputElement;
+                    if(input) input.value = e.target.value;
+                  }}
+                  className="w-10 h-10 border-0 rounded p-0 cursor-pointer h-10 w-10"
+                />
+                <input 
+                  name="chatbot_color" 
+                  id="chatbot_color_input"
+                  defaultValue={configMap["chatbot_color"] || "#2563eb"}
+                  placeholder="#2563eb"
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm uppercase uppercase"
+                  onChange={(e) => {
+                    const picker = document.getElementById("color_picker") as HTMLInputElement;
+                    if(picker) picker.value = e.target.value;
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Vị trí hiển thị</label>
+              <select 
+                name="chatbot_position" 
+                defaultValue={configMap["chatbot_position"] || "right"}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-10 bg-white"
+              >
+                <option value="right">Góc dưới bên phải</option>
+                <option value="left">Góc dưới bên trái</option>
+              </select>
+            </div>
+          </div>
+        </div>
+</div>
         <div className="pt-6 border-t border-slate-100 flex justify-end">
           <SubmitButtons />
         </div>

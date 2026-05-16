@@ -15,7 +15,8 @@ export async function updateConfigAction(formData: FormData) {
       "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS",
       "seo_title", "google_site_verification", "seo_description",
       "logo_url", "default_og_image", "footer_description", "footer_email",
-      "footer_phone", "zalo_oa_widget"
+      "footer_phone", "zalo_oa_widget",
+      "chatbot_gemini_key", "chatbot_color", "chatbot_position"
     ];
 
     for (const key of ALLOWED_KEYS) {
@@ -28,6 +29,14 @@ export async function updateConfigAction(formData: FormData) {
         });
       }
     }
+
+    // Handle checkboxes
+    const chatbot_enabled = formData.get("chatbot_enabled") === "true" ? "true" : "false";
+    await prisma.systemConfig.upsert({
+      where: { key: "chatbot_enabled" },
+      update: { value: chatbot_enabled },
+      create: { key: "chatbot_enabled", value: chatbot_enabled },
+    });
 
     revalidatePath("/admin/settings");
     revalidatePath("/");

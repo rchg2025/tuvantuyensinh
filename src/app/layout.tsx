@@ -6,6 +6,7 @@ import "./globals.css";
 import Link from "next/link";
 import MobileHeaderClient from "./MobileHeaderClient";
 import prisma from "@/lib/prisma";
+import Chatbot from "@/components/Chatbot";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700", "900"],
@@ -84,7 +85,7 @@ export default async function RootLayout({
   const configs = await prisma.systemConfig.findMany({
     where: {
       key: {
-        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget"]
+        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "chatbot_enabled", "chatbot_color", "chatbot_position"]
       }
     }
   });
@@ -125,6 +126,10 @@ export default async function RootLayout({
   const footerEmail = configMap["footer_email"] || "nguyenluyen@nsg.edu.vn";
   const footerDesc = configMap["footer_description"] || "Hệ thống hỗ trợ giải đáp thắc mắc và tuyển sinh trực tuyến nhanh chóng, chính xác.";
   const zaloOaWidget = configMap["zalo_oa_widget"] || "";
+  
+  const chatbotEnabled = configMap["chatbot_enabled"] !== "false";
+  const chatbotColor = configMap["chatbot_color"] || "#2563eb";
+  const chatbotPosition = configMap["chatbot_position"] || "right";
 
   async function handleLogout() {
     "use server";
@@ -255,6 +260,9 @@ export default async function RootLayout({
         </footer>
         {zaloOaWidget && (
           <div dangerouslySetInnerHTML={{ __html: zaloOaWidget }} />
+        )}
+        {chatbotEnabled && (
+          <Chatbot color={chatbotColor} position={chatbotPosition} />
         )}
       </body>
     </html>
