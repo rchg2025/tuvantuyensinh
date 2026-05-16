@@ -265,7 +265,7 @@ export default async function RootLayout({
           <ZaloWidget html={zaloOaWidget} position={zaloPosition} />
         )}
         {chatbotEnabled && (
-          <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} />
+          <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} logoUrl={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} siteTitle={siteTitle} />
         )}
       </body>
     </html>

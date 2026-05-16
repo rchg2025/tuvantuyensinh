@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 
-export default function Chatbot({ color = "#2563eb", position = "right", width = "360px", height = "500px" }: { color?: string; position?: string; width?: string; height?: string }) {
+export default function Chatbot({ color = "#2563eb", position = "right", width = "360px", height = "500px", logoUrl, siteTitle }: { color?: string; position?: string; width?: string; height?: string; logoUrl?: string; siteTitle?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [input, setInput] = useState('');
@@ -119,11 +119,18 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           className="bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
           style={{ width: width, height: height }}
         >
-          <div className="text-white p-3 flex justify-between items-center" style={{ backgroundColor: color }}>
-            <h3 className="font-semibold text-sm">Trợ lý ảo Tư vấn Tuyển sinh</h3>
+          <div className="bg-white border-b border-gray-100 p-3 flex justify-between items-center shadow-sm">
+            <div className="flex items-center gap-2">
+              {logoUrl && (
+                <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full border border-gray-200 p-0.5 object-cover" />
+              )}
+              <h3 className="font-bold text-sm leading-tight text-blue-900 line-clamp-2 max-w-[220px]">
+                {siteTitle || "Tư vấn tuyển sinh và giới thiệu về nhà trường"}
+              </h3>
+            </div>
             <button 
               onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200 focus:outline-none"
+              className="text-gray-500 hover:text-gray-800 focus:outline-none ml-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -133,8 +140,17 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           
           <div className="flex-1 p-3 overflow-y-auto bg-gray-50 flex flex-col gap-3">
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 text-sm mt-4">
-                Xin chào! Tôi có thể giúp gì cho bạn?
+              <div className="bg-blue-50/80 text-blue-900 border border-blue-100 p-4 rounded-xl text-sm leading-relaxed mt-2 mx-1 shadow-sm">
+                <p className="font-bold flex items-center gap-2 mb-2 text-base">
+                  <span className="text-xl">👋</span> Xin chào!
+                </p>
+                <p className="mb-2">
+                  Tôi là chatbot tư vấn tuyển sinh và giới thiệu về <strong>{siteTitle || 'nhà trường'}</strong>.
+                  Bạn hãy đặt câu hỏi để được tư vấn nhé!
+                </p>
+                <p className="text-gray-600 italic">
+                  Ví dụ: "Học phí", "Hồ sơ xét tuyển", "Cơ hội việc làm"...
+                </p>
               </div>
             )}
             {messages.map((m, index) => (
