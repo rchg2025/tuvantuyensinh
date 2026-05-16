@@ -108,7 +108,7 @@
     <div class="ai-chatbot-container">
       <div class="ai-chatbot-header">
         <div class="ai-chatbot-info">
-          ${logo ? `<img src="${logo}" class="ai-chatbot-logo" alt="Logo" />` : `<div class="ai-chatbot-logo" style="background:#f1f5f9; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>`}
+          ${logo ? `<img src="${logo}" class="ai-chatbot-logo" alt="Logo" />` : `<div class="ai-chatbot-logo" style="background:${color}15; color:${color}; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>`}
           <h3 class="ai-chatbot-title">${title}</h3>
         </div>
         <button class="ai-chatbot-close" title="Đóng">&times;</button>
