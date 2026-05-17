@@ -16,6 +16,7 @@ export default async function AdminQaPage({
   const resolvedSearchParams = await searchParams;
   const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : "";
   const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "all";
+  const source = typeof resolvedSearchParams.source === "string" ? resolvedSearchParams.source : "all";
   const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "manage";
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
   const pageSize = 10;
@@ -36,10 +37,16 @@ export default async function AdminQaPage({
       ? { OR: [{ answer: null }, { answer: "" }] } 
       : {};
 
+  const sourceFilter =
+    source === "student" ? { isFromSchool: false }
+    : source === "admin" ? { isFromSchool: true }
+    : {};
+
   const queryWhere = {
     AND: [
       searchFilter,
       statusFilter,
+      sourceFilter,
     ]
   };
 
@@ -185,28 +192,41 @@ export default async function AdminQaPage({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex gap-2">
               <Link
-                href={`/admin/qa?tab=manage&status=all${q ? `&q=${q}` : ""}`}
+                href={`/admin/qa?tab=manage&status=all&source=${source}${q ? `&q=${q}` : ""}`}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "all" ? "bg-slate-800 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
               >
                 Tất cả
               </Link>
               <Link
-                href={`/admin/qa?tab=manage&status=unanswered${q ? `&q=${q}` : ""}`}
+                href={`/admin/qa?tab=manage&status=unanswered&source=${source}${q ? `&q=${q}` : ""}`}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "unanswered" ? "bg-orange-500 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
               >
                 Chưa trả lời
               </Link>
               <Link
-                href={`/admin/qa?tab=manage&status=answered${q ? `&q=${q}` : ""}`}
+                href={`/admin/qa?tab=manage&status=answered&source=${source}${q ? `&q=${q}` : ""}`}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "answered" ? "bg-green-600 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
               >
                 Đã trả lời
               </Link>
             </div>
-            <form action="/admin/qa" method="GET" className="relative flex items-center w-full sm:w-auto">
-              <input type="hidden" name="tab" value="manage" />
-              <input type="hidden" name="status" value={status} />
-              <LiveSearch className="w-full sm:w-64 text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm" />
+            <form action="/admin/qa" method="GET" className="relative flex items-center w-full flex-wrap sm:flex-nowrap sm:w-auto gap-2 mt-4 sm:mt-0">
+              <select 
+                name="source" 
+                defaultValue={source}
+                onChange={(e) => e.target.form?.submit()}
+                className="w-full sm:w-auto text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm"
+              >
+                <option value="all">Tất cả nguồn</option>
+                <option value="student">Học viên hỏi</option>
+                <option value="admin">Quản trị nhập</option>
+              </select>
+              <div className="relative w-full sm:w-auto">
+                <LiveSearch 
+                  additionalParams={{ tab, status }}
+                  className="w-full sm:w-64 text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm" 
+                />
+              </div>
             </form>
           </div>
 
@@ -246,7 +266,7 @@ export default async function AdminQaPage({
                   return (
                     <Link
                       key={p}
-                      href={`/admin/qa?tab=manage&status=${status}&page=${p}${q ? `&q=${q}` : ""}`}
+                      href={`/admin/qa?tab=manage&status=${status}&source=${source}&page=${p}${q ? `&q=${q}` : ""}`}
                       className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
                         page === p
                           ? "bg-blue-600 text-white"
