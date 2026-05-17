@@ -141,7 +141,7 @@ export default function QaRow({
               onClick={() => setIsEditingAnswer(true)}
               className="px-3 py-1.5 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 rounded-md font-semibold text-xs transition-colors self-start mt-2"
             >
-              {question.answer ? "‏️ Cập nhật & Sửa" : "☍️ Trả lời"}
+              {question.answer ? "‏️ Cập nhật" : "☍️ Trả lời"}
             </button>
           </div>
         ) : (
@@ -181,7 +181,7 @@ export default function QaRow({
                onClick={() => setIsEditingQuestion(true)}
                className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs w-full"
             >
-               Sửa câu hỏi
+               Sửa
             </button>
           )}
           <button

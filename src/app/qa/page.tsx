@@ -183,7 +183,7 @@ export default async function QaPage({
               tab === "student" ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Q&A của Học viên
+            Câu hỏi Q&A của Học viên
           </Link>
           <Link
             href={`/qa?tab=school${q ? `&q=${q}` : ""}`}
@@ -191,7 +191,7 @@ export default async function QaPage({
               tab === "school" ? "bg-blue-600 text-white shadow-sm" : "bg-transparent text-gray-600 hover:bg-gray-100"
             }`}
           >
-            Q&A từ nhà trường
+            Câu hỏi Q&A từ nhà trường
           </Link>
         </div>
         
