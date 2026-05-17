@@ -9,7 +9,14 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPostsPage() {
+export default async function AdminPostsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "manage"; // 'manage' or 'create'
+
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },
     include: { category: true }
@@ -30,56 +37,83 @@ export default async function AdminPostsPage() {
         </div>
       </div>
 
-      <PostForm categories={categories} />
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
-          <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
-            <tr>
-              <th className="p-4 w-1/4">Tiêu đề</th>
-              <th className="p-4">Danh mục</th>
-              <th className="p-4">Người đăng</th>
-              <th className="p-4">Ngày đăng</th>
-              <th className="p-4 text-center">Hành động</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-sm">
-            {posts.map((post) => (
-              <tr key={post.id} className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 align-top font-bold text-slate-800">
-                  <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="flex items-center gap-3 hover:text-blue-600 transition-colors">
-                    {post.thumbnailUrl && (
-                      <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-12 h-12 rounded object-cover" />
-                    )}
-                    <span>{post.title}</span>
-                  </Link>
-                </td>
-                <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
-                <td className="p-4 align-middle text-slate-500">{(post as any).authorName || "Không có"}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
-                <td className="p-4 align-middle text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition text-xs">Xem</Link>                                        <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
-                      Sửa
-                    </a>
-                    <form action={deletePostAction}>
-                      <input type="hidden" name="id" value={post.id} />
-                      <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs">
-                        Xóa
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {posts.length === 0 && (
-              <tr>
-                <td colSpan={3} className="p-8 text-center text-slate-500">Chưa có bài viết nào.</td>
-              </tr>
-            )}
-          </tbody>
-        </table></div>
+      <div className="flex border-b border-slate-200">
+        <Link
+          href={`/admin/posts?tab=manage`}
+          className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+            tab === "manage"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
+        >
+          Quản lý bài viết
+        </Link>
+        <Link
+          href={`/admin/posts?tab=create`}
+          className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+            tab === "create"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
+        >
+          Đăng bài viết mới
+        </Link>
       </div>
+
+      {tab === "create" ? (
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <PostForm categories={categories} />
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
+            <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
+              <tr>
+                <th className="p-4 w-1/4">Tiêu đề</th>
+                <th className="p-4">Danh mục</th>
+                <th className="p-4">Người đăng</th>
+                <th className="p-4">Ngày đăng</th>
+                <th className="p-4 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm">
+              {posts.map((post) => (
+                <tr key={post.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 align-top font-bold text-slate-800">
+                    <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="flex items-center gap-3 hover:text-blue-600 transition-colors">
+                      {post.thumbnailUrl && (
+                        <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-12 h-12 rounded object-cover" />
+                      )}
+                      <span>{post.title}</span>
+                    </Link>
+                  </td>
+                  <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
+                  <td className="p-4 align-middle text-slate-500">{(post as any).authorName || "Không có"}</td>
+                  <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                  <td className="p-4 align-middle text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition text-xs">Xem</Link>                                        <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
+                        Sửa
+                      </a>
+                      <form action={deletePostAction}>
+                        <input type="hidden" name="id" value={post.id} />
+                        <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs">
+                          Xóa
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {posts.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-slate-500">Chưa có bài viết nào.</td>
+                </tr>
+              )}
+            </tbody>
+          </table></div>
+        </div>
+      )}
     </div>
   );
 }

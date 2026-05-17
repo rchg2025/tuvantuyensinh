@@ -15,10 +15,12 @@ export default async function AdminQaPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : "";
+  const status = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : "all";
+  const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "manage";
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
   const pageSize = 10;
 
-  const queryWhere = q
+  const searchFilter = q
     ? {
         OR: [
           { question: { contains: q, mode: "insensitive" as const } },
@@ -26,6 +28,20 @@ export default async function AdminQaPage({
         ],
       }
     : {};
+
+  const statusFilter =
+    status === "answered"
+      ? { NOT: [{ answer: null }, { answer: "" }] }
+      : status === "unanswered"
+      ? { OR: [{ answer: null }, { answer: "" }] } 
+      : {};
+
+  const queryWhere = {
+    AND: [
+      searchFilter,
+      statusFilter,
+    ]
+  };
 
   const [totalQuestions, questions] = await Promise.all([
     prisma.question.count({ where: queryWhere }),
@@ -43,7 +59,7 @@ export default async function AdminQaPage({
     "use server";
     const q = await prisma.question.update({
       where: { id },
-      data: { answer },
+      data: { answer: answer.trim() === "" ? null : answer },
     });
 
     if (q.email && answer.trim()) {
@@ -87,92 +103,146 @@ export default async function AdminQaPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-slate-800">Quản lý câu hỏi & Tư vấn</h1>
-        <form action="/admin/qa" method="GET" className="relative flex items-center w-full sm:w-auto">
-          <LiveSearch className="w-full sm:w-64 text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm" />
-        </form>
+      <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Hỏi - Đáp</h1>
+          <p className="text-slate-500 text-sm mt-1">Quản lý câu hỏi và tư vấn</p>
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
-        <h2 className="text-lg font-bold text-slate-800 mb-4">Tạo Q&A nội bộ</h2>
-        <form action={createQuestion} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Câu hỏi (Tự nhập)</label>
-            <input 
-              name="question" 
-              required 
-              placeholder="VD: Điều kiện xét tuyển học bạ là gì?"
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Câu trả lời</label>
-            <textarea 
-              name="answer" 
-              required 
-              rows={3}
-              placeholder="Đội ngũ trả lời sẵn nội dung luôn..."
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg transition-colors">
-            Tạo mới
-          </button>
-        </form>
+      <div className="flex border-b border-slate-200">
+        <Link
+          href={`/admin/qa?tab=manage&status=${status}${q ? `&q=${q}` : ""}`}
+          className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+            tab === "manage"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
+        >
+          Quản lý Hỏi - Đáp
+        </Link>
+        <Link
+          href={`/admin/qa?tab=create`}
+          className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+            tab === "create"
+              ? "border-blue-600 text-blue-600"
+              : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+          }`}
+        >
+          Tạo mới câu hỏi Q&A
+        </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
-          <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
-            <tr>
-              <th className="p-4">Người hỏi</th>
-              <th className="p-4 w-1/3">Câu hỏi</th>
-              <th className="p-4 w-1/3">Câu trả lời</th>
-              <th className="p-4 text-center">Xóa</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-sm">
-            {questions.map((q) => (
-              <QaRow
-                key={q.id}
-                question={q}
-                onUpdate={updateAnswerWrapper}
-                onDelete={deleteQuestionWrapper}
+      {tab === "create" ? (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <h2 className="text-lg font-bold text-slate-800 mb-4">Tạo Q&A nội bộ</h2>
+          <form action={createQuestion} className="space-y-4 max-w-2xl">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Câu hỏi (Tự nhập)</label>
+              <input 
+                name="question" 
+                required 
+                placeholder="VD: Điều kiện xét tuyển học bạ là gì?"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            ))}
-            {questions.length === 0 && (
-              <tr>
-                <td colSpan={4} className="p-8 text-center text-slate-500">
-                  {q ? "Không tìm thấy câu hỏi nào phù hợp." : "Chưa có câu hỏi nào."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table></div>
-        
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="p-4 border-t border-slate-100 flex justify-center gap-2 bg-slate-50">
-            {Array.from({ length: totalPages }).map((_, i) => {
-              const p = i + 1;
-              return (
-                <Link
-                  key={p}
-                  href={`/admin/qa?page=${p}${q ? `&q=${q}` : ""}`}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
-                    page === p
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {p}
-                </Link>
-              );
-            })}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Câu trả lời</label>
+              <textarea 
+                name="answer" 
+                required 
+                rows={4}
+                placeholder="Đội ngũ trả lời sẵn nội dung luôn..."
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2 rounded-lg transition-colors">
+              Đăng câu hỏi
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex gap-2">
+              <Link
+                href={`/admin/qa?tab=manage&status=all${q ? `&q=${q}` : ""}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "all" ? "bg-slate-800 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
+              >
+                Tất cả
+              </Link>
+              <Link
+                href={`/admin/qa?tab=manage&status=unanswered${q ? `&q=${q}` : ""}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "unanswered" ? "bg-orange-500 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
+              >
+                Chưa trả lời
+              </Link>
+              <Link
+                href={`/admin/qa?tab=manage&status=answered${q ? `&q=${q}` : ""}`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${status === "answered" ? "bg-green-600 text-white" : "bg-white border text-slate-600 hover:bg-slate-50"}`}
+              >
+                Đã trả lời
+              </Link>
+            </div>
+            <form action="/admin/qa" method="GET" className="relative flex items-center w-full sm:w-auto">
+              <input type="hidden" name="tab" value="manage" />
+              <input type="hidden" name="status" value={status} />
+              <LiveSearch className="w-full sm:w-64 text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm" />
+            </form>
           </div>
-        )}
-      </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
+              <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
+                <tr>
+                  <th className="p-4">Người hỏi</th>
+                  <th className="p-4 w-1/3">Câu hỏi</th>
+                  <th className="p-4 w-1/3">Câu trả lời</th>
+                  <th className="p-4 text-center">Xóa</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm">
+                {questions.map((q) => (
+                  <QaRow
+                    key={q.id}
+                    question={q}
+                    onUpdate={updateAnswerWrapper}
+                    onDelete={deleteQuestionWrapper}
+                  />
+                ))}
+                {questions.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-slate-500">
+                      {q ? "Không tìm thấy câu hỏi nào phù hợp." : "Chưa có câu hỏi nào."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table></div>
+            
+            {totalPages > 1 && (
+              <div className="p-4 border-t border-slate-100 flex justify-center gap-2 bg-slate-50">
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const p = i + 1;
+                  return (
+                    <Link
+                      key={p}
+                      href={`/admin/qa?tab=manage&status=${status}&page=${p}${q ? `&q=${q}` : ""}`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
+                        page === p
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
+                      }`}
+                    >
+                      {p}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
