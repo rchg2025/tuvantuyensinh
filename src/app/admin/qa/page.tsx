@@ -50,23 +50,42 @@ export default async function AdminQaPage({
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
+      include: { category: true },
     }),
   ]);
 
   const totalPages = Math.ceil(totalQuestions / pageSize);
 
-  async function updateAnswerWrapper(id: string, answer: string) {
+  async function updateQuestionInfo(id: string, data: { answer?: string, question?: string }) {
     "use server";
+    
+    // We update the fields
+    const cookieStore = await cookies();
+    const authNameEncoded = cookieStore.get("auth_name")?.value;
+    const currentUserName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "Admin";
+
+    const updateData: any = {};
+    if (data.answer !== undefined) {
+      updateData.answer = data.answer.trim() === "" ? null : data.answer;
+      if (updateData.answer !== null) {
+        updateData.answeredBy = currentUserName;
+        updateData.answeredAt = new Date();
+      }
+    }
+    if (data.question !== undefined) {
+      updateData.question = data.question;
+    }
+
     const q = await prisma.question.update({
       where: { id },
-      data: { answer: answer.trim() === "" ? null : answer },
+      data: updateData,
     });
 
-    if (q.email && answer.trim()) {
+    if (data.answer !== undefined && q.email && q.answer) {
       notifyStudentQuestionAnswered(q.email, {
         askerName: q.askerName,
         question: q.question,
-        answer
+        answer: q.answer
       }).catch(console.error);
     }
 
@@ -206,7 +225,7 @@ export default async function AdminQaPage({
                   <QaRow
                     key={q.id}
                     question={q}
-                    onUpdate={updateAnswerWrapper}
+                    onUpdate={updateQuestionInfo}
                     onDelete={deleteQuestionWrapper}
                   />
                 ))}
