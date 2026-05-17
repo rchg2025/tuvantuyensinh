@@ -36,7 +36,9 @@ export default async function Home() {
             🎓 Hệ thống tư vấn tuyển sinh trực tuyến
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-            Định hướng tương lai <br />
+            <span className="inline-block bg-gradient-to-r from-[#ffe259] via-[#ffa751] to-[#ffe259] text-transparent bg-clip-text animate-text-gradient">
+              Định hướng tương lai
+            </span> <br />
             <span className="text-yellow-300">Chọn đúng ngành, đúng trường</span>
           </h1>
           <p className="text-blue-100 text-lg md:text-xl font-medium max-w-2xl mx-auto">
