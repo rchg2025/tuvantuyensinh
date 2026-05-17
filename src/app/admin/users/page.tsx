@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import UserRow from "./UserRow";
 
 export const dynamic = "force-dynamic";
 
@@ -115,26 +116,12 @@ export default async function AdminUsersPage() {
               <th className="p-4">Liên hệ</th>
               <th className="p-4">Chức vụ</th>
               <th className="p-4">Quyền</th>
-              <th className="p-4 text-center">Xóa</th>
+              <th className="p-4 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-slate-800">{u.name || "Chưa cập nhật"}</td>
-                <td className="p-4 text-slate-600">
-                  <p>{u.email}</p>
-                  <p className="text-xs">{u.phone}</p>
-                </td>
-                <td className="p-4 text-slate-600">{u.position?.name || "Chưa có"}</td>
-                <td className="p-4 font-semibold text-indigo-600">{u.role}</td>
-                <td className="p-4 text-center">
-                  <form action={deleteUser}>
-                    <input type="hidden" name="id" value={u.id} />
-                    <button type="submit" className="text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition text-xs">Xóa</button>
-                  </form>
-                </td>
-              </tr>
+              <UserRow key={u.id} user={u} positions={positions} deleteAction={deleteUser} />
             ))}
           </tbody>
         </table></div>
