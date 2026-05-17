@@ -3,7 +3,7 @@ import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import { getDirectImageUrl } from "@/lib/gdrive";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function PostsPage({ searchParams }: { searchParams: Promise<{ page?: string; q?: string; categorySlug?: string }> }) {
   const resolvedParams = await searchParams;

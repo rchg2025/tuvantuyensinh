@@ -4,7 +4,7 @@ import LiveSearch from "@/components/LiveSearch";
 import PostSlider from "@/components/PostSlider";
 import { getDirectImageUrl } from "@/lib/gdrive";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Home() {
   const [postCount, questionCount, latestQuestions, rawLatestPosts] = await Promise.all([

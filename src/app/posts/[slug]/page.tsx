@@ -5,7 +5,7 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 import { Metadata } from "next";
 import linkifyHtml from "linkify-html";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

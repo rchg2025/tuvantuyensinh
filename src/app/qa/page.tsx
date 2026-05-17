@@ -4,7 +4,7 @@ import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import { notifyNewQuestion } from "@/lib/mail";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 function LinkifyText({ text }: { text: string }) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;

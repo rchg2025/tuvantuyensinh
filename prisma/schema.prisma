@@ -22,6 +22,10 @@ model Question {
   answeredAt   DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([categoryId])
+  @@index([isFromSchool])
 }
 
 model Post {
@@ -30,13 +34,16 @@ model Post {
   title        String
   content      String
   thumbnailUrl String?
-  attachments  String?   // JSON str or single URL
+  attachments  String? // JSON str or single URL
   viewCount    Int       @default(0)
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id])
   authorName   String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([categoryId])
 }
 
 model ConsultationRequest {
