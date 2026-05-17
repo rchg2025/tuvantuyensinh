@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import LiveSearch from "@/components/LiveSearch";
 import QaRow from "./QaRow";
+import SourceSelect from "./SourceSelect";
 import { notifyStudentQuestionAnswered } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
@@ -211,16 +212,9 @@ export default async function AdminQaPage({
               </Link>
             </div>
             <form action="/admin/qa" method="GET" className="relative flex items-center w-full flex-wrap sm:flex-nowrap sm:w-auto gap-2 mt-4 sm:mt-0">
-              <select 
-                name="source" 
-                defaultValue={source}
-                onChange={(e) => e.target.form?.submit()}
-                className="w-full sm:w-auto text-gray-900 bg-white border border-slate-200 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm shadow-sm"
-              >
-                <option value="all">Tất cả nguồn</option>
-                <option value="student">Học viên hỏi</option>
-                <option value="admin">Quản trị nhập</option>
-              </select>
+              <input type="hidden" name="tab" value="manage" />
+              <input type="hidden" name="status" value={status} />
+              <SourceSelect defaultValue={source} />
               <div className="relative w-full sm:w-auto">
                 <LiveSearch 
                   additionalParams={{ tab, status }}
