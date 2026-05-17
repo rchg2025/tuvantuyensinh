@@ -7,9 +7,10 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 export const revalidate = 60;
 
 export default async function Home() {
-  const [postCount, questionCount, latestQuestions, rawLatestPosts] = await Promise.all([
+  const [postCount, questionCount, majorCount, latestQuestions, rawLatestPosts] = await Promise.all([
     prisma.post.count(),
     prisma.question.count(),
+    prisma.category.count({ where: { type: "MAJOR" } }),
     prisma.question.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -74,7 +75,7 @@ export default async function Home() {
         {[
           { label: "Bài viết", value: postCount.toString(), icon: "📰" },
           { label: "Câu hỏi Q&A", value: questionCount.toString(), icon: "💬" },
-          { label: "Chương trình", value: "4+", icon: "🎯" },
+          { label: "Chương trình", value: majorCount.toString(), icon: "🎯" },
           { label: "Hỗ trợ", value: "24/7", icon: "🕒" }
         ].map((stat, i) => (
           <div key={i} className="bg-white rounded-2xl shadow-sm border border-blue-50 p-6 text-center hover:-translate-y-1 transition-transform">
