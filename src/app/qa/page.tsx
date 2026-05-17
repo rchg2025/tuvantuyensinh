@@ -221,8 +221,17 @@ export default async function QaPage({
                     {q.askerName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center flex-wrap gap-2 mb-1">
                       <span className="font-semibold text-gray-900 text-sm">{q.askerName}</span>
+                      {q.isFromSchool ? (
+                        <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Quản trị viên / Chuyên viên tư vấn
+                        </span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Học viên
+                        </span>
+                      )}
                       <span className="text-gray-400 text-xs">·</span>
                       <span className="text-gray-400 text-xs">
                         {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
