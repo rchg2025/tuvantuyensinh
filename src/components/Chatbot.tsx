@@ -119,18 +119,21 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           className="bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
           style={{ width: width, height: height }}
         >
-          <div className="bg-white border-b border-gray-100 p-3 flex justify-between items-center shadow-sm">
+          <div 
+            className="p-3 flex justify-between items-center shadow-sm"
+            style={{ background: `linear-gradient(135deg, ${color}, ${color}dd)` }}
+          >
             <div className="flex items-center gap-2">
               {logoUrl && (
-                <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full border border-gray-200 p-0.5 object-cover" />
+                <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full border border-white/20 p-0.5 object-cover bg-white" />
               )}
-              <h3 className="font-bold text-sm leading-tight text-blue-900 line-clamp-2 max-w-[220px]">
+              <h3 className="font-bold text-sm leading-tight text-white line-clamp-2 max-w-[220px]">
                 {siteTitle || "Tư vấn tuyển sinh và giới thiệu về nhà trường"}
               </h3>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
-              className="text-gray-500 hover:text-gray-800 focus:outline-none ml-2"
+              className="text-white/80 hover:text-white focus:outline-none ml-2 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
