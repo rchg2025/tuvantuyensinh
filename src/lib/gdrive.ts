@@ -1,4 +1,4 @@
-﻿import { google } from "googleapis";
+import { google } from "googleapis";
 import prisma from "@/lib/prisma";
 
 export async function getDriveConfig() {
@@ -73,16 +73,7 @@ export function getDirectImageUrl(url: string | null | undefined, ogMode: boolea
     const id = url.split('id=')[1]?.split('&')[0];
     if (id) {
       if (ogMode) {
-         return `https://drive.google.com/thumbnail?id=${id}&sz=w1200#.jpg`;
-      }
-      return `https://lh3.googleusercontent.com/d/${id}=w1000`;
-    }
-  }
-  if (url.includes('drive.google.com/thumbnail?id=')) {
-    const id = url.split('id=')[1]?.split('&')[0];
-    if (id) {
-      if (ogMode) {
-         return `https://drive.google.com/thumbnail?id=${id}&sz=w1200#.jpg`;
+         return `https://lh3.googleusercontent.com/d/${id}=w1200`;
       }
       return `https://lh3.googleusercontent.com/d/${id}=w1000`;
     }
