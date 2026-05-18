@@ -105,3 +105,8 @@ model VisitorStat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model ActiveSession {
+  id        String   @id
+  updatedAt DateTime @updatedAt
+}
