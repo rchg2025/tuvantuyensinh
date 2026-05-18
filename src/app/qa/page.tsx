@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import { notifyNewQuestion } from "@/lib/mail";
+import Pagination from "@/components/Pagination";
 
 export const revalidate = 60;
 
@@ -263,26 +264,7 @@ export default async function QaPage({
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
-            {Array.from({ length: totalPages }).map((_, i) => {
-              const p = i + 1;
-              return (
-                <Link
-                  key={p}
-                  href={`/qa?tab=${tab}&page=${p}${q ? `&q=${q}` : ""}`}
-                  className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium text-sm transition-colors ${
-                    page === p
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                  }`}
-                >
-                  {p}
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        <Pagination currentPage={page} totalPages={totalPages} />
       </div>
     </div>
   );

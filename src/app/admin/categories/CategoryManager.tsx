@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { createCategory, updateCategory, deleteCategory } from "./actions";
+import Pagination from "@/components/Pagination";
 
 type CategoryType = 'MAJOR' | 'POSITION' | 'POST';
 
@@ -166,27 +167,7 @@ export default function CategoryManager({ initialCategories }: { initialCategori
         </div>
 
         {/* Pagination logic */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-4">
-            <button 
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 rounded border border-slate-200 disabled:opacity-50 text-sm font-semibold"
-            >
-              Trước
-            </button>
-            <span className="px-4 py-1 text-sm font-semibold flex items-center">
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 rounded border border-slate-200 disabled:opacity-50 text-sm font-semibold"
-            >
-              Tiếp
-            </button>
-          </div>
-        )}
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import ExportExcelButton from "./ExportExcelButton";
 import ConsultationRow from "./ConsultationRow";
 import ConsultationsFilter from "./ConsultationsFilter";
-import Pagination from "./Pagination";
+import Pagination from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 
