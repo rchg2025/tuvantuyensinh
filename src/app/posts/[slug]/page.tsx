@@ -5,6 +5,7 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 import { Metadata } from "next";
 import linkifyHtml from "linkify-html";
 import ShareButtons from "@/components/ShareButtons";
+import GalleryDisplay from "@/components/GalleryDisplay";
 
 export const revalidate = 60;
 
@@ -97,6 +98,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
              className="post-content text-gray-800 leading-relaxed block overflow-x-auto break-words max-w-full w-full" 
              dangerouslySetInnerHTML={{ __html: linkifyHtml(post.content, { defaultProtocol: "https", target: "_blank", rel: "noopener noreferrer", className: "text-blue-600 hover:underline" }) }}
           ></div>
+
+          {post.gallery && post.gallery !== "[]" && (
+            <div className="mt-8">
+              <GalleryDisplay images={post.gallery} configStr={post.galleryConfig || undefined} />
+            </div>
+          )}
           
           {post.attachments && (() => {
             let previewUrl = post.attachments;

@@ -84,12 +84,29 @@ export default function GalleryUploader({
 
   const [showSettings, setShowSettings] = useState(false);
 
+  const [isDragging, setIsDragging] = useState(false);
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  
+  const onDragLeave = () => setIsDragging(false);
+  
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(e.dataTransfer.files);
+    }
+  };
+
   return (
     <div className="w-full space-y-4">
       <input type="hidden" name="gallery" value={JSON.stringify(images)} />
       <input type="hidden" name="galleryConfig" value={JSON.stringify(config)} />
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <label className="block text-sm font-semibold text-slate-700">Thư viện ảnh (Gallery)</label>
         <div className="flex gap-2">
            <button
@@ -120,6 +137,14 @@ export default function GalleryUploader({
           onChange={(e) => handleFileChange(e.target.files)}
         />
       </div>
+
+      <div 
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        onClick={() => { if (images.length === 0 && !isUploading) fileInputRef.current?.click(); }}
+        className={`w-full transition-colors ${images.length === 0 ? "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer" : "cursor-default"} ${isDragging ? "border-blue-500 bg-blue-50" : images.length === 0 ? "border-slate-300 hover:bg-slate-50 bg-slate-50/50" : ""}`}
+      >
 
       {showSettings && (
         <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 space-y-4">
@@ -212,10 +237,11 @@ export default function GalleryUploader({
           ))}
         </div>
       ) : (
-        <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center text-slate-500 bg-slate-50">
-          Chưa có ảnh nào trong thư viện. Vui lòng bấm "Thêm ảnh" để tải lên.
+        <div className="text-slate-500 pointer-events-none">
+          {isDragging ? "Thả ảnh vào đây..." : "Kéo thả ảnh vào đây hoặc bấm \"Thêm ảnh\" để tải lên."}
         </div>
       )}
+      </div>
     </div>
   );
 }
