@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { createPostAction } from "../actions";
 import DragDropUpload from "@/components/DragDropUpload";
 import { uploadFileAction } from "@/app/admin/uploadAction";
+import GalleryUploader from "./GalleryUploader";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
@@ -104,6 +105,13 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
             <label className="block text-sm font-semibold text-slate-700 mb-1">File đính kèm (Tùy chọn)</label>
             <DragDropUpload name="attachments" defaultValue={defaultValues?.attachments || ""} accept="*/*" label="Kéo thả file đính kèm vào đây (PDF, DOCX...)" />
           </div>
+        </div>
+
+        <div className="pt-2 border-t border-slate-100">
+          <GalleryUploader 
+            defaultGallery={defaultValues?.gallery} 
+            defaultConfig={defaultValues?.galleryConfig} 
+          />
         </div>
 
         <div>
