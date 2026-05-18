@@ -138,14 +138,6 @@ export default function GalleryUploader({
         />
       </div>
 
-      <div 
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-        onClick={() => { if (images.length === 0 && !isUploading) fileInputRef.current?.click(); }}
-        className={`w-full transition-colors ${images.length === 0 ? "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer" : "cursor-default"} ${isDragging ? "border-blue-500 bg-blue-50" : images.length === 0 ? "border-slate-300 hover:bg-slate-50 bg-slate-50/50" : ""}`}
-      >
-
       {showSettings && (
         <div className="p-4 border border-slate-200 rounded-lg bg-slate-50 space-y-4">
           <div>
@@ -212,6 +204,14 @@ export default function GalleryUploader({
           </div>
         </div>
       )}
+
+      <div 
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+        onClick={() => { if (images.length === 0 && !isUploading) fileInputRef.current?.click(); }}
+        className={`w-full transition-colors ${images.length === 0 ? "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer" : "cursor-default"} ${isDragging ? "border-blue-500 bg-blue-50" : images.length === 0 ? "border-slate-300 hover:bg-slate-50 bg-slate-50/50" : ""}`}
+      >
 
       {images.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
