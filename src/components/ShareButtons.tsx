@@ -17,11 +17,32 @@ export default function ShareButtons({ title }: { title: string }) {
     email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent("Xem bài viết này: " + url)}`
   };
 
-  const handleZaloShare = (e: React.MouseEvent) => {
+  const handleZaloShare = async (e: React.MouseEvent) => {
     e.preventDefault();
-    // Use window.open for Zalo to prevent main window from redirecting to Zalo install page
+    
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+    // Use native Web Share API if supported (works flawlessly on mobile Safari/Chrome)
+    if (isMobile && typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          url: url
+        });
+        return;
+      } catch (err) {
+        console.log("Share failed or cancelled");
+      }
+    }
+
     const zaloUrl = `https://zalo.me/share?url=${encodeURIComponent(url)}`;
-    window.open(zaloUrl, 'zalo-share', 'width=600,height=500,toolbar=0,menubar=0,location=0');
+    if (isMobile) {
+      // Direct navigation on mobile (helps with some in-app browser quirks)
+      window.location.href = zaloUrl;
+    } else {
+      // Popup on desktop prevents main window from redirecting to Zalo install page
+      window.open(zaloUrl, 'zalo-share', 'width=600,height=500,toolbar=0,menubar=0,location=0');
+    }
   };
 
   const copyToClipboard = async () => {
