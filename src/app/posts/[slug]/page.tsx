@@ -1,9 +1,10 @@
-﻿import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import { Metadata } from "next";
 import linkifyHtml from "linkify-html";
+import ShareButtons from "@/components/ShareButtons";
 
 export const revalidate = 60;
 
@@ -130,6 +131,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
               </div>
             );
           })()}
+
+          <ShareButtons title={post.title} />
         </div>
       </div>
     </div>
