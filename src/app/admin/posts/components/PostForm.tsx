@@ -53,8 +53,9 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
       if (res.success) {
         toast.success(res.message, { id: loadingToast });
         if (!defaultValues) {
-          formRef.current?.reset();
-          setContent("");
+          setTimeout(() => {
+            window.location.href = "/admin/posts?tab=create";
+          }, 1000);
         }
       } else {
         toast.error("Lỗi: " + res.message, { id: loadingToast });
