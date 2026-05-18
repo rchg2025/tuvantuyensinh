@@ -9,6 +9,8 @@ import prisma from "@/lib/prisma";
 import Chatbot from "@/components/Chatbot";
 import ZaloWidget from "@/components/ZaloWidget";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import VisitorCounter from "@/components/VisitorCounter";
+import BackToTop from "@/components/BackToTop";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700", "900"],
@@ -257,8 +259,11 @@ export default async function RootLayout({
               </ul>
             </div>
           </div>
-          <div className="w-full px-4 md:px-8 mt-8 pt-8 border-t border-blue-800 text-center">
-            &copy; {new Date().getFullYear()} {siteTitle}.
+          <div className="w-full px-4 md:px-8 mt-8 pt-8 border-t border-blue-800 text-center flex flex-col items-center">
+            <VisitorCounter />
+            <div className="mt-6 text-blue-400">
+              &copy; {new Date().getFullYear()} {siteTitle}.
+            </div>
           </div>
         </footer>
         {zaloEnabled && zaloOaWidget && (
@@ -267,6 +272,7 @@ export default async function RootLayout({
         {chatbotEnabled && (
           <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} logoUrl={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} siteTitle={siteTitle} />
         )}
+        <BackToTop />
       </body>
     </html>
   );

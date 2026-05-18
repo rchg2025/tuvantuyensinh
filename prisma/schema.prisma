@@ -98,3 +98,10 @@ model SystemConfig {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+model VisitorStat {
+  date      String   @id // YYYY-MM-DD
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
