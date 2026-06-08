@@ -206,7 +206,7 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           {/* Bouncing Tooltip */}
           <div className={`absolute ${position === "left" ? "left-full ml-4" : "right-full mr-4"} animate-bounce`}>
             <div className={`bg-white text-blue-600 font-bold text-sm py-2 px-4 rounded-2xl shadow-xl border border-blue-100 flex items-center gap-2 whitespace-nowrap relative`}>
-              <span className="text-lg animate-pulse">✨</span> Chat với AI
+              <span className="text-lg animate-pulse">✨</span> Chat với tư vấn viên AI
               {/* Arrow */}
               <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white transform rotate-45 ${
                 position === "left" 
