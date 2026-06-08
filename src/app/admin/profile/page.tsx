@@ -22,6 +22,7 @@ export default async function ProfilePage() {
       email: "nguyenluyen@nsg.edu.vn",
       role: "ADMIN",
       phone: "",
+      avatar: "",
       positionId: null
     };
     isAdmin = true;
@@ -40,6 +41,7 @@ export default async function ProfilePage() {
     "use server";
     const name = formData.get("name")?.toString() || "";
     const phone = formData.get("phone")?.toString() || "";
+    const avatar = formData.get("avatar")?.toString() || "";
     const password = formData.get("password")?.toString();
 
     const role = formData.get("role")?.toString();
@@ -57,6 +59,7 @@ export default async function ProfilePage() {
     const isUserAdmin = userDb.role === "ADMIN";
 
     const dataToUpdate: any = { name, phone };
+    if (avatar) dataToUpdate.avatar = avatar;
     if (password && password.trim() !== "") {
       dataToUpdate.password = password.trim();
     }

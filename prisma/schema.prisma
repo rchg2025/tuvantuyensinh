@@ -85,6 +85,7 @@ model SystemUser {
   phone      String?
   password   String
   name       String?
+  avatar     String?
   role       String    @default("ADMIN")
   positionId String?
   position   Category? @relation(fields: [positionId], references: [id])
