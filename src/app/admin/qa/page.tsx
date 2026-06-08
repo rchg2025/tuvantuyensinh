@@ -163,7 +163,7 @@ export default async function AdminQaPage({
       {tab === "create" ? (
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <h2 className="text-lg font-bold text-slate-800 mb-4">Tạo Q&A nội bộ</h2>
-          <form action={createQuestion} className="space-y-4 max-w-2xl">
+          <form action={createQuestion} className="space-y-4 w-full">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Câu hỏi (Tự nhập)</label>
               <input 
