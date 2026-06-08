@@ -205,8 +205,11 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
         <div className="relative flex items-center group cursor-pointer" onClick={() => setIsOpen(true)}>
           {/* Bouncing Tooltip */}
           <div className={`absolute ${position === "left" ? "left-full ml-4" : "right-full mr-4"} animate-bounce`}>
-            <div className={`bg-white text-blue-600 font-bold text-sm py-2 px-4 rounded-2xl shadow-xl border border-blue-100 flex items-center gap-2 whitespace-nowrap relative`}>
-              <span className="text-lg animate-pulse">✨</span> Chat với tư vấn viên AI
+            <div className={`bg-white text-blue-600 font-bold text-sm p-3 rounded-2xl shadow-xl border border-blue-100 flex flex-col items-center justify-center whitespace-nowrap relative`}>
+              <img src="/chatbot-avatar.png" alt="AI Avatar" className="w-20 h-20 object-contain drop-shadow-md mb-1 hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-lg animate-pulse">✨</span> Chat với tư vấn viên AI
+              </div>
               {/* Arrow */}
               <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white transform rotate-45 ${
                 position === "left" 
