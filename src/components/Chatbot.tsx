@@ -202,20 +202,37 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           </form>
         </div>
       ) : (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="text-white rounded-full p-3 shadow-lg transition-transform transform hover:scale-105 flex items-center justify-center h-14 w-14"
-          style={{ backgroundColor: color }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
-            <path d="M12 8V4H8"/>
-            <rect width="16" height="12" x="4" y="8" rx="2"/>
-            <path d="M2 14h2"/>
-            <path d="M20 14h2"/>
-            <path d="M15 13v2"/>
-            <path d="M9 13v2"/>
-          </svg>
-        </button>
+        <div className="relative flex items-center group cursor-pointer" onClick={() => setIsOpen(true)}>
+          {/* Bouncing Tooltip */}
+          <div className={`absolute ${position === "left" ? "left-full ml-4" : "right-full mr-4"} animate-bounce`}>
+            <div className={`bg-white text-blue-600 font-bold text-sm py-2 px-4 rounded-2xl shadow-xl border border-blue-100 flex items-center gap-2 whitespace-nowrap relative`}>
+              <span className="text-lg animate-pulse">✨</span> Chat với AI
+              {/* Arrow */}
+              <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white transform rotate-45 ${
+                position === "left" 
+                  ? "-left-1.5 border-b border-l border-blue-100" 
+                  : "-right-1.5 border-t border-r border-blue-100"
+              }`}></div>
+            </div>
+          </div>
+
+          {/* Pulse Ring */}
+          <div className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: color }}></div>
+          
+          <button
+            className="relative text-white rounded-full p-3 shadow-2xl transition-all transform group-hover:scale-110 group-hover:rotate-6 flex items-center justify-center h-14 w-14"
+            style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+              <path d="M12 8V4H8"/>
+              <rect width="16" height="12" x="4" y="8" rx="2"/>
+              <path d="M2 14h2"/>
+              <path d="M20 14h2"/>
+              <path d="M15 13v2"/>
+              <path d="M9 13v2"/>
+            </svg>
+          </button>
+        </div>
       )}
     </div>
   );
