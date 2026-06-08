@@ -7,6 +7,10 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -110,15 +114,94 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
     return html;
   };
 
+  const handleCloseClick = () => {
+    // Nếu có tin nhắn mới hiển thị đánh giá, ngược lại đóng luôn
+    if (messages.length > 0) {
+      setShowRatingDialog(true);
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  const submitRating = async () => {
+    if (rating === 0) return;
+    setIsSubmittingRating(true);
+    try {
+      await fetch('/api/chat-rating', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating, feedback, history: messages })
+      });
+    } catch (e) {
+      console.error('Lỗi khi gửi đánh giá:', e);
+    } finally {
+      setIsSubmittingRating(false);
+      setShowRatingDialog(false);
+      setIsOpen(false);
+      setMessages([]); // Reset lại chat khi đã hoàn thành
+      setRating(0);
+      setFeedback('');
+    }
+  };
+
+  const skipRating = () => {
+    setShowRatingDialog(false);
+    setIsOpen(false);
+  };
+
   const posClass = position === "left" ? "left-4" : "right-4";
 
   return (
     <div className={`fixed bottom-4 ${posClass} z-[9999]`}>
       {isOpen ? (
         <div 
-          className="bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)]"
+          className="bg-white border border-gray-200 rounded-lg shadow-xl flex flex-col overflow-hidden max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] relative"
           style={{ width: width, height: height }}
         >
+          {showRatingDialog && (
+            <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Đánh giá tư vấn viên AI</h3>
+              <p className="text-sm text-gray-600 mb-6">Mức độ hài lòng của bạn về cuộc trò chuyện?</p>
+              
+              <div className="flex gap-2 mb-6">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className={`text-4xl transition-transform hover:scale-110 focus:outline-none ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              <textarea 
+                placeholder="Ý kiến đóng góp (không bắt buộc)..." 
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-3 text-sm mb-4 resize-none h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <div className="flex gap-3 w-full">
+                <button 
+                  onClick={skipRating}
+                  className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Bỏ qua
+                </button>
+                <button 
+                  onClick={submitRating}
+                  disabled={rating === 0 || isSubmittingRating}
+                  className="flex-1 py-2 px-4 rounded-lg text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: color }}
+                >
+                  {isSubmittingRating ? 'Đang gửi...' : 'Gửi đánh giá'}
+                </button>
+              </div>
+            </div>
+          )}
+
           <div 
             className="p-3 flex justify-between items-center shadow-sm"
             style={{ background: `linear-gradient(135deg, ${color}, ${color}dd)` }}
@@ -132,7 +215,7 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
               </h3>
             </div>
             <button 
-              onClick={() => setIsOpen(false)}
+              onClick={handleCloseClick}
               className="text-white/80 hover:text-white focus:outline-none ml-2 transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

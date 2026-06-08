@@ -222,6 +222,58 @@ export async function notifyStudentQuestionAnswered(userEmail: string, data: { a
   await sendEmail({ to: userEmail, subject: `Re: Câu hỏi tư vấn tuyển sinh của bạn đã được giải đáp`, html });
 }
 
+export async function notifyChatbotRating(data: { rating: number, feedback?: string, history: any[] }) {
+  const adminEmails = await getAdminAndCVDEmails();
+  if (adminEmails.length === 0) return;
+
+  const historyHtml = data.history.map((msg: any) => `
+    <div style="margin-bottom: 10px; padding: 10px; border-radius: 8px; background-color: ${msg.role === 'user' ? '#eff6ff' : '#f8fafc'}; border: 1px solid ${msg.role === 'user' ? '#bfdbfe' : '#e2e8f0'};">
+      <strong style="color: ${msg.role === 'user' ? '#1d4ed8' : '#475569'};">${msg.role === 'user' ? '👤 Người dùng' : '🤖 Chatbot'}:</strong>
+      <div style="margin-top: 5px; white-space: pre-wrap; font-size: 14px;">${msg.content}</div>
+    </div>
+  `).join('');
+
+  const html = `
+    <html>
+      <head>
+        <style>${styles}</style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+            <h1>⭐ Đánh giá chất lượng Chatbot</h1>
+          </div>
+          <div class="content">
+            <h2>Kết quả đánh giá</h2>
+            <div class="info-box">
+              <div class="info-row">
+                <div class="info-label">Mức độ hài lòng:</div>
+                <div class="info-value" style="font-size: 24px; color: #f59e0b;">
+                  ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)} (${data.rating}/5)
+                </div>
+              </div>
+              ${data.feedback ? `
+              <div class="info-row">
+                <div class="info-label">Ý kiến đóng góp:</div>
+                <div class="info-value" style="font-style: italic;">"${data.feedback}"</div>
+              </div>` : ''}
+            </div>
+
+            <h2>Lịch sử cuộc trò chuyện</h2>
+            <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; background: #fff;">
+              ${historyHtml || '<p style="color: #64748b; font-style: italic;">Không có nội dung trò chuyện.</p>'}
+            </div>
+          </div>
+          <div class="footer">
+            Đây là hệ thống gửi mail tự động từ Hệ Thống Tư Vấn Tuyển Sinh.
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+  await sendEmail({ to: adminEmails, subject: \`[Chatbot Rating] Người dùng đánh giá \${data.rating} sao\`, html });
+}
+
 async function getAdminAndCVDEmails() {
   const users = await prisma.systemUser.findMany({
     where: { 
