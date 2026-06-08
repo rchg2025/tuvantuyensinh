@@ -20,12 +20,14 @@ export default async function AdminLayout({
   }
 
   let role = "ADMIN";
+  let avatarUrl = "";
   if (auth !== "admin_logged_in") {
     const user = await prisma.systemUser.findUnique({ where: { id: auth } });
     if (!user) {
       redirect("/login");
     }
     role = user.role;
+    avatarUrl = user.avatar || "";
   }
 
   // Fetch pending counts
@@ -46,8 +48,12 @@ export default async function AdminLayout({
     <>
         <div className="p-6 border-b border-slate-100 text-center relative group">
           <Link href="/admin/profile" className="block cursor-pointer">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-50 text-blue-600 mb-3 shadow-inner group-hover:scale-105 transition-transform">
-              <span className="text-2xl">🛡️</span>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-50 text-blue-600 mb-3 shadow-inner group-hover:scale-105 transition-transform overflow-hidden border border-slate-100">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl">🛡️</span>
+              )}
             </div>
             <h2 className="font-bold text-slate-800 break-words hover:text-blue-600 transition-colors" title="Bấm để cập nhật thông tin">
               {authName}
