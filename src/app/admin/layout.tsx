@@ -28,6 +28,11 @@ export default async function AdminLayout({
     }
     role = user.role;
     avatarUrl = user.avatar || "";
+  } else {
+    const authAvatar = cookieStore.get("auth_avatar")?.value;
+    if (authAvatar) {
+      avatarUrl = decodeURIComponent(authAvatar);
+    }
   }
 
   // Fetch pending counts
@@ -66,6 +71,7 @@ export default async function AdminLayout({
               const cookieStore = await cookies();
               cookieStore.delete("auth_token");
               cookieStore.delete("auth_name");
+              cookieStore.delete("auth_avatar");
               redirect("/login");
             }}>
               <button 
@@ -123,6 +129,7 @@ export default async function AdminLayout({
             const cookieStore = await cookies();
             cookieStore.delete("auth_token");
             cookieStore.delete("auth_name");
+            cookieStore.delete("auth_avatar");
             redirect("/login");
           }}>
             <button className="w-full px-4 py-2 rounded-lg text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-center gap-2">

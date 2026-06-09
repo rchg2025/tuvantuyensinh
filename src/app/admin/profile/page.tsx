@@ -16,13 +16,15 @@ export default async function ProfilePage() {
   let isAdmin = false;
 
   if (auth === "admin_logged_in") {
+    const authNameEncoded = cookieStore.get("auth_name")?.value;
+    const authAvatarEncoded = cookieStore.get("auth_avatar")?.value;
     user = { 
       id: "admin_logged_in", 
-      name: "Nguyễn Văn Luyến", 
+      name: authNameEncoded ? decodeURIComponent(authNameEncoded) : "Nguyễn Văn Luyến", 
       email: "nguyenluyen@nsg.edu.vn",
       role: "ADMIN",
       phone: "",
-      avatar: "",
+      avatar: authAvatarEncoded ? decodeURIComponent(authAvatarEncoded) : "",
       positionId: null
     };
     isAdmin = true;
@@ -51,6 +53,11 @@ export default async function ProfilePage() {
       // For hardcoded root admin we do not allow password change via DB here
       const cookieStore = await cookies();
       cookieStore.set("auth_name", encodeURIComponent(name), { httpOnly: true, path: "/" });
+      if (avatar) {
+        cookieStore.set("auth_avatar", encodeURIComponent(avatar), { httpOnly: true, path: "/" });
+      }
+      revalidatePath("/admin/profile");
+      revalidatePath("/admin");
       return;
     }
 
