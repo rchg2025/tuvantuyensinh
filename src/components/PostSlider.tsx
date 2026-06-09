@@ -11,6 +11,11 @@ interface Post {
   content?: string;
   thumbnailUrl: string | null;
   createdAt: Date;
+  category?: {
+    id: string;
+    slug?: string | null;
+    name: string;
+  } | null;
 }
 
 export default function PostSlider({ posts }: { posts: Post[] }) {
@@ -78,8 +83,13 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
                     {post.title}
                   </h3>
                 </Link>
-                <div className="text-gray-300 text-xs md:text-sm mt-2">
-                  {new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                <div className="text-gray-300 text-xs md:text-sm mt-2 flex justify-between items-center gap-2">
+                  <span>{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
+                  {post.category && (
+                    <span className="bg-blue-500/80 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-semibold backdrop-blur-sm truncate max-w-[50%]">
+                      {post.category.name}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

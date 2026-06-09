@@ -23,6 +23,13 @@ export default async function Home() {
         thumbnailUrl: true,
         createdAt: true,
         authorName: true,
+        category: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+          }
+        }
       },
       orderBy: { createdAt: "desc" },
       take: 12,
