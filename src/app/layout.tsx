@@ -10,8 +10,8 @@ import prisma from "@/lib/prisma";
 import dynamic from "next/dynamic";
 import { getDirectImageUrl } from "@/lib/gdrive";
 
-const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
-const ZaloWidget = dynamic(() => import("@/components/ZaloWidget"), { ssr: false });
+const Chatbot = dynamic(() => import("@/components/Chatbot"));
+const ZaloWidget = dynamic(() => import("@/components/ZaloWidget"));
 import VisitorCounter from "@/components/VisitorCounter";
 import BackToTop from "@/components/BackToTop";
 
