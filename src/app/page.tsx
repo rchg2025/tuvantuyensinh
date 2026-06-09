@@ -16,6 +16,14 @@ export default async function Home() {
       take: 5,
     }),
     prisma.post.findMany({
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        thumbnailUrl: true,
+        createdAt: true,
+        authorName: true,
+      },
       orderBy: { createdAt: "desc" },
       take: 12,
     }),

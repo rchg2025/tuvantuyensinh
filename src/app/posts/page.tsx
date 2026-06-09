@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import Image from "next/image";
 
 export const revalidate = 60;
 
@@ -93,8 +94,14 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
             {posts.map((post) => (
               <div key={post.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col h-full overflow-hidden">
                 {post.thumbnailUrl && (
-                  <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-48 flex-shrink-0">
-                    <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105" />
+                  <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-48 flex-shrink-0 relative">
+                    <Image 
+                      src={getDirectImageUrl(post.thumbnailUrl)} 
+                      alt={post.title} 
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform hover:scale-105" 
+                    />
                   </Link>
                 )}
                 <div className="p-5 flex flex-col flex-grow">

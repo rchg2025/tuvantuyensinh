@@ -4,11 +4,14 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import "./globals.css";
 import Link from "next/link";
+import Image from "next/image";
 import MobileHeaderClient from "./MobileHeaderClient";
 import prisma from "@/lib/prisma";
-import Chatbot from "@/components/Chatbot";
-import ZaloWidget from "@/components/ZaloWidget";
+import dynamic from "next/dynamic";
 import { getDirectImageUrl } from "@/lib/gdrive";
+
+const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
+const ZaloWidget = dynamic(() => import("@/components/ZaloWidget"), { ssr: false });
 import VisitorCounter from "@/components/VisitorCounter";
 import BackToTop from "@/components/BackToTop";
 
@@ -155,7 +158,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-lg tracking-tight hover:opacity-90 transition">
-              <img src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5" />
+              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5" />
               <span>{siteTitle}</span>
             </Link>
 
@@ -238,7 +241,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4 text-white">
-                <img src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
+                <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
                 <span className="font-bold text-lg">{siteTitle}</span>
               </div>
               <div className="whitespace-pre-line">{footerDesc}</div>

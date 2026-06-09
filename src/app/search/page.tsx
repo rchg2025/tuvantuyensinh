@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import Image from "next/image";
 
 export const revalidate = 60;
 
@@ -46,7 +47,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           Hiển thị kết quả tìm kiếm cho từ khóa: <span className="font-bold text-yellow-300">"{q}"</span>
         </p>
         
-        <form action="/search" method="GET" className="mt-6 flex items-center relative max-w-xl">
+        <form action="/search" method="GET" className="mt-6 flex items-center relative w-full">
           <input 
             type="text" 
             name="q"
@@ -87,8 +88,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                 {posts.map((post) => (
                   <div key={post.id} className="bg-white rounded-2xl border border-blue-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col h-full overflow-hidden">
                     {post.thumbnailUrl && (
-                      <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-40 flex-shrink-0">
-                        <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105" />
+                      <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-40 flex-shrink-0 relative">
+                        <Image 
+                          src={getDirectImageUrl(post.thumbnailUrl)} 
+                          alt={post.title} 
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          className="object-cover transition-transform hover:scale-105" 
+                        />
                       </Link>
                     )}
                     <div className="p-5 flex flex-col flex-grow">

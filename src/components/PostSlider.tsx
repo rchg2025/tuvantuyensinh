@@ -59,10 +59,12 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
           <div key={post.id} className="w-full md:w-1/2 lg:w-1/4 flex-shrink-0 px-2">
             <div className="relative h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-blue-50 bg-white">
               {post.thumbnailUrl ? (
-                <img 
+                <Image 
                   src={post.thumbnailUrl} 
                   alt={post.title} 
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full bg-blue-100 flex items-center justify-center text-blue-300 font-bold text-6xl">

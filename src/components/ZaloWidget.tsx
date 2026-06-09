@@ -8,7 +8,10 @@ export default function ZaloWidget({ html, position }: { html: string, position:
   useEffect(() => {
     if (!containerRef.current) return;
     
-    // Clean up any global Zalo chat widgets that might have been injected to the body
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
+      
+      // Clean up any global Zalo chat widgets that might have been injected to the body
     document.querySelectorAll('div[class*="zalo-chat-widget"]').forEach(el => {
       if (!containerRef.current?.contains(el)) {
         el.remove();
@@ -49,9 +52,12 @@ export default function ZaloWidget({ html, position }: { html: string, position:
       const newScript = document.createElement("script");
       Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
       newScript.text = oldScript.text;
-      document.body.appendChild(newScript);
-      oldScript.remove(); // Remove it from the container so it's not confusing
-    });
+        document.body.appendChild(newScript);
+        oldScript.remove(); // Remove it from the container so it's not confusing
+      });
+    }, 3500); // Delay 3.5s to improve PageSpeed LCP and TBT
+
+    return () => clearTimeout(timer);
   }, [html]);
 
   return (
