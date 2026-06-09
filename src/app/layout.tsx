@@ -217,8 +217,13 @@ export default async function RootLayout({
               </Link>
             </nav>
 
-            <div className="hidden md:block">
-              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition ml-4">
+            <div className="hidden md:flex items-center gap-2 ml-4">
+              <Link href="/search" className="text-white hover:bg-white/10 p-2 rounded-full transition" title="Tìm kiếm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </Link>
+              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition">
                 {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>

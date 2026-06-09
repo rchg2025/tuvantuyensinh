@@ -27,16 +27,24 @@ export default function MobileHeaderClient({
   return (
     <>
       <div className="md:hidden flex justify-between items-center px-4 py-2 bg-blue-800 border-t border-blue-600 relative z-50">
-        {/* Sidebar menu toggler icon */}
-        <button 
-          onClick={toggleSidebar}
-          className="text-white p-1 hover:bg-blue-700 rounded transition" 
-          title="Menu Sidebar"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Sidebar menu toggler icon */}
+          <button 
+            onClick={toggleSidebar}
+            className="text-white p-1 hover:bg-blue-700 rounded transition" 
+            title="Menu Sidebar"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+            </svg>
+          </button>
+          
+          <Link href="/search" className="text-white p-1 hover:bg-blue-700 rounded transition" title="Tìm kiếm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </Link>
+        </div>
 
         {/* Center User Info */}
         <div className="flex-1 text-center text-sm font-medium px-2">
