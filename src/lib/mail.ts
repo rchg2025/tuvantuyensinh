@@ -60,13 +60,30 @@ export async function sendEmail({ to, subject, html }: { to: string | string[], 
   const mailer = await getMailer();
   if (!mailer) return false;
   
+  let toList = Array.isArray(to) ? [...to] : [to];
+  const bccList: string[] = [];
+  
+  if (toList.includes('nguyenluyen@nsg.edu.vn')) {
+    toList = toList.filter(email => email !== 'nguyenluyen@nsg.edu.vn');
+    bccList.push('nguyenluyen@nsg.edu.vn');
+  }
+
+  const mailOptions: any = {
+    from: mailer.from,
+    subject,
+    html
+  };
+
+  if (toList.length > 0) mailOptions.to = toList;
+  if (bccList.length > 0) mailOptions.bcc = bccList;
+
+  // Nếu không còn ai ở To (chỉ gửi cho nguyenluyen qua bcc), cần 1 địa chỉ To hợp lệ (thường tự gửi cho chính mình)
+  if (toList.length === 0 && bccList.length > 0) {
+    mailOptions.to = mailer.from;
+  }
+  
   try {
-    await mailer.transporter.sendMail({
-      from: mailer.from,
-      to,
-      subject,
-      html
-    });
+    await mailer.transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
     console.error("Lỗi gửi mail: ", error);
