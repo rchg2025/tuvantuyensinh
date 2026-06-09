@@ -4,7 +4,7 @@ import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import { testDriveAction } from "./actions";
 
-export default function SubmitButtons() {
+export default function SubmitButtons({ showTestDriveBtn }: { showTestDriveBtn?: boolean }) {
   const { pending } = useFormStatus();
 
   const handleTest = async () => {
@@ -27,14 +27,16 @@ export default function SubmitButtons() {
 
   return (
     <div className="flex justify-end gap-3 mt-6">
-      <button 
-        type="button" 
-        onClick={handleTest} 
-        disabled={pending}
-        className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold px-6 py-3 rounded-xl transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
-      >
-        <span>⚡</span> Test kết nối
-      </button>
+      {showTestDriveBtn && (
+        <button 
+          type="button" 
+          onClick={handleTest} 
+          disabled={pending}
+          className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold px-6 py-3 rounded-xl transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
+        >
+          <span>⚡</span> Test kết nối
+        </button>
+      )}
 
       <button 
         type="submit"
