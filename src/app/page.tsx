@@ -90,17 +90,21 @@ export default async function Home() {
       {/* Stats */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Bài viết", value: postCount.toString(), icon: "📰" },
-          { label: "Câu hỏi Q&A", value: questionCount.toString(), icon: "💬" },
-          { label: "Chương trình", value: majorCount.toString(), icon: "🎯" },
-          { label: "Hỗ trợ", value: "24/7", icon: "🕒" }
-        ].map((stat, i) => (
-          <div key={i} className="bg-white rounded-2xl shadow-sm border border-blue-50 p-6 text-center hover:-translate-y-1 transition-transform">
-            <div className="text-3xl mb-2">{stat.icon}</div>
-            <div className="text-3xl font-extrabold text-blue-700">{stat.value}</div>
-            <div className="text-gray-500 text-sm font-medium mt-1">{stat.label}</div>
-          </div>
-        ))}
+          { label: "Bài viết", value: postCount.toString(), icon: "📰", link: "/posts" },
+          { label: "Câu hỏi Q&A", value: questionCount.toString(), icon: "💬", link: "/qa" },
+          { label: "Chương trình", value: majorCount.toString(), icon: "🎯", link: "/posts?categorySlug=gioi-thieu" },
+          { label: "Hỗ trợ", value: "24/7", icon: "🕒", link: "tel:0981146179" }
+        ].map((stat, i) => {
+          const isTel = stat.link.startsWith("tel:");
+          const Tag = isTel ? "a" : Link;
+          return (
+            <Tag href={stat.link} key={i} className="bg-white rounded-2xl shadow-sm border border-blue-50 p-6 text-center hover:-translate-y-1 hover:shadow-md hover:border-blue-200 transition-all block group">
+              <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{stat.icon}</div>
+              <div className="text-3xl font-extrabold text-blue-700">{stat.value}</div>
+              <div className="text-gray-500 text-sm font-medium mt-1">{stat.label}</div>
+            </Tag>
+          );
+        })}
       </section>
 
       {/* Slider Latest Posts */}
