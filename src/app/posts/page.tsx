@@ -58,7 +58,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
           <h2 className="text-3xl font-extrabold mb-2">📰 Tin tức & Bài viết</h2>
           <p className="text-blue-100">Cập nhật thông tin tuyển sinh, thông báo mới của Khoa Cơ khí - Trường Cao đẳng Bách khoa Nam Sài Gòn.</p>
         </div>
-        <form action="/posts" method="GET" className="flex items-center gap-2 bg-white/20 p-2 rounded-xl backdrop-blur-md">
+        <form action="/posts" method="GET" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white/20 p-2 rounded-xl backdrop-blur-md w-full lg:w-auto mt-4 lg:mt-0">
           <input
             type="text"
             name="q"
@@ -66,18 +66,20 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
             placeholder="Tìm kiếm bài viết..."
             className="w-full sm:w-64 bg-white text-gray-900 placeholder:text-gray-500 px-4 py-2 rounded-lg border-transparent focus:ring-2 focus:ring-blue-300 outline-none"
           />
-          <select
-            name="categorySlug"
-            defaultValue={categorySlug}
-            title="Danh mục"
-            className="bg-white text-gray-900 border-transparent px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none max-w-40"
-          >
-            <option value="">Tất cả danh mục</option>
-            {categories.map(c => <option key={c.id} value={c.slug || c.id}>{c.name}</option>)}
-          </select>
-          <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
-            Tìm
-          </button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <select
+              name="categorySlug"
+              defaultValue={categorySlug}
+              title="Danh mục"
+              className="flex-1 sm:flex-none bg-white text-gray-900 border-transparent px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none sm:max-w-40"
+            >
+              <option value="">Tất cả danh mục</option>
+              {categories.map(c => <option key={c.id} value={c.slug || c.id}>{c.name}</option>)}
+            </select>
+            <button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 sm:px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+              Tìm
+            </button>
+          </div>
         </form>
       </div>
 
