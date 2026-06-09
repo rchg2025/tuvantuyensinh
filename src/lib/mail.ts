@@ -271,7 +271,7 @@ export async function notifyChatbotRating(data: { rating: number, feedback?: str
       </body>
     </html>
   `;
-  await sendEmail({ to: adminEmails, subject: \`[Chatbot Rating] Người dùng đánh giá \${data.rating} sao\`, html });
+  await sendEmail({ to: adminEmails, subject: `[Chatbot Rating] Người dùng đánh giá ${data.rating} sao`, html });
 }
 
 async function getAdminAndCVDEmails() {
