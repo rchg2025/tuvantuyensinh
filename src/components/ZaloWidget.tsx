@@ -4,12 +4,36 @@ import { useEffect, useRef } from "react";
 
 export default function ZaloWidget({ html, position }: { html: string, position: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const initialized = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current || initialized.current) return;
-    initialized.current = true;
+    if (!containerRef.current) return;
     
+    // Clean up any global Zalo chat widgets that might have been injected to the body
+    document.querySelectorAll('div[class*="zalo-chat-widget"]').forEach(el => {
+      if (!containerRef.current?.contains(el)) {
+        el.remove();
+      }
+    });
+    document.querySelectorAll('iframe[src*="zalo.me/"], iframe[src*="chat.zalo.me/"]').forEach(el => {
+      // Find the absolute positioned parent that Zalo usually creates
+      let parent = el.parentElement;
+      while (parent && parent !== document.body) {
+        const style = window.getComputedStyle(parent);
+        if (style.position === 'fixed' || style.position === 'absolute') {
+          parent.remove();
+          break;
+        }
+        parent = parent.parentElement;
+      }
+      if (document.body.contains(el)) el.remove();
+    });
+
+    // Clean up old scripts
+    document.querySelectorAll('script[src*="sp.zalo.me"]').forEach(el => el.remove());
+    if ((window as any).ZaloSocialPlugin) {
+      delete (window as any).ZaloSocialPlugin;
+    }
+
     // Clear previous
     containerRef.current.innerHTML = "";
 
@@ -25,7 +49,8 @@ export default function ZaloWidget({ html, position }: { html: string, position:
       const newScript = document.createElement("script");
       Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
       newScript.text = oldScript.text;
-      oldScript.parentNode?.replaceChild(newScript, oldScript);
+      document.body.appendChild(newScript);
+      oldScript.remove(); // Remove it from the container so it's not confusing
     });
   }, [html]);
 
