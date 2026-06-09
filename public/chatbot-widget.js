@@ -13,25 +13,93 @@
   // Inject CSS
   const style = document.createElement("style");
   style.innerHTML = `
-    .ai-chatbot-btn {
+    .ai-launcher-wrapper {
       position: fixed;
       bottom: 20px;
       ${position}: 20px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background-color: ${color};
-      color: white;
-      border: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      cursor: pointer;
       z-index: 999999;
       display: flex;
       align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
+      cursor: pointer;
     }
-    .ai-chatbot-btn:hover { transform: scale(1.05); }
+    .ai-launcher-tooltip-container {
+      position: absolute;
+      ${position === "left" ? "left: 100%; margin-left: 16px;" : "right: 100%; margin-right: 16px;"}
+      animation: ai-bounce-y 1s infinite alternate ease-in-out;
+    }
+    @keyframes ai-bounce-y {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+    @keyframes ai-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .ai-launcher-tooltip {
+      background: white;
+      color: #2563eb;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 16px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      border: 1px solid #dbeafe;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      position: relative;
+    }
+    .ai-launcher-tooltip-icon {
+      font-size: 18px;
+      animation: ai-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .ai-launcher-tooltip-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      width: 12px;
+      height: 12px;
+      background: white;
+      ${position === "left" ? "left: -6px; border-bottom: 1px solid #dbeafe; border-left: 1px solid #dbeafe;" : "right: -6px; border-top: 1px solid #dbeafe; border-right: 1px solid #dbeafe;"}
+    }
+    .ai-launcher-pulse-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background-color: ${color};
+      opacity: 0.3;
+      animation: ai-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    @keyframes ai-ping {
+      75%, 100% { transform: scale(1.5); opacity: 0; }
+    }
+    .ai-chatbot-btn {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, ${color}, ${color}cc);
+      color: white;
+      border: 2px solid white;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      overflow: hidden;
+      padding: 0;
+    }
+    .ai-launcher-wrapper:hover .ai-chatbot-btn {
+      transform: scale(1.1);
+    }
+    .ai-chatbot-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: white;
+    }
     .ai-chatbot-container {
       position: fixed;
       bottom: 85px;
@@ -102,9 +170,18 @@
   wrapper.style.all = "initial";
   
   wrapper.innerHTML = `
-    <button class="ai-chatbot-btn" aria-label="Mở chat">
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-    </button>
+    <div class="ai-launcher-wrapper">
+      <div class="ai-launcher-tooltip-container">
+        <div class="ai-launcher-tooltip">
+          <span class="ai-launcher-tooltip-icon">✨</span> Chat với tư vấn viên AI
+          <div class="ai-launcher-tooltip-arrow"></div>
+        </div>
+      </div>
+      <div class="ai-launcher-pulse-ring"></div>
+      <button class="ai-chatbot-btn" aria-label="Mở chat">
+        <img src="${host}/chatbot-avatar.png" alt="AI Avatar" />
+      </button>
+    </div>
     <div class="ai-chatbot-container">
       <div class="ai-chatbot-header">
         <div class="ai-chatbot-info">
@@ -127,7 +204,7 @@
   document.body.appendChild(wrapper);
 
   // Logic
-  const btn = wrapper.querySelector(".ai-chatbot-btn");
+  const btn = wrapper.querySelector(".ai-launcher-wrapper");
   const container = wrapper.querySelector(".ai-chatbot-container");
   const closeBtn = wrapper.querySelector(".ai-chatbot-close");
   const form = wrapper.querySelector(".ai-chatbot-form");
