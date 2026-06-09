@@ -161,6 +161,25 @@
     .ai-chatbot-input:focus { border-color: ${color}; box-shadow: 0 0 0 2px ${color}33; }
     .ai-chatbot-submit { background: ${color}; color: white; border: none; border-radius: 6px; padding: 0 16px; font-size: 14px; cursor: pointer; transition: opacity 0.2s; margin: 0; font-weight: bold; }
     .ai-chatbot-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .ai-chatbot-actions { display: flex; align-items: center; gap: 8px; }
+    .ai-chatbot-action-btn { background: none; border: none; line-height: 1; color: #64748b; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s; }
+    .ai-chatbot-action-btn:hover { background: #f1f5f9; color: #0f172a; }
+    
+    .ai-rating-overlay {
+      position: absolute; inset: 0; background: rgba(255,255,255,0.95); z-index: 10;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .ai-rating-overlay.active { opacity: 1; pointer-events: all; }
+    
+    .ai-stars { display: flex; gap: 8px; margin: 15px 0; }
+    .ai-star { font-size: 32px; color: #cbd5e1; cursor: pointer; transition: color 0.2s; }
+    .ai-star:hover, .ai-star.active { color: #f59e0b; }
+    .ai-rating-feedback { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; resize: none; font-family: inherit; font-size: 14px; box-sizing: border-box; }
+    .ai-rating-submit { background: ${color}; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 8px; font-size: 14px; }
+    .ai-rating-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .ai-rating-skip { background: none; border: none; color: #64748b; font-size: 14px; cursor: pointer; text-decoration: underline; padding: 8px; }
   `;
   document.head.appendChild(style);
 
@@ -188,7 +207,10 @@
           ${logo ? `<img src="${logo}" class="ai-chatbot-logo" alt="Logo" />` : `<div class="ai-chatbot-logo" style="background:${color}15; color:${color}; display:flex; align-items:center; justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></div>`}
           <h3 class="ai-chatbot-title">${title}</h3>
         </div>
-        <button class="ai-chatbot-close" title="Đóng">&times;</button>
+        <div class="ai-chatbot-actions">
+          <button class="ai-chatbot-action-btn ai-chatbot-minimize" title="Thu nhỏ" style="font-size: 18px; font-weight: bold; padding-bottom: 8px;">_</button>
+          <button class="ai-chatbot-action-btn ai-chatbot-close" title="Đóng & Đánh giá" style="font-size: 24px;">&times;</button>
+        </div>
       </div>
       <div class="ai-chatbot-messages">
         <div class="ai-msg bot" style="background:#eff6ff; border-color:#dbeafe; color:#1e3a8a;">
@@ -199,6 +221,21 @@
         <input type="text" class="ai-chatbot-input" placeholder="Nhập câu hỏi..." autocomplete="off" />
         <button type="submit" class="ai-chatbot-submit">Gửi</button>
       </form>
+      
+      <div class="ai-rating-overlay">
+        <h3 style="margin:0 0 10px 0; color:#1e293b;">Đánh giá Chatbot</h3>
+        <p style="margin:0; font-size:14px; color:#64748b;">Bạn cảm thấy cuộc trò chuyện này hữu ích không?</p>
+        <div class="ai-stars">
+          <span class="ai-star" data-val="1">★</span>
+          <span class="ai-star" data-val="2">★</span>
+          <span class="ai-star" data-val="3">★</span>
+          <span class="ai-star" data-val="4">★</span>
+          <span class="ai-star" data-val="5">★</span>
+        </div>
+        <textarea class="ai-rating-feedback" rows="3" placeholder="Góp ý thêm (không bắt buộc)..."></textarea>
+        <button class="ai-rating-submit">Gửi đánh giá & Đóng</button>
+        <button class="ai-rating-skip">Bỏ qua</button>
+      </div>
     </div>
   `;
   document.body.appendChild(wrapper);
@@ -207,14 +244,22 @@
   const btn = wrapper.querySelector(".ai-launcher-wrapper");
   const container = wrapper.querySelector(".ai-chatbot-container");
   const closeBtn = wrapper.querySelector(".ai-chatbot-close");
+  const minimizeBtn = wrapper.querySelector(".ai-chatbot-minimize");
   const form = wrapper.querySelector(".ai-chatbot-form");
   const input = wrapper.querySelector(".ai-chatbot-input");
   const msgsDiv = wrapper.querySelector(".ai-chatbot-messages");
   const submitBtn = wrapper.querySelector(".ai-chatbot-submit");
 
+  const ratingOverlay = wrapper.querySelector(".ai-rating-overlay");
+  const stars = wrapper.querySelectorAll(".ai-star");
+  const ratingFeedback = wrapper.querySelector(".ai-rating-feedback");
+  const ratingSubmit = wrapper.querySelector(".ai-rating-submit");
+  const ratingSkip = wrapper.querySelector(".ai-rating-skip");
+
   let isOpen = false;
   let isLoading = false;
   let chatHistory = [];
+  let currentRating = 0;
 
   function toggle() {
     isOpen = !isOpen;
@@ -226,8 +271,73 @@
     }
   }
 
+  function closeAndClear() {
+    container.classList.remove("open");
+    isOpen = false;
+    ratingOverlay.classList.remove("active");
+    chatHistory = [];
+    currentRating = 0;
+    stars.forEach(s => s.classList.remove("active"));
+    ratingFeedback.value = "";
+    
+    msgsDiv.innerHTML = `
+      <div class="ai-msg bot" style="background:#eff6ff; border-color:#dbeafe; color:#1e3a8a;">
+        <b><span style="font-size:18px;">👋</span> Xin chào!</b><br/>Tôi là chatbot tư vấn tuyển sinh và giới thiệu về <b>${title}</b>.<br/>Bạn hãy đặt câu hỏi để được tư vấn nhé!<br/><i style="color:#64748b; font-size:13px;">Ví dụ: "Học phí", "Hồ sơ xét tuyển", "Cơ hội việc làm"...</i>
+      </div>
+    `;
+  }
+
   btn.addEventListener("click", toggle);
-  closeBtn.addEventListener("click", toggle);
+  minimizeBtn.addEventListener("click", toggle);
+
+  closeBtn.addEventListener("click", () => {
+    const hasUserMsg = chatHistory.some(m => m.role === 'user');
+    if (hasUserMsg) {
+      ratingOverlay.classList.add("active");
+    } else {
+      closeAndClear();
+    }
+  });
+
+  stars.forEach(star => {
+    star.addEventListener("click", () => {
+      currentRating = parseInt(star.getAttribute("data-val"));
+      stars.forEach(s => {
+        if (parseInt(s.getAttribute("data-val")) <= currentRating) s.classList.add("active");
+        else s.classList.remove("active");
+      });
+    });
+  });
+
+  ratingSkip.addEventListener("click", closeAndClear);
+
+  ratingSubmit.addEventListener("click", async () => {
+    if (currentRating === 0) {
+      alert("Vui lòng chọn số sao đánh giá trước khi gửi!");
+      return;
+    }
+    
+    try {
+      ratingSubmit.disabled = true;
+      ratingSubmit.textContent = "Đang gửi...";
+      
+      await fetch(host + "/api/chat-rating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating: currentRating,
+          feedback: ratingFeedback.value.trim(),
+          history: chatHistory
+        })
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      ratingSubmit.disabled = false;
+      ratingSubmit.textContent = "Gửi đánh giá & Đóng";
+      closeAndClear();
+    }
+  });
 
   function addMsg(text, isUser) {
     const d = document.createElement("div");
