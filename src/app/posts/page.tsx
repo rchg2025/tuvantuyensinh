@@ -99,6 +99,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                       src={getDirectImageUrl(post.thumbnailUrl)} 
                       alt={post.title} 
                       fill
+                      unoptimized
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       className="object-cover transition-transform hover:scale-105" 
                     />

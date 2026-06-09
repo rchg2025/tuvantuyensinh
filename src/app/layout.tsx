@@ -158,7 +158,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-lg tracking-tight hover:opacity-90 transition">
-              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5" />
+              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5" />
               <span>{siteTitle}</span>
             </Link>
 
@@ -241,7 +241,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4 text-white">
-                <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
+                <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} unoptimized className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
                 <span className="font-bold text-lg">{siteTitle}</span>
               </div>
               <div className="whitespace-pre-line">{footerDesc}</div>

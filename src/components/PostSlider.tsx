@@ -63,6 +63,7 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
                   src={post.thumbnailUrl} 
                   alt={post.title} 
                   fill
+                  unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover"
                 />
