@@ -92,7 +92,7 @@ export default async function Home() {
         {[
           { label: "Bài viết", value: postCount.toString(), icon: "📰", link: "/posts" },
           { label: "Câu hỏi Q&A", value: questionCount.toString(), icon: "💬", link: "/qa" },
-          { label: "Chương trình", value: majorCount.toString(), icon: "🎯", link: "/posts?categorySlug=gioi-thieu" },
+          { label: "Chương trình", value: majorCount.toString(), icon: "🎯", link: "/posts?categorySlug=cmp55zz6j0000qiiidxaahtmf" },
           { label: "Hỗ trợ", value: "24/7", icon: "🕒", link: "tel:0981146179" }
         ].map((stat, i) => {
           const isTel = stat.link.startsWith("tel:");
