@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 
 export default function ZaloWidget({ html, position }: { html: string, position: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || initialized.current) return;
+    initialized.current = true;
     
     // Clear previous
     containerRef.current.innerHTML = "";
