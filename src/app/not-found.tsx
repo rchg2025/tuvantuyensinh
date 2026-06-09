@@ -40,7 +40,7 @@ export default function NotFound() {
           </div>
           
           <div className="mt-12 pt-8 border-t border-gray-100 text-sm text-gray-400">
-            Cần hỗ trợ gấp? Hãy gọi <a href="tel:0123456789" className="text-blue-500 font-semibold hover:underline">Hotline tư vấn</a> hoặc để lại câu hỏi ở phần <Link href="/qa" className="text-blue-500 font-semibold hover:underline">Hỏi Đáp</Link>.
+            Cần hỗ trợ gấp? Hãy gọi <a href="tel:0981146179" className="text-blue-500 font-semibold hover:underline">Hotline tư vấn</a> hoặc để lại câu hỏi ở phần <Link href="/qa" className="text-blue-500 font-semibold hover:underline">Hỏi Đáp</Link>.
           </div>
         </div>
       </div>
