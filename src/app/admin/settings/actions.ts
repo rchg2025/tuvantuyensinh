@@ -12,7 +12,7 @@ export async function updateConfigAction(formData: FormData) {
   try {
     const ALLOWED_KEYS = [
       "GDRIVE_FOLDER_ID", "GDRIVE_SERVICE_EMAIL", "GDRIVE_PRIVATE_KEY",
-      "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS",
+      "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "SMTP_SENDER_NAME",
       "seo_title", "google_site_verification", "seo_description",
       "logo_url", "default_og_image", "footer_description", "footer_email",
       "footer_phone", "zalo_oa_widget",

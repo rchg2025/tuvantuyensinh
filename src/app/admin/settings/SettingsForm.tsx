@@ -210,6 +210,15 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
             <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Tên người gửi (Sender Name)</label>
+              <input 
+                name="SMTP_SENDER_NAME" 
+                defaultValue={configMap["SMTP_SENDER_NAME"] || ""}
+                placeholder="VD: Hệ Thống Tư Vấn Tuyển Sinh"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1">Email gửi (SMTP User)</label>
               <input 
                 name="SMTP_USER" 
