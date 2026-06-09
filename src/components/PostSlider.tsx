@@ -8,7 +8,7 @@ interface Post {
   id: string;
   slug?: string | null;
   title: string;
-  content: string;
+  content?: string;
   thumbnailUrl: string | null;
   createdAt: Date;
 }
