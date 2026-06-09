@@ -2,9 +2,9 @@
 
 import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
-import { testDriveAction } from "./actions";
+import { testDriveAction, pingSitemapAction } from "./actions";
 
-export default function SubmitButtons({ showTestDriveBtn }: { showTestDriveBtn?: boolean }) {
+export default function SubmitButtons({ showTestDriveBtn, showPingSitemapBtn }: { showTestDriveBtn?: boolean, showPingSitemapBtn?: boolean }) {
   const { pending } = useFormStatus();
 
   const handleTest = async () => {
@@ -25,6 +25,24 @@ export default function SubmitButtons({ showTestDriveBtn }: { showTestDriveBtn?:
     );
   };
 
+  const handlePingSitemap = async () => {
+    const pingPromise = pingSitemapAction().then(res => {
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      return res.message;
+    });
+
+    toast.promise(
+      pingPromise,
+      {
+        loading: 'Đang ping sitemap đến Google & Bing...',
+        success: (msg) => <b>{msg as string}</b>,
+        error: (err) => <b>{err.message}</b>,
+      }
+    );
+  };
+
   return (
     <div className="flex justify-end gap-3 mt-6">
       {showTestDriveBtn && (
@@ -35,6 +53,17 @@ export default function SubmitButtons({ showTestDriveBtn }: { showTestDriveBtn?:
           className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold px-6 py-3 rounded-xl transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
         >
           <span>⚡</span> Test kết nối
+        </button>
+      )}
+
+      {showPingSitemapBtn && (
+        <button 
+          type="button" 
+          onClick={handlePingSitemap} 
+          disabled={pending}
+          className="bg-white border border-blue-300 hover:bg-blue-50 text-blue-700 font-bold px-6 py-3 rounded-xl transition-colors shadow-sm flex items-center gap-2 disabled:opacity-50"
+        >
+          <span>🚀</span> Ép Google Index
         </button>
       )}
 

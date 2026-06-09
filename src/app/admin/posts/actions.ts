@@ -5,6 +5,14 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { generateUniqueSlug } from "@/lib/unique-slug";
 
+const sitemapUrl = "https://ts26.nsg.edu.vn/sitemap.xml";
+const pingSearchEngines = () => {
+  Promise.allSettled([
+    fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`, { method: "GET" }).catch(() => {}),
+    fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`, { method: "GET" }).catch(() => {})
+  ]);
+};
+
 export async function createPostAction(formData: FormData) {
   const id = formData.get("id")?.toString();
   const title = formData.get("title")?.toString() || "";
@@ -31,6 +39,7 @@ export async function createPostAction(formData: FormData) {
       data: { title, content, thumbnailUrl, attachments, gallery, galleryConfig, categoryId, slug },
     });
     revalidatePath("/admin/posts");
+    pingSearchEngines();
     return { success: true, message: "Cập nhật thành công!" };
   } else {
     const slug = await generateUniqueSlug(title, "Post");
@@ -38,6 +47,7 @@ export async function createPostAction(formData: FormData) {
       data: { title, content, thumbnailUrl, attachments, gallery, galleryConfig, categoryId, authorName, slug },
     });
     revalidatePath("/admin/posts");
+    pingSearchEngines();
     return { success: true, message: "Đăng bài viết thành công!" };
   }
 }
@@ -47,5 +57,6 @@ export async function deletePostAction(formData: FormData) {
   if (id) {
     await prisma.post.delete({ where: { id } });
     revalidatePath("/admin/posts");
+    pingSearchEngines();
   }
 }

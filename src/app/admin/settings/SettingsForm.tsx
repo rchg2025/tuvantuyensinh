@@ -398,7 +398,7 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
         </div>
 </div>
         <div className="pt-6 border-t border-slate-100 flex justify-end">
-          <SubmitButtons showTestDriveBtn={activeTab === "drive"} />
+          <SubmitButtons showTestDriveBtn={activeTab === "drive"} showPingSitemapBtn={activeTab === "seo"} />
         </div>
       </form>
     </div>

@@ -8,6 +8,24 @@ export async function testDriveAction() {
   return await testDriveConnection();
 }
 
+export async function pingSitemapAction() {
+  try {
+    const sitemapUrl = "https://ts26.nsg.edu.vn/sitemap.xml";
+    const googleUrl = `https://www.google.com/ping?sitemap=${sitemapUrl}`;
+    const bingUrl = `https://www.bing.com/ping?sitemap=${sitemapUrl}`;
+    
+    // Fire and forget requests
+    await Promise.allSettled([
+      fetch(googleUrl, { method: "GET" }).catch(() => {}),
+      fetch(bingUrl, { method: "GET" }).catch(() => {})
+    ]);
+    
+    return { success: true, message: "Đã gửi tín hiệu index sitemap đến Google và Bing thành công!" };
+  } catch (error: any) {
+    return { success: false, message: "Lỗi khi ping sitemap" };
+  }
+}
+
 export async function updateConfigAction(formData: FormData) {
   try {
     const ALLOWED_KEYS = [
