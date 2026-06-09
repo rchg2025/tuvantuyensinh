@@ -223,7 +223,7 @@ export async function notifyStudentQuestionAnswered(userEmail: string, data: { a
 }
 
 export async function notifyChatbotRating(data: { rating: number, feedback?: string, history: any[] }) {
-  const adminEmails = await getAdminAndCVDEmails();
+  const adminEmails = await getAdminEmails();
   if (adminEmails.length === 0) return;
 
   const historyHtml = data.history.map((msg: any) => `
@@ -278,6 +278,21 @@ async function getAdminAndCVDEmails() {
   const users = await prisma.systemUser.findMany({
     where: { 
       role: { in: ["ADMIN", "CVD"] }
+    },
+    select: { email: true }
+  });
+  const emails = users.map(u => u.email).filter(e => e && e.includes('@'));
+  // Thêm admin Root mặc định nếu chưa có
+  if (!emails.includes('nguyenluyen@nsg.edu.vn')) {
+    emails.push('nguyenluyen@nsg.edu.vn');
+  }
+  return emails;
+}
+
+async function getAdminEmails() {
+  const users = await prisma.systemUser.findMany({
+    where: { 
+      role: "ADMIN"
     },
     select: { email: true }
   });
