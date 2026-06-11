@@ -7,6 +7,8 @@ import QaRow from "./QaRow";
 import SourceSelect from "./SourceSelect";
 import { notifyStudentQuestionAnswered } from "@/lib/mail";
 
+import Pagination from "@/components/Pagination";
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminQaPage({
@@ -254,23 +256,8 @@ export default async function AdminQaPage({
             </table></div>
             
             {totalPages > 1 && (
-              <div className="p-4 border-t border-slate-100 flex justify-center gap-2 bg-slate-50">
-                {Array.from({ length: totalPages }).map((_, i) => {
-                  const p = i + 1;
-                  return (
-                    <Link
-                      key={p}
-                      href={`/admin/qa?tab=manage&status=${status}&source=${source}&page=${p}${q ? `&q=${q}` : ""}`}
-                      className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${
-                        page === p
-                          ? "bg-blue-600 text-white"
-                          : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                      }`}
-                    >
-                      {p}
-                    </Link>
-                  );
-                })}
+              <div className="p-4 border-t border-slate-100 flex justify-center bg-slate-50">
+                <Pagination currentPage={page} totalPages={totalPages} />
               </div>
             )}
           </div>
