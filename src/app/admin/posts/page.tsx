@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import PostForm from "./components/PostForm";
 import { deletePostAction } from "./actions";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import Pagination from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +17,20 @@ export default async function AdminPostsPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "manage"; // 'manage' or 'create'
+  const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
+  const pageSize = 10;
 
-  const posts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { category: true }
-  });
+  const [totalPosts, posts] = await Promise.all([
+    prisma.post.count(),
+    prisma.post.findMany({
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      include: { category: true }
+    })
+  ]);
+
+  const totalPages = Math.ceil(totalPosts / pageSize);
 
   const categories = await prisma.category.findMany({
     where: {
@@ -112,6 +122,12 @@ export default async function AdminPostsPage({
               )}
             </tbody>
           </table></div>
+          
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-slate-100 flex justify-center bg-slate-50">
+              <Pagination currentPage={page} totalPages={totalPages} />
+            </div>
+          )}
         </div>
       )}
     </div>
