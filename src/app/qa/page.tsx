@@ -249,7 +249,12 @@ export default async function QaPage({
                       </div>
                     )}
                     <div>
-                      <p className="text-xs font-semibold text-blue-700 mb-1">{q.answeredBy || "Chuyên viên tư vấn"}</p>
+                      <div className="flex items-center flex-wrap gap-2 mb-1">
+                        <span className="text-xs font-semibold text-blue-700">{q.answeredBy || "Chuyên viên tư vấn"}</span>
+                        <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Quản trị viên / Chuyên viên tư vấn
+                        </span>
+                      </div>
                       <p className="text-gray-700 text-sm whitespace-pre-wrap"><LinkifyText text={q.answer} /></p>
                     </div>
                   </div>

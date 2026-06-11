@@ -165,9 +165,19 @@ export default async function Home() {
                     <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words block">
                       {q.question}
                     </Link>
-                    <p className="text-sm text-gray-600 mt-2 break-words whitespace-pre-wrap">
-                      {q.answer ? <LinkifyText text={q.answer} /> : 'Đang chờ chuyên gia trả lời...'}
-                    </p>
+                    <div className="text-sm text-gray-600 mt-2 break-words whitespace-pre-wrap">
+                      {q.answer ? (
+                        <>
+                          <div className="flex items-center gap-2 mb-1 mt-3">
+                            <span className="font-semibold text-blue-700 text-xs">{q.answeredBy || "Chuyên viên tư vấn"}</span>
+                            <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">
+                              Quản trị viên / Chuyên viên tư vấn
+                            </span>
+                          </div>
+                          <LinkifyText text={q.answer} />
+                        </>
+                      ) : 'Đang chờ chuyên gia trả lời...'}
+                    </div>
                     <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
                       <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
