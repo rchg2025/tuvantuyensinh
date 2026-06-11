@@ -21,27 +21,52 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
     if (!file) return;
 
     setIsUploadingImage(true);
-    const toastId = toast.loading("Đang tải tệp lên Google Drive...");
+    const toastId = toast.loading("Đang khởi tạo tải lên...");
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      let uploadedUrl = "";
       
-      const res = await uploadFileAction(formData);
-      if (res.success && res.url) {
-        // Insert to content
-        let fileTag = "";
-        if (file.type.startsWith("image/")) {
-          fileTag = `<img src="${res.url}" alt="${file.name}" />`;
-        } else {
-          fileTag = `<a href="${res.url}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
-        }
-        setContent((prev: string) => prev + fileTag);
-        toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
+      if (file.size > 4.5 * 1024 * 1024) {
+        toast.loading("File lớn đang được tải lên trực tiếp...", { id: toastId });
+        
+        const { getResumableUrlAction, finalizeUploadAction } = await import("@/app/admin/uploadAction");
+        const initRes = await getResumableUrlAction(file.name, file.type || "application/octet-stream");
+        if (!initRes.success || !initRes.uploadUrl) throw new Error(initRes.error || "Lỗi khởi tạo");
+
+        const uploadRes = await fetch(initRes.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+          body: file,
+        });
+
+        if (!uploadRes.ok) throw new Error("Lỗi khi tải file lên Google Drive");
+        const fileData = await uploadRes.json();
+        if (!fileData.id) throw new Error("Không nhận được ID file");
+
+        toast.loading("Đang thiết lập quyền truy cập...", { id: toastId });
+        const finalRes = await finalizeUploadAction(fileData.id, file.type || "application/octet-stream");
+        if (!finalRes.success || !finalRes.url) throw new Error(finalRes.error || "Lỗi lấy link file");
+        
+        uploadedUrl = finalRes.url;
       } else {
-        toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await uploadFileAction(formData);
+        if (!res.success || !res.url) throw new Error(res.error || "Không thể tải lên");
+        uploadedUrl = res.url;
       }
-    } catch (error) {
-      toast.error("Đã xảy ra lỗi khi tải tệp!", { id: toastId });
+
+      // Insert to content
+      let fileTag = "";
+      if (file.type.startsWith("image/")) {
+        fileTag = `<img src="${uploadedUrl}" alt="${file.name}" />`;
+      } else {
+        fileTag = `<a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
+      }
+      setContent((prev: string) => prev + fileTag);
+      toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
+
+    } catch (error: any) {
+      toast.error("Lỗi: " + (error?.message || "Đã xảy ra lỗi khi tải tệp!"), { id: toastId });
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

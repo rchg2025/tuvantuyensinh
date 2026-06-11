@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { uploadFileAction } from "@/app/admin/uploadAction";
+import { uploadFileAction, getResumableUrlAction, finalizeUploadAction } from "@/app/admin/uploadAction";
 
 interface DragDropUploadProps {
   name: string;
@@ -21,18 +21,58 @@ export default function DragDropUpload({ name, defaultValue = "", accept = "imag
     if (!file) return;
     
     setIsUploading(true);
-    const toastId = toast.loading("Đang tải file lên Google Drive...");
+    const toastId = toast.loading("Đang khởi tạo tải lên...");
     
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      
-      const res = await uploadFileAction(formData);
-      if (res.success && res.url) {
-        setFileUrl(res.url);
-        toast.success("Tải lên thành công!", { id: toastId });
+      if (file.size > 4.5 * 1024 * 1024) {
+        toast.loading("File lớn đang được tải lên trực tiếp...", { id: toastId });
+        
+        // 1. Get Resumable URL
+        const initRes = await getResumableUrlAction(file.name, file.type || "application/octet-stream");
+        if (!initRes.success || !initRes.uploadUrl) {
+          throw new Error(initRes.error || "Không thể khởi tạo upload");
+        }
+
+        // 2. Upload directly to Google Drive
+        const uploadRes = await fetch(initRes.uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": file.type || "application/octet-stream",
+          },
+          body: file,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Lỗi khi tải file lên Google Drive");
+        }
+
+        const fileData = await uploadRes.json();
+        if (!fileData.id) {
+          throw new Error("Không nhận được ID file từ Google");
+        }
+
+        toast.loading("Đang thiết lập quyền truy cập...", { id: toastId });
+
+        // 3. Make public
+        const finalRes = await finalizeUploadAction(fileData.id, file.type || "application/octet-stream");
+        if (finalRes.success && finalRes.url) {
+          setFileUrl(finalRes.url);
+          toast.success("Tải lên thành công!", { id: toastId });
+        } else {
+          throw new Error(finalRes.error || "Không thể hoàn tất file");
+        }
       } else {
-        toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
+        // Fallback for smaller files (optional, but faster since fewer roundtrips)
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        const res = await uploadFileAction(formData);
+        if (res.success && res.url) {
+          setFileUrl(res.url);
+          toast.success("Tải lên thành công!", { id: toastId });
+        } else {
+          toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
+        }
       }
     } catch (e: any) {
       console.error(e);

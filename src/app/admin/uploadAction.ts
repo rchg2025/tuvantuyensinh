@@ -19,3 +19,27 @@ export async function uploadFileAction(formData: FormData) {
     return { success: false, error: error.message };
   }
 }
+
+export async function getResumableUrlAction(fileName: string, mimeType: string) {
+  try {
+    const { createResumableUpload } = await import("@/lib/gdrive");
+    const uploadUrl = await createResumableUpload(fileName, mimeType);
+    return { success: true, uploadUrl };
+  } catch (error: any) {
+    console.error("Lỗi getResumableUrl:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function finalizeUploadAction(fileId: string, mimeType: string) {
+  try {
+    const { makeFilePublic, getDirectImageUrl } = await import("@/lib/gdrive");
+    const url = await makeFilePublic(fileId);
+    const isImage = mimeType.startsWith("image/");
+    const finalUrl = isImage ? getDirectImageUrl(url) : url;
+    return { success: true, url: finalUrl };
+  } catch (error: any) {
+    console.error("Lỗi finalizeUpload:", error);
+    return { success: false, error: error.message };
+  }
+}

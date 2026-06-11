@@ -123,3 +123,43 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
     url: "https://drive.google.com/uc?export=view&id=" + data.id
   };
 }
+
+export async function createResumableUpload(fileName: string, mimeType: string) {
+  const auth = await getDriveAuth();
+  const { folderId } = await getDriveConfig();
+  
+  const token = await auth.getAccessToken();
+
+  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-Upload-Content-Type": mimeType,
+    },
+    body: JSON.stringify({
+      name: fileName,
+      parents: [folderId],
+    })
+  });
+
+  const uploadUrl = response.headers.get("Location");
+  if (!uploadUrl) {
+    throw new Error("Không lấy được link upload từ Google Drive");
+  }
+  return uploadUrl;
+}
+
+export async function makeFilePublic(fileId: string) {
+  const auth = await getDriveAuth();
+  const drive = google.drive({ version: "v3", auth });
+  await drive.permissions.create({
+    fileId: fileId,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+    supportsAllDrives: true,
+  });
+  return "https://drive.google.com/uc?export=view&id=" + fileId;
+}
