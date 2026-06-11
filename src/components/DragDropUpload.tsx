@@ -35,7 +35,8 @@ export default function DragDropUpload({ name, defaultValue = "", accept = "imag
         toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
       }
     } catch (e: any) {
-      toast.error("Đã xảy ra lỗi khi tải file", { id: toastId });
+      console.error(e);
+      toast.error("Đã xảy ra lỗi khi tải file: " + (e?.message || "Unknown error"), { id: toastId });
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
