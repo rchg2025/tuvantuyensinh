@@ -124,19 +124,25 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
   };
 }
 
-export async function createResumableUpload(fileName: string, mimeType: string) {
+export async function createResumableUpload(fileName: string, mimeType: string, origin?: string) {
   const auth = await getDriveAuth();
   const { folderId } = await getDriveConfig();
   
   const token = await auth.getAccessToken();
 
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "X-Upload-Content-Type": mimeType,
+  };
+
+  if (origin) {
+    headers["Origin"] = origin;
+  }
+
   const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "X-Upload-Content-Type": mimeType,
-    },
+    headers: headers,
     body: JSON.stringify({
       name: fileName,
       parents: [folderId],

@@ -20,10 +20,15 @@ export async function uploadFileAction(formData: FormData) {
   }
 }
 
+import { headers } from "next/headers";
+
 export async function getResumableUrlAction(fileName: string, mimeType: string) {
   try {
     const { createResumableUpload } = await import("@/lib/gdrive");
-    const uploadUrl = await createResumableUpload(fileName, mimeType);
+    const headersList = await headers();
+    const origin = headersList.get("origin") || "";
+    
+    const uploadUrl = await createResumableUpload(fileName, mimeType, origin);
     return { success: true, uploadUrl };
   } catch (error: any) {
     console.error("Lỗi getResumableUrl:", error);
