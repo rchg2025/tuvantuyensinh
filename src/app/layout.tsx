@@ -159,7 +159,7 @@ export default async function RootLayout({
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-sm md:text-base leading-tight tracking-tight hover:opacity-90 transition mr-4">
               <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
-              <span className="max-w-[120px] md:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none">{siteTitle}</span>
+              <span className="max-w-[250px] sm:max-w-[350px] md:max-w-[150px] lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none">{siteTitle}</span>
             </Link>
 
             {/* Nav */}
