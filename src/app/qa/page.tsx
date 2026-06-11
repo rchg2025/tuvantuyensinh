@@ -46,6 +46,16 @@ export default async function QaPage({
 
   const totalPages = Math.ceil(totalQuestions / pageSize);
 
+  const adminUsers = await prisma.systemUser.findMany({
+    where: { role: { in: ["ADMIN", "CONSULTANT"] } },
+    select: { name: true, email: true, avatar: true },
+  });
+  const adminAvatars = adminUsers.reduce((acc, user) => {
+    if (user.name) acc[user.name] = user.avatar;
+    acc[user.email] = user.avatar;
+    return acc;
+  }, {} as Record<string, string | null>);
+
   async function submitQuestion(formData: FormData) {
     "use server";
     const askerName = formData.get("askerName") as string;
@@ -201,9 +211,13 @@ export default async function QaPage({
               <div key={q.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 overflow-hidden">
                 {/* Question */}
                 <div className="p-5 flex items-start gap-4">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
-                    {q.askerName.charAt(0).toUpperCase()}
-                  </div>
+                  {q.isFromSchool && adminAvatars[q.askerName] ? (
+                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
+                  ) : (
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+                      {q.askerName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center flex-wrap gap-2 mb-1">
                       <span className="font-semibold text-gray-900 text-sm">{q.askerName}</span>
@@ -228,11 +242,15 @@ export default async function QaPage({
                 {/* Answer */}
                 {q.answer ? (
                   <div className="bg-blue-50 border-t border-blue-100 px-5 py-4 flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
-                      TV
-                    </div>
+                    {adminAvatars[q.answeredBy || ""] ? (
+                      <img src={adminAvatars[q.answeredBy || ""]!} alt={q.answeredBy || "Chuyên viên tư vấn"} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-600" />
+                    ) : (
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                        {q.answeredBy ? q.answeredBy.charAt(0).toUpperCase() : "TV"}
+                      </div>
+                    )}
                     <div>
-                      <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên viên tư vấn</p>
+                      <p className="text-xs font-semibold text-blue-700 mb-1">{q.answeredBy || "Chuyên viên tư vấn"}</p>
                       <p className="text-gray-700 text-sm whitespace-pre-wrap"><LinkifyText text={q.answer} /></p>
                     </div>
                   </div>

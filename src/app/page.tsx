@@ -34,7 +34,17 @@ export default async function Home() {
       orderBy: { createdAt: "desc" },
       take: 12,
     }),
+    prisma.systemUser.findMany({
+      where: { role: { in: ["ADMIN", "CONSULTANT"] } },
+      select: { name: true, email: true, avatar: true },
+    }),
   ]);
+
+  const adminAvatars = adminUsers.reduce((acc, user) => {
+    if (user.name) acc[user.name] = user.avatar;
+    acc[user.email] = user.avatar;
+    return acc;
+  }, {} as Record<string, string | null>);
 
   const latestPosts = rawLatestPosts.map(post => ({
     ...post,
@@ -145,9 +155,13 @@ export default async function Home() {
             latestQuestions.map((q) => (
               <div key={q.id} className="group block bg-gray-50 hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 hover:border-blue-200 transition-colors">
                 <div className="flex gap-4">
-                  <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
-                    Q
-                  </div>
+                  {q.isFromSchool && adminAvatars[q.askerName] ? (
+                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} className="hidden sm:block flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
+                  ) : (
+                    <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
+                      Q
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words block">
                       {q.question}
