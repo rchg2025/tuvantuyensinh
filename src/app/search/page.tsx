@@ -135,7 +135,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               </div>
               <div className="grid gap-4">
                 {questions.map((question) => (
-                  <Link key={question.id} href={`/qa`} className="group block bg-white hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                  <Link key={question.id} href={`/qa?q=${encodeURIComponent(question.question)}`} className="group block bg-white hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all">
                     <div className="flex gap-4">
                       <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex-shrink-0 text-xl font-bold">
                         Q
