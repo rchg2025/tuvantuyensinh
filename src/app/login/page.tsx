@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
@@ -43,6 +43,7 @@ export default async function LoginPage({
             let matched = false;
             let currentName = "Admin";
             let currentId = "admin_logged_in";
+            let currentAvatar = "";
 
             if (email === "nguyenluyen@nsg.edu.vn" && password === "Nsg@2026") {
                matched = true;
@@ -51,6 +52,7 @@ export default async function LoginPage({
                matched = true;
                currentName = dbUser.name || dbUser.email;
                currentId = dbUser.id;
+               currentAvatar = dbUser.avatar || "";
             }
 
             if (matched) {
@@ -63,6 +65,14 @@ export default async function LoginPage({
                 httpOnly: true,
                 path: "/",
               });
+              if (currentAvatar) {
+                cookieStore.set("auth_avatar", encodeURIComponent(currentAvatar), {
+                  httpOnly: true,
+                  path: "/",
+                });
+              } else {
+                cookieStore.delete("auth_avatar");
+              }
               redirect("/admin");
             } else {
               redirect("/login?error=credentials");

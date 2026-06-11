@@ -84,6 +84,11 @@ export default async function ProfilePage() {
 
     const cookieStore = await cookies();
     cookieStore.set("auth_name", encodeURIComponent(name), { httpOnly: true, path: "/" });
+    if (avatar) {
+      cookieStore.set("auth_avatar", encodeURIComponent(avatar), { httpOnly: true, path: "/" });
+    } else {
+      cookieStore.delete("auth_avatar");
+    }
 
     revalidatePath("/admin/profile");
     revalidatePath("/admin");

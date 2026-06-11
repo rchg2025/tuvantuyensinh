@@ -83,8 +83,20 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
-  const authName = cookieStore.get("auth_name")?.value;
+  const authNameEncoded = cookieStore.get("auth_name")?.value;
+  const authName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "";
   const isLoggedIn = !!token;
+
+  let authAvatar = "";
+  if (isLoggedIn && token) {
+    if (token === "admin_logged_in") {
+      const avatarCookie = cookieStore.get("auth_avatar")?.value;
+      if (avatarCookie) authAvatar = decodeURIComponent(avatarCookie);
+    } else {
+      const user = await prisma.systemUser.findUnique({ where: { id: token } });
+      if (user) authAvatar = user.avatar || "";
+    }
+  }
 
   const configs = await prisma.systemConfig.findMany({
     where: {
@@ -223,11 +235,15 @@ export default async function RootLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </Link>
-              <Link href={isLoggedIn ? "/admin" : "/login"} className={isLoggedIn ? "text-white hover:bg-white/10 p-2 rounded-full transition" : "text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap"} title={isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}>
+              <Link href={isLoggedIn ? "/admin" : "/login"} className={isLoggedIn ? "text-white hover:bg-white/10 p-1.5 rounded-full transition" : "text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap"} title={isLoggedIn ? (authName || "Trang cá nhân") : "Đăng nhập"}>
                 {isLoggedIn ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  authAvatar ? (
+                    <img src={authAvatar} alt="Avatar" className="w-6 h-6 rounded-full object-cover bg-white" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 m-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  )
                 ) : (
                   "Đăng nhập"
                 )}
@@ -237,7 +253,8 @@ export default async function RootLayout({
           {/* Mobile Secondary Menu Row */}
           <MobileHeaderClient 
             isLoggedIn={isLoggedIn} 
-            authName={authName!} 
+            authName={authName} 
+            authAvatar={authAvatar}
             menuTree={menuTree} 
             postCategories={postCategories} 
             handleLogout={handleLogout} 

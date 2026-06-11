@@ -6,12 +6,14 @@ import Link from "next/link";
 export default function MobileHeaderClient({
   isLoggedIn,
   authName,
+  authAvatar,
   menuTree,
   postCategories,
   handleLogout
 }: {
   isLoggedIn: boolean;
   authName: string;
+  authAvatar?: string;
   menuTree: any[];
   postCategories: any[];
   handleLogout: () => void;
@@ -50,8 +52,11 @@ export default function MobileHeaderClient({
         <div className="flex-1 text-center text-sm font-medium px-2">
           {isLoggedIn ? (
             <div className="flex items-center justify-center gap-2">
-              <Link href="/admin" className="truncate text-white hover:text-blue-200 transition">
-                {authName ? decodeURIComponent(authName) : "Trang cá nhân"}
+              <Link href="/admin" className="flex items-center justify-center gap-1.5 truncate text-white hover:text-blue-200 transition">
+                {authAvatar && (
+                  <img src={authAvatar} alt="Avatar" className="w-5 h-5 rounded-full object-cover border border-white/30 shrink-0" />
+                )}
+                <span className="truncate">{authName || "Trang cá nhân"}</span>
               </Link>
               <form action={handleLogout}>
                 <button 
