@@ -152,7 +152,7 @@ export default async function Home() {
                     <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words block">
                       {q.question}
                     </Link>
-                    <p className="text-sm text-gray-600 mt-2 break-words">
+                    <p className="text-sm text-gray-600 mt-2 break-words whitespace-pre-wrap">
                       {q.answer ? (
                         q.answer.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
                           part.match(/(https?:\/\/[^\s]+)/g) ? (
