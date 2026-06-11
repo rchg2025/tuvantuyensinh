@@ -152,43 +152,64 @@ export default async function Home() {
         <div className="grid gap-4">
           {latestQuestions.length > 0 ? (
             latestQuestions.map((q) => (
-              <div key={q.id} className="group block bg-gray-50 hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 hover:border-blue-200 transition-colors">
-                <div className="flex gap-4">
+              <div key={q.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 overflow-hidden">
+                {/* Question */}
+                <div className="p-5 flex items-start gap-4">
                   {q.isFromSchool && adminAvatars[q.askerName] ? (
-                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} className="hidden sm:block flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
+                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
                   ) : (
-                    <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
-                      Q
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+                      {q.askerName.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words block">
+                    <div className="flex items-center flex-wrap gap-2 mb-1">
+                      <span className="font-semibold text-gray-900 text-sm">{q.askerName}</span>
+                      {q.isFromSchool ? (
+                        <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Quản trị viên / Chuyên viên tư vấn
+                        </span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Học viên
+                        </span>
+                      )}
+                      <span className="text-gray-400 text-xs">·</span>
+                      <span className="text-gray-400 text-xs">
+                        {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                      </span>
+                    </div>
+                    <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 hover:text-blue-700 transition-colors break-words block">
                       {q.question}
                     </Link>
-                    <div className="text-sm text-gray-600 mt-2 break-words whitespace-pre-wrap">
-                      {q.answer ? (
-                        <>
-                          <div className="flex items-center gap-2 mb-1 mt-3">
-                            <span className="font-semibold text-blue-700 text-xs">{q.answeredBy || "Chuyên viên tư vấn"}</span>
-                            <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">
-                              Quản trị viên / Chuyên viên tư vấn
-                            </span>
-                          </div>
-                          <LinkifyText text={q.answer} />
-                        </>
-                      ) : 'Đang chờ chuyên gia trả lời...'}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
-                      <span>👤 {q.askerName}</span>
-                      <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
-                      {q.answer !== null ? (
-                        <span className="text-green-600 bg-green-100 px-2 py-0.5 rounded text-[10px] font-bold">ĐÃ TRẢ LỜI</span>
-                      ) : (
-                        <span className="text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded text-[10px] font-bold">CHỜ DUYỆT</span>
-                      )}
-                    </div>
                   </div>
                 </div>
+
+                {/* Answer */}
+                {q.answer ? (
+                  <div className="bg-blue-50 border-t border-blue-100 px-5 py-4 flex items-start gap-4">
+                    {adminAvatars[q.answeredBy || ""] ? (
+                      <img src={adminAvatars[q.answeredBy || ""]!} alt={q.answeredBy || "Chuyên viên tư vấn"} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-600" />
+                    ) : (
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                        {q.answeredBy ? q.answeredBy.charAt(0).toUpperCase() : "TV"}
+                      </div>
+                    )}
+                    <div>
+                      <div className="flex items-center flex-wrap gap-2 mb-1">
+                        <span className="text-xs font-semibold text-blue-700">{q.answeredBy || "Chuyên viên tư vấn"}</span>
+                        <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                          Quản trị viên / Chuyên viên tư vấn
+                        </span>
+                      </div>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap"><LinkifyText text={q.answer} /></p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-orange-50 border-t border-orange-100 px-5 py-3 flex items-center justify-between">
+                    <span className="text-orange-600 text-xs font-medium">⏳ Đang chờ chuyên viên tư vấn trả lời...</span>
+                  </div>
+                )}
               </div>
             ))
           ) : (
