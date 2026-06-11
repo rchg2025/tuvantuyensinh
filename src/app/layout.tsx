@@ -167,7 +167,7 @@ export default async function RootLayout({
               {menuTree.length > 0 ? (
                 menuTree.map((menu: any) => (
                   <div key={menu.id} className="group relative">
-                    <Link href={menu.url} className={`px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 ${menu.children?.length > 0 ? "pr-3" : ""}`}>
+                    <Link href={menu.url} className={`px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap ${menu.children?.length > 0 ? "pr-3" : ""}`}>
                       {menu.title}
                       {menu.children?.length > 0 && (
                         <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +191,7 @@ export default async function RootLayout({
               ) : (
                 <>
               <div className="group relative">
-                <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1">
+                <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap">
                   Bài viết
                   <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -209,10 +209,10 @@ export default async function RootLayout({
                   </div>
                 )}
               </div>
-              <Link href="/qa" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition">Hỏi đáp</Link>
+              <Link href="/qa" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition whitespace-nowrap">Hỏi đáp</Link>
                 </>
               )}
-              <Link href="/consultation" className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg shadow transition">
+              <Link href="/consultation" className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg shadow transition whitespace-nowrap">
                 Đăng ký tư vấn
               </Link>
             </nav>
@@ -223,7 +223,7 @@ export default async function RootLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </Link>
-              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition">
+              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap">
                 {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
               </Link>
             </div>
