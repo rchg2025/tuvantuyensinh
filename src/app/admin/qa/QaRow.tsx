@@ -86,7 +86,7 @@ export default function QaRow({
       <td className="p-4 align-top text-slate-600">
         {!isEditingQuestion ? (
           <div>
-            <p className="line-clamp-4">{question.question}</p>
+            <p className="whitespace-pre-wrap break-words">{question.question}</p>
             <p className="text-xs text-slate-400 mt-2">{new Date(question.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</p>
           </div>
         ) : (
@@ -94,9 +94,19 @@ export default function QaRow({
             <textarea
               value={questionText}
               onChange={(e) => setQuestionText(e.target.value)}
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+              }}
+              ref={(el) => {
+                if (el) {
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
+                }
+              }}
               placeholder="Nhập câu hỏi..."
               autoFocus
-              className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 min-h-[80px]"
+              className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 min-h-[80px] resize-none overflow-hidden"
             />
             <div className="flex justify-end gap-2 mt-1">
               <button
@@ -124,7 +134,7 @@ export default function QaRow({
           <div className="flex flex-col gap-2">
             {question.answer ? (
               <div className="text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm">
-                <p className="line-clamp-4">{question.answer}</p>
+                <p className="whitespace-pre-wrap break-words">{question.answer}</p>
                 <div className="mt-2 text-[10px] text-gray-500 font-medium">
                   { question.answeredBy && question.answeredAt && (
                     <span>
@@ -149,9 +159,19 @@ export default function QaRow({
             <textarea
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+              }}
+              ref={(el) => {
+                if (el) {
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
+                }
+              }}
               placeholder="Nhập câu trả lời..."
               autoFocus
-              className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 min-h-[100px]"
+              className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 min-h-[100px] resize-none overflow-hidden"
             />
             <div className="flex justify-end gap-2 mt-2">
               <button
