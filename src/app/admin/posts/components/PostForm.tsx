@@ -21,22 +21,27 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
     if (!file) return;
 
     setIsUploadingImage(true);
-    const toastId = toast.loading("Đang tải ảnh lên Google Drive...");
+    const toastId = toast.loading("Đang tải tệp lên Google Drive...");
     try {
       const formData = new FormData();
       formData.append("file", file);
       
       const res = await uploadFileAction(formData);
       if (res.success && res.url) {
-        // Insert image to content
-        const imageTag = `<img src="${res.url}" alt="image" />`;
-        setContent((prev: string) => prev + imageTag);
-        toast.success("Đã chèn ảnh vào bài viết!", { id: toastId });
+        // Insert to content
+        let fileTag = "";
+        if (file.type.startsWith("image/")) {
+          fileTag = `<img src="${res.url}" alt="${file.name}" />`;
+        } else {
+          fileTag = `<a href="${res.url}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
+        }
+        setContent((prev: string) => prev + fileTag);
+        toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
       } else {
         toast.error("Lỗi: " + (res.error || "Không thể tải lên"), { id: toastId });
       }
     } catch (error) {
-      toast.error("Đã xảy ra lỗi khi tải ảnh!", { id: toastId });
+      toast.error("Đã xảy ra lỗi khi tải tệp!", { id: toastId });
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -121,10 +126,10 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
             <div>
               <input 
                 type="file" 
-                title="Tải ảnh lên"
+                title="Tải tệp lên"
                 ref={fileInputRef}
                 className="hidden" 
-                accept="image/*"
+                accept="*/*"
                 onChange={handleImageUpload}
               />
               <button 
