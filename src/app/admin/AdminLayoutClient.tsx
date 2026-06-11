@@ -22,7 +22,7 @@ export default function AdminLayoutClient({
 
 
   return (
-    <div className="flex bg-slate-50 min-h-screen relative w-full overflow-hidden">
+    <div className="flex bg-slate-50 min-h-screen relative w-full">
       {/* Mobile Header & Toggle */}
       <div className="hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 z-50 flex items-center px-4 justify-between shadow-sm">
         <span className="font-bold text-slate-800">Quản trị viên</span>
@@ -45,7 +45,7 @@ export default function AdminLayoutClient({
 
       {/* Sidebar */}
       <div className={`
-        fixed md:relative inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out bg-white
+        fixed md:sticky md:top-0 inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out bg-white
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         w-64 border-r border-slate-200 shadow-xl md:shadow-sm flex flex-col md:flex-shrink-0 h-screen
       `} onClick={() => { if (window.innerWidth < 768) setIsOpen(false) }}>
@@ -53,7 +53,7 @@ export default function AdminLayoutClient({
       </div>
 
       {/* Main content */}
-      <main className="flex-1 w-full md:w-auto h-screen overflow-y-auto pt-4 md:pt-8 p-4 md:p-8">
+      <main className="flex-1 w-full md:w-auto min-h-screen pt-4 md:pt-8 p-4 md:p-8">
         {children}
       </main>
     </div>
