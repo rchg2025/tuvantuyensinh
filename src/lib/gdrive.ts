@@ -140,7 +140,7 @@ export async function createResumableUpload(fileName: string, mimeType: string, 
     headers["Origin"] = origin;
   }
 
-  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable", {
+  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true", {
     method: "POST",
     headers: headers,
     body: JSON.stringify({

@@ -43,7 +43,8 @@ export default function DragDropUpload({ name, defaultValue = "", accept = "imag
         });
 
         if (!uploadRes.ok) {
-          throw new Error("Lỗi khi tải file lên Google Drive");
+          const errText = await uploadRes.text();
+          throw new Error(`Google Drive Error (${uploadRes.status}): ${errText}`);
         }
 
         const fileData = await uploadRes.json();
