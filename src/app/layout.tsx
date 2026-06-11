@@ -155,11 +155,11 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#f0f6ff] text-gray-900">
         <header className="bg-blue-700 text-white shadow-lg sticky top-0 z-50">
-          <div className="w-full px-4 md:px-8 flex justify-between items-center h-16">
+          <div className="w-full px-4 md:px-8 flex justify-between items-center min-h-[4rem] py-2">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 font-extrabold text-lg tracking-tight hover:opacity-90 transition">
-              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5" />
-              <span>{siteTitle}</span>
+            <Link href="/" className="flex items-center gap-2 font-extrabold text-sm md:text-base leading-tight tracking-tight hover:opacity-90 transition mr-4">
+              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
+              <span className="max-w-[150px] md:max-w-[300px] lg:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none">{siteTitle}</span>
             </Link>
 
             {/* Nav */}
