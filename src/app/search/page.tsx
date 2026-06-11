@@ -134,26 +134,50 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                 )}
               </div>
               <div className="grid gap-4">
-                {questions.map((question) => (
-                  <Link key={question.id} href={`/qa?q=${encodeURIComponent(question.question)}`} className="group block bg-white hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                    <div className="flex gap-4">
-                      <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex-shrink-0 text-xl font-bold">
-                        Q
+                {questions.map((q) => (
+                  <Link key={q.id} href={`/qa?q=${encodeURIComponent(q.question)}`} className="group block bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden hover:shadow-md transition-all hover:border-blue-300">
+                    {/* Question */}
+                    <div className="p-5 flex items-start gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+                        {q.askerName.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base md:text-lg font-bold text-gray-800 group-hover:text-indigo-600 transition-colors break-words">{question.question}</h3>
-                        <p className="text-sm text-gray-600 mt-2 line-clamp-2 break-words">{question.answer || 'Đang chờ chuyên gia trả lời...'}</p>
-                        <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
-                          <span>👤 {question.askerName}</span>
-                          <span>📅 {new Date(question.createdAt).toLocaleDateString("vi-VN")}</span>
-                          {question.answer !== null ? (
-                            <span className="text-green-600 bg-green-100 px-2 py-0.5 rounded font-bold">ĐÃ TRẢ LỜI</span>
+                        <div className="flex items-center flex-wrap gap-2 mb-1">
+                          <span className="font-semibold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{q.askerName}</span>
+                          {q.isFromSchool ? (
+                            <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                              Quản trị viên / Chuyên viên tư vấn
+                            </span>
                           ) : (
-                            <span className="text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded font-bold">CHỜ DUYỆT</span>
+                            <span className="bg-gray-100 text-gray-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                              Học viên
+                            </span>
                           )}
+                          <span className="text-gray-400 text-xs">·</span>
+                          <span className="text-gray-400 text-xs">
+                            {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                          </span>
                         </div>
+                        <p className="text-gray-800 whitespace-pre-wrap break-words">{q.question}</p>
                       </div>
                     </div>
+
+                    {/* Answer */}
+                    {q.answer ? (
+                      <div className="bg-blue-50 border-t border-blue-100 px-5 py-4 flex items-start gap-4 group-hover:bg-blue-100/50 transition-colors">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                          TV
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên viên tư vấn</p>
+                          <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">{q.answer}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-orange-50 border-t border-orange-100 px-5 py-3 group-hover:bg-orange-100/50 transition-colors">
+                        <span className="text-orange-600 text-xs font-medium">⏳ Đang chờ chuyên viên tư vấn trả lời...</span>
+                      </div>
+                    )}
                   </Link>
                 ))}
               </div>
