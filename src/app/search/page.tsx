@@ -3,8 +3,26 @@ import Link from "next/link";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import Image from "next/image";
 import Pagination from "@/components/Pagination";
-
 export const revalidate = 60;
+
+function LinkifyText({ text }: { text: string }) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline z-10 relative">
+              {part}
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
@@ -151,7 +169,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               </div>
               <div className="grid gap-4">
                 {questions.map((q) => (
-                  <Link key={q.id} href={`/qa?q=${encodeURIComponent(q.question)}`} className="group block bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden hover:shadow-md transition-all hover:border-blue-300">
+                  <div key={q.id} className="group block bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden hover:shadow-md transition-all hover:border-blue-300">
                     {/* Question */}
                     <div className="p-5 flex items-start gap-4">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
@@ -174,7 +192,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                             {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                           </span>
                         </div>
-                        <p className="text-gray-800 whitespace-pre-wrap break-words">{q.question}</p>
+                        <p className="text-gray-800 whitespace-pre-wrap break-words"><LinkifyText text={q.question} /></p>
                       </div>
                     </div>
 
@@ -186,7 +204,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-blue-700 mb-1">Chuyên viên tư vấn</p>
-                          <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">{q.answer}</p>
+                          <p className="text-gray-700 text-sm whitespace-pre-wrap break-words"><LinkifyText text={q.answer} /></p>
                         </div>
                       </div>
                     ) : (
@@ -194,7 +212,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                         <span className="text-orange-600 text-xs font-medium">⏳ Đang chờ chuyên viên tư vấn trả lời...</span>
                       </div>
                     )}
-                  </Link>
+                    
+                    {/* View Details Link */}
+                    <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+                      <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-blue-600 hover:text-blue-800 text-sm font-semibold hover:underline flex items-center gap-1">
+                        Xem chi tiết <span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                  </div>
                 ))}
               </div>
               {totalQaPages > 1 && (
