@@ -47,7 +47,6 @@ export default async function QaPage({
   const totalPages = Math.ceil(totalQuestions / pageSize);
 
   const adminUsers = await prisma.systemUser.findMany({
-    where: { role: { in: ["ADMIN", "CONSULTANT"] } },
     select: { name: true, email: true, avatar: true },
   });
   const adminAvatars = adminUsers.reduce((acc, user) => {

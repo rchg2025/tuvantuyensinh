@@ -35,7 +35,6 @@ export default async function Home() {
       take: 12,
     }),
     prisma.systemUser.findMany({
-      where: { role: { in: ["ADMIN", "CONSULTANT"] } },
       select: { name: true, email: true, avatar: true },
     }),
   ]);
