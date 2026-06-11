@@ -4,27 +4,10 @@ import Link from "next/link";
 import LiveSearch from "@/components/LiveSearch";
 import { notifyNewQuestion } from "@/lib/mail";
 import Pagination from "@/components/Pagination";
+import LinkifyText from "@/components/LinkifyText";
 
 export const revalidate = 60;
 
-function LinkifyText({ text }: { text: string }) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
-  return (
-    <>
-      {parts.map((part, i) => {
-        if (part.match(urlRegex)) {
-          return (
-            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-              {part}
-            </a>
-          );
-        }
-        return <span key={i}>{part}</span>;
-      })}
-    </>
-  );
-}
 
 export default async function QaPage({
   searchParams,

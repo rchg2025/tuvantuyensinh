@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import LiveSearch from "@/components/LiveSearch";
 import PostSlider from "@/components/PostSlider";
 import { getDirectImageUrl } from "@/lib/gdrive";
-
+import LinkifyText from "@/components/LinkifyText";
 export const revalidate = 60;
 
 export default async function Home() {
@@ -153,19 +153,7 @@ export default async function Home() {
                       {q.question}
                     </Link>
                     <p className="text-sm text-gray-600 mt-2 break-words whitespace-pre-wrap">
-                      {q.answer ? (
-                        q.answer.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
-                          part.match(/(https?:\/\/[^\s]+)/g) ? (
-                            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              {part}
-                            </a>
-                          ) : (
-                            <span key={i}>{part}</span>
-                          )
-                        )
-                      ) : (
-                        'Đang chờ chuyên gia trả lời...'
-                      )}
+                      {q.answer ? <LinkifyText text={q.answer} /> : 'Đang chờ chuyên gia trả lời...'}
                     </p>
                     <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
