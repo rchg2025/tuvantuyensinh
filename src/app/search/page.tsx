@@ -2,42 +2,63 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import Image from "next/image";
+import Pagination from "@/components/Pagination";
 
 export const revalidate = 60;
 
-export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+export default async function SearchPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
-  const q = resolvedParams.q || "";
+  const q = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
+  const postPage = typeof resolvedParams.postPage === "string" ? parseInt(resolvedParams.postPage) : 1;
+  const qaPage = typeof resolvedParams.qaPage === "string" ? parseInt(resolvedParams.qaPage) : 1;
+  
+  const POSTS_PER_PAGE = 8;
+  const QA_PER_PAGE = 5;
 
   let posts: any[] = [];
   let questions: any[] = [];
+  let totalPosts = 0;
+  let totalQuestions = 0;
 
   if (q.trim()) {
+    const postWhere = {
+      OR: [
+        { title: { contains: q, mode: "insensitive" as const } },
+        { content: { contains: q, mode: "insensitive" as const } }
+      ]
+    };
+
+    const qaWhere = {
+      OR: [
+        { question: { contains: q, mode: "insensitive" as const } },
+        { answer: { contains: q, mode: "insensitive" as const } }
+      ]
+    };
+
     const postPromise = prisma.post.findMany({
-      where: {
-        OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { content: { contains: q, mode: "insensitive" } }
-        ]
-      },
+      where: postWhere,
       orderBy: { createdAt: "desc" },
-      take: 20,
+      skip: (postPage - 1) * POSTS_PER_PAGE,
+      take: POSTS_PER_PAGE,
       include: { category: true }
     });
+    
+    const postCountPromise = prisma.post.count({ where: postWhere });
 
     const qaPromise = prisma.question.findMany({
-      where: {
-        OR: [
-          { question: { contains: q, mode: "insensitive" } },
-          { answer: { contains: q, mode: "insensitive" } }
-        ]
-      },
+      where: qaWhere,
       orderBy: { createdAt: "desc" },
-      take: 20,
+      skip: (qaPage - 1) * QA_PER_PAGE,
+      take: QA_PER_PAGE,
     });
+    
+    const qaCountPromise = prisma.question.count({ where: qaWhere });
 
-    [posts, questions] = await Promise.all([postPromise, qaPromise]);
+    [posts, totalPosts, questions, totalQuestions] = await Promise.all([postPromise, postCountPromise, qaPromise, qaCountPromise]);
   }
+
+  const totalPostPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+  const totalQaPages = Math.ceil(totalQuestions / QA_PER_PAGE);
 
   return (
     <div className="space-y-10">
@@ -77,12 +98,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           {posts.length > 0 && (
             <section>
               <div className="flex items-end justify-between mb-6">
-                <h2 className="text-2xl font-bold text-blue-900">📰 Bài viết ({posts.length})</h2>
-                {posts.length >= 20 && (
-                  <Link href={`/posts?q=${encodeURIComponent(q)}`} className="text-sm text-blue-600 hover:underline font-semibold">
-                    Xem tất cả bài viết →
-                  </Link>
-                )}
+                <h2 className="text-2xl font-bold text-blue-900">📰 Bài viết ({totalPosts})</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {posts.map((post) => (
@@ -119,6 +135,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                   </div>
                 ))}
               </div>
+              {totalPostPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination currentPage={postPage} totalPages={totalPostPages} pageParamName="postPage" />
+                </div>
+              )}
             </section>
           )}
 
@@ -126,12 +147,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           {questions.length > 0 && (
             <section>
               <div className="flex items-end justify-between mb-6">
-                <h2 className="text-2xl font-bold text-blue-900">💬 Hỏi đáp tư vấn ({questions.length})</h2>
-                {questions.length >= 20 && (
-                  <Link href={`/qa?q=${encodeURIComponent(q)}`} className="text-sm text-blue-600 hover:underline font-semibold">
-                    Xem tất cả câu hỏi →
-                  </Link>
-                )}
+                <h2 className="text-2xl font-bold text-blue-900">💬 Hỏi đáp tư vấn ({totalQuestions})</h2>
               </div>
               <div className="grid gap-4">
                 {questions.map((q) => (
@@ -181,6 +197,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                   </Link>
                 ))}
               </div>
+              {totalQaPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <Pagination currentPage={qaPage} totalPages={totalQaPages} pageParamName="qaPage" />
+                </div>
+              )}
             </section>
           )}
         </div>

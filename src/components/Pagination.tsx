@@ -18,11 +18,13 @@ const ChevronRightIcon = () => (
 export default function Pagination({ 
   currentPage, 
   totalPages, 
-  onPageChange 
+  onPageChange,
+  pageParamName = "page"
 }: { 
   currentPage: number, 
   totalPages: number,
-  onPageChange?: (page: number) => void
+  onPageChange?: (page: number) => void,
+  pageParamName?: string
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,7 +33,7 @@ export default function Pagination({
 
   const getPageUrl = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", page.toString());
+    params.set(pageParamName, page.toString());
     return `${pathname}?${params.toString()}`;
   };
 
