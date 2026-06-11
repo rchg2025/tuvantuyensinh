@@ -26,7 +26,7 @@ export default function MobileHeaderClient({
 
   return (
     <>
-      <div className="md:hidden flex justify-between items-center px-4 py-2 bg-blue-800 border-t border-blue-600 relative z-50">
+      <div className="lg:hidden flex justify-between items-center px-4 py-2 bg-blue-800 border-t border-blue-600 relative z-50">
         <div className="flex items-center gap-1">
           {/* Sidebar menu toggler icon */}
           <button 
@@ -88,7 +88,7 @@ export default function MobileHeaderClient({
       </div>
 
       {isHeaderMenuOpen && (
-        <div className="md:hidden bg-blue-700 border-t border-blue-600/50 py-2 w-full animate-in slide-in-from-top-2 absolute left-0 right-0 z-40 shadow-xl" style={{ top: "100%" }}>
+        <div className="lg:hidden bg-blue-700 border-t border-blue-600/50 py-2 w-full animate-in slide-in-from-top-2 absolute left-0 right-0 z-40 shadow-xl" style={{ top: "100%" }}>
           {menuTree.length > 0 ? (
             menuTree.map((menu: any) => (
               <div key={menu.id} className="block w-full">

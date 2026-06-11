@@ -159,11 +159,11 @@ export default async function RootLayout({
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-sm md:text-base leading-tight tracking-tight hover:opacity-90 transition mr-4">
               <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
-              <span className="md:max-w-[150px] lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none pr-4">{siteTitle}</span>
+              <span className="lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 lg:line-clamp-none pr-4">{siteTitle}</span>
             </Link>
 
             {/* Nav */}
-            <nav className="hidden md:flex items-center gap-1 relative z-50">
+            <nav className="hidden lg:flex items-center gap-1 relative z-50">
               {menuTree.length > 0 ? (
                 menuTree.map((menu: any) => (
                   <div key={menu.id} className="group relative">
@@ -194,7 +194,7 @@ export default async function RootLayout({
                 <Link href="/posts" className="px-2 lg:px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap">
                   Bài viết
                   <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </Link>
                 {postCategories.length > 0 && (
@@ -217,7 +217,7 @@ export default async function RootLayout({
               </Link>
             </nav>
 
-            <div className="hidden md:flex items-center gap-2 ml-4">
+            <div className="hidden lg:flex items-center gap-2 ml-4">
               <Link href="/search" className="text-white hover:bg-white/10 p-2 rounded-full transition" title="Tìm kiếm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
