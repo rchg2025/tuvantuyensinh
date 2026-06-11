@@ -13,19 +13,19 @@ export default function LinkifyText({ text }: { text: string }) {
 
         if (part.match(/^https?:\/\/[^\s]+$/)) {
           return (
-            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
               {part}
             </a>
           );
         } else if (part.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
           return (
-            <a key={i} href={`mailto:${part}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+            <a key={i} href={`mailto:${part}`} className="text-blue-600 hover:underline">
               {part}
             </a>
           );
         } else if (part.match(/^(?:0|\+84)[0-9]{9,10}$/)) {
           return (
-            <a key={i} href={`tel:${part}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+            <a key={i} href={`tel:${part}`} className="text-blue-600 hover:underline">
               {part}
             </a>
           );
