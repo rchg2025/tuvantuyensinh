@@ -143,14 +143,30 @@ export default async function Home() {
         <div className="grid gap-4">
           {latestQuestions.length > 0 ? (
             latestQuestions.map((q) => (
-              <Link key={q.id} href={`/qa?q=${encodeURIComponent(q.question)}`} className="group block bg-gray-50 hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 hover:border-blue-200 transition-colors">
+              <div key={q.id} className="group block bg-gray-50 hover:bg-blue-50/50 rounded-xl p-5 border border-gray-100 hover:border-blue-200 transition-colors">
                 <div className="flex gap-4">
                   <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0 text-xl font-bold">
                     Q
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words">{q.question}</h3>
-                    <p className="text-sm text-gray-600 mt-2 break-words">{q.answer || 'Đang chờ chuyên gia trả lời...'}</p>
+                    <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 group-hover:text-blue-700 transition-colors break-words block">
+                      {q.question}
+                    </Link>
+                    <p className="text-sm text-gray-600 mt-2 break-words">
+                      {q.answer ? (
+                        q.answer.split(/(https?:\/\/[^\s]+)/g).map((part, i) => 
+                          part.match(/(https?:\/\/[^\s]+)/g) ? (
+                            <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              {part}
+                            </a>
+                          ) : (
+                            <span key={i}>{part}</span>
+                          )
+                        )
+                      ) : (
+                        'Đang chờ chuyên gia trả lời...'
+                      )}
+                    </p>
                     <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-3 text-xs text-gray-500 font-medium">
                       <span>👤 {q.askerName}</span>
                       <span>📅 {new Date(q.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
@@ -162,7 +178,7 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))
           ) : (
              <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-xl border border-dashed">

@@ -215,7 +215,7 @@ export default async function QaPage({
         ) : (
           <div className="space-y-4">
             {questions.map((q) => (
-              <div key={q.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
+              <div key={q.id} className="bg-white rounded-2xl border border-blue-100 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 overflow-hidden">
                 {/* Question */}
                 <div className="p-5 flex items-start gap-4">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
