@@ -159,7 +159,7 @@ export default async function RootLayout({
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-sm md:text-base leading-tight tracking-tight hover:opacity-90 transition mr-4">
               <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
-              <span className="max-w-[150px] md:max-w-[300px] lg:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none">{siteTitle}</span>
+              <span className="max-w-[120px] md:max-w-[200px] lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 md:line-clamp-none">{siteTitle}</span>
             </Link>
 
             {/* Nav */}
@@ -167,7 +167,7 @@ export default async function RootLayout({
               {menuTree.length > 0 ? (
                 menuTree.map((menu: any) => (
                   <div key={menu.id} className="group relative">
-                    <Link href={menu.url} className={`px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap ${menu.children?.length > 0 ? "pr-3" : ""}`}>
+                    <Link href={menu.url} className={`px-2 lg:px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap ${menu.children?.length > 0 ? "pr-1 lg:pr-3" : ""}`}>
                       {menu.title}
                       {menu.children?.length > 0 && (
                         <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +191,7 @@ export default async function RootLayout({
               ) : (
                 <>
               <div className="group relative">
-                <Link href="/posts" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap">
+                <Link href="/posts" className="px-2 lg:px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition inline-flex items-center gap-1 whitespace-nowrap">
                   Bài viết
                   <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -209,10 +209,10 @@ export default async function RootLayout({
                   </div>
                 )}
               </div>
-              <Link href="/qa" className="px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition whitespace-nowrap">Hỏi đáp</Link>
+              <Link href="/qa" className="px-2 lg:px-4 py-2 rounded-lg hover:bg-white/15 text-sm font-medium transition whitespace-nowrap">Hỏi đáp</Link>
                 </>
               )}
-              <Link href="/consultation" className="ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg shadow transition whitespace-nowrap">
+              <Link href="/consultation" className="ml-1 lg:ml-2 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-3 lg:px-4 py-2 rounded-lg shadow transition whitespace-nowrap">
                 Đăng ký tư vấn
               </Link>
             </nav>
