@@ -223,8 +223,14 @@ export default async function RootLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </Link>
-              <Link href={isLoggedIn ? "/admin" : "/login"} className="text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap">
-                {isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}
+              <Link href={isLoggedIn ? "/admin" : "/login"} className={isLoggedIn ? "text-white hover:bg-white/10 p-2 rounded-full transition" : "text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap"} title={isLoggedIn ? (authName ? decodeURIComponent(authName) : "Trang cá nhân") : "Đăng nhập"}>
+                {isLoggedIn ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                ) : (
+                  "Đăng nhập"
+                )}
               </Link>
             </div>
           </div>
