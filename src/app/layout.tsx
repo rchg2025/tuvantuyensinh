@@ -182,6 +182,14 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-HZRVKSY02C');`
         }} />
+        {/* Google tag (gtag.js) */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-VJBSWELMM3" strategy="afterInteractive" />
+        <Script id="google-analytics-vjb" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-VJBSWELMM3');`
+        }} />
       </head>
       <body className="min-h-full flex flex-col bg-[#f0f6ff] text-gray-900">
         {/* Google Tag Manager (noscript) */}
