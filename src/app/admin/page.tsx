@@ -47,39 +47,39 @@ export default async function AdminDashboard() {
       <h1 className="text-2xl font-bold text-slate-800">Bảng điều khiển</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <Link href="/admin/posts" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:shadow-md transition-shadow">
           <div>
             <p className="text-sm font-semibold text-slate-500 mb-1">Tổng bài viết</p>
             <h2 className="text-3xl font-black text-blue-600">{postCount}</h2>
           </div>
           <div className="text-4xl opacity-80">🔰</div>
-        </div>
+        </Link>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <Link href="/admin/qa" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between hover:shadow-md transition-shadow">
           <div>
             <p className="text-sm font-semibold text-slate-500 mb-1">Tổng câu hỏi</p>
             <h2 className="text-3xl font-black text-indigo-600">{questionCount}</h2>
           </div>
           <div className="text-4xl opacity-80">💌</div>
-        </div>
+        </Link>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
+        <Link href="/admin/qa?tab=manage&status=unanswered&source=all" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden hover:shadow-md transition-shadow">
           <div className="relative z-10">
             <p className="text-sm font-semibold text-slate-500 mb-1">Câu hỏi chờ duyệt</p>
             <h2 className="text-3xl font-black text-red-500">{questionCount - answeredCount}</h2>
           </div>
           <div className="text-4xl opacity-80 relative z-10">⏳</div>
           {(questionCount - answeredCount) > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-red-100 rounded-bl-full -mr-4 -mt-4 opacity-50"></div>}
-        </div>
+        </Link>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden">
+        <Link href="/admin/consultations" className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden hover:shadow-md transition-shadow">
           <div className="relative z-10">
             <p className="text-sm font-semibold text-slate-500 mb-1">Đăng ký mới / Chờ xử lý</p>
             <h2 className="text-3xl font-black text-orange-500">{pendingConsultationCount}</h2>
           </div>
           <div className="text-4xl opacity-80 relative z-10">📞</div>
           {pendingConsultationCount > 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-orange-100 rounded-bl-full -mr-4 -mt-4 opacity-50"></div>}
-        </div>
+        </Link>
       </div>
 
       <DashboardCharts consultationsByProgram={consultationsByProgram} qaStatus={qaStatus} />
