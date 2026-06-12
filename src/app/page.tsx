@@ -139,11 +139,11 @@ export default async function Home() {
             <h2 className="text-2xl font-extrabold text-blue-900">Câu hỏi tư vấn mới nhất</h2>
             <p className="text-gray-500 mt-1">Những thắc mắc thường gặp được giải đáp</p>
           </div>
-          <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0 items-center">
-            <form action="/qa" method="GET" className="relative flex items-center">
+          <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0 items-stretch md:items-center w-full md:w-auto">
+            <form action="/qa" method="GET" className="relative flex items-center w-full md:w-auto">
               <LiveSearch className="w-full md:w-64 text-gray-900 bg-gray-50 border border-gray-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" />
             </form>
-            <Link href="/qa" className="inline-flex text-blue-600 font-semibold hover:underline bg-blue-50 rounded-lg px-4 py-2 whitespace-nowrap">
+            <Link href="/qa" className="inline-flex justify-center text-blue-600 font-semibold hover:underline bg-blue-50 rounded-lg px-4 py-2 whitespace-nowrap w-full md:w-auto">
               Xem tất cả câu hỏi →
             </Link>
           </div>
