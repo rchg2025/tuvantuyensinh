@@ -86,13 +86,3 @@ body {
   overflow-wrap: break-word;
 }
 
-@keyframes text-gradient {
-  to {
-    background-position: 200% center;
-  }
-}
-
-.animate-text-gradient {
-  background-size: 200% auto;
-  animation: text-gradient 3s linear infinite;
-}
