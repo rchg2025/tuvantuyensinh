@@ -7,13 +7,11 @@ const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 let jwtClient: any = null;
 
 if (clientEmail && privateKey) {
-  jwtClient = new google.auth.JWT(
-    clientEmail,
-    undefined,
-    privateKey,
-    ['https://www.googleapis.com/auth/indexing'],
-    undefined
-  );
+  jwtClient = new google.auth.JWT({
+    email: clientEmail,
+    key: privateKey,
+    scopes: ['https://www.googleapis.com/auth/indexing'],
+  });
 }
 
 /**
