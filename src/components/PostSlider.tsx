@@ -60,7 +60,7 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <div key={post.id} className="w-full md:w-1/2 lg:w-1/4 flex-shrink-0 px-2">
             <div className="relative h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-blue-50 bg-white">
               {post.thumbnailUrl ? (
@@ -68,8 +68,8 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
                   src={post.thumbnailUrl} 
                   alt={post.title} 
                   fill
-                  unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  priority={index < 4}
                   className="object-cover"
                 />
               ) : (

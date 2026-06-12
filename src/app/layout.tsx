@@ -10,8 +10,7 @@ import prisma from "@/lib/prisma";
 import dynamic from "next/dynamic";
 import { getDirectImageUrl } from "@/lib/gdrive";
 
-const Chatbot = dynamic(() => import("@/components/Chatbot"));
-const ZaloWidget = dynamic(() => import("@/components/ZaloWidget"));
+import DynamicWidgets from "@/components/DynamicWidgets";
 import VisitorCounter from "@/components/VisitorCounter";
 import BackToTop from "@/components/BackToTop";
 
@@ -170,7 +169,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 flex justify-between items-center min-h-[4rem] py-2">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 font-extrabold text-sm md:text-base leading-tight tracking-tight hover:opacity-90 transition mr-4">
-              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} unoptimized className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
+              <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={32} height={32} priority className="w-8 h-8 rounded-lg object-cover bg-white shadow-sm p-0.5 shrink-0" />
               <span className="lg:max-w-[300px] xl:max-w-[400px] whitespace-normal line-clamp-2 lg:line-clamp-none pr-4">{siteTitle}</span>
             </Link>
 
@@ -269,7 +268,7 @@ export default async function RootLayout({
           <div className="w-full px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4 text-white">
-                <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} unoptimized className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
+                <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
                 <span className="font-bold text-lg">{siteTitle}</span>
               </div>
               <div className="whitespace-pre-line">{footerDesc}</div>
@@ -297,12 +296,18 @@ export default async function RootLayout({
             </div>
           </div>
         </footer>
-        {zaloEnabled && zaloOaWidget && (
-          <ZaloWidget html={zaloOaWidget} position={zaloPosition} />
-        )}
-        {chatbotEnabled && (
-          <Chatbot color={chatbotColor} position={chatbotPosition} width={chatbotWidth} height={chatbotHeight} logoUrl={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} siteTitle={siteTitle} />
-        )}
+        <DynamicWidgets
+          zaloEnabled={zaloEnabled}
+          zaloOaWidget={zaloOaWidget}
+          zaloPosition={zaloPosition}
+          chatbotEnabled={chatbotEnabled}
+          chatbotColor={chatbotColor}
+          chatbotPosition={chatbotPosition}
+          chatbotWidth={chatbotWidth}
+          chatbotHeight={chatbotHeight}
+          logoUrl={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl}
+          siteTitle={siteTitle}
+        />
         <BackToTop />
       </body>
     </html>
