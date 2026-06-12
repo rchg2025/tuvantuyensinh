@@ -15,6 +15,7 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<any>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,7 +63,17 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
       } else {
         fileTag = `<a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
       }
-      setContent((prev: string) => prev + fileTag);
+
+      if (editorRef.current && typeof editorRef.current.selection?.insertHTML === "function") {
+        editorRef.current.selection.insertHTML(fileTag);
+        setContent(editorRef.current.value);
+      } else if (editorRef.current && typeof editorRef.current.s?.insertHTML === "function") {
+        editorRef.current.s.insertHTML(fileTag);
+        setContent(editorRef.current.value);
+      } else {
+        setContent((prev: string) => prev + fileTag);
+      }
+      
       toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
 
     } catch (error: any) {
@@ -174,6 +185,7 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
           </div>
           <div className="border border-slate-200 rounded-lg overflow-hidden prose-sm max-w-none">
              <JoditEditor
+                ref={editorRef}
                 value={content}
                 config={{
                   readonly: false,
