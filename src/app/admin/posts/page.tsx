@@ -9,6 +9,7 @@ import { getDirectImageUrl } from "@/lib/gdrive";
 import Pagination from "@/components/Pagination";
 import LiveSearch from "@/components/LiveSearch";
 import CategoryFilter from "./components/CategoryFilter";
+import DateFilter from "./components/DateFilter";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,8 @@ export default async function AdminPostsPage({
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
   const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : undefined;
   const categoryId = typeof resolvedSearchParams.categoryId === "string" ? resolvedSearchParams.categoryId : undefined;
+  const startDate = typeof resolvedSearchParams.startDate === "string" ? resolvedSearchParams.startDate : undefined;
+  const endDate = typeof resolvedSearchParams.endDate === "string" ? resolvedSearchParams.endDate : undefined;
   const pageSize = 10;
 
   const where: any = {};
@@ -34,6 +37,22 @@ export default async function AdminPostsPage({
   }
   if (categoryId) {
     where.categoryId = categoryId;
+  }
+  if (startDate || endDate) {
+    if (startDate) {
+      const start = new Date(startDate + "T00:00:00+07:00");
+      if (!isNaN(start.getTime())) {
+         where.createdAt = where.createdAt || {};
+         where.createdAt.gte = start;
+      }
+    }
+    if (endDate) {
+      const end = new Date(endDate + "T23:59:59+07:00");
+      if (!isNaN(end.getTime())) {
+         where.createdAt = where.createdAt || {};
+         where.createdAt.lte = end;
+      }
+    }
   }
 
   const [totalPosts, posts] = await Promise.all([
@@ -94,18 +113,31 @@ export default async function AdminPostsPage({
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row gap-3">
-             <form action="/admin/posts" method="GET" className="relative flex items-center w-full md:w-96">
+             <form action="/admin/posts" method="GET" className="relative flex items-center w-full md:flex-1">
                 <input type="hidden" name="tab" value="manage" />
                 <LiveSearch 
                   placeholder="Tìm kiếm tiêu đề, nội dung..." 
                   className="w-full text-slate-800 bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
-                  additionalParams={{ tab: "manage", ...(categoryId ? { categoryId } : {}) }}
+                  additionalParams={{ 
+                    tab: "manage", 
+                    ...(categoryId ? { categoryId } : {}),
+                    ...(startDate ? { startDate } : {}),
+                    ...(endDate ? { endDate } : {})
+                  }}
                 />
              </form>
-             <form action="/admin/posts" method="GET" className="w-full md:w-64">
+             <form action="/admin/posts" method="GET" className="w-full md:w-48">
                 <input type="hidden" name="tab" value="manage" />
                 {q && <input type="hidden" name="q" value={q} />}
+                {startDate && <input type="hidden" name="startDate" value={startDate} />}
+                {endDate && <input type="hidden" name="endDate" value={endDate} />}
                 <CategoryFilter categories={categories} defaultCategoryId={categoryId || ""} />
+             </form>
+             <form action="/admin/posts" method="GET" className="w-full md:w-auto">
+                <input type="hidden" name="tab" value="manage" />
+                {q && <input type="hidden" name="q" value={q} />}
+                {categoryId && <input type="hidden" name="categoryId" value={categoryId} />}
+                <DateFilter defaultStartDate={startDate || ""} defaultEndDate={endDate || ""} />
              </form>
           </div>
           <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
