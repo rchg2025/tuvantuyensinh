@@ -39,19 +39,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   let totalQuestions = 0;
 
   if (q.trim()) {
-    const postWhere = {
-      OR: [
-        { title: { contains: q, mode: "insensitive" as const } },
-        { content: { contains: q, mode: "insensitive" as const } }
-      ]
-    };
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const [postIds, qaIds] = await Promise.all([
+      searchUnaccent('Post', ['title', 'content'], q),
+      searchUnaccent('Question', ['question', 'answer'], q)
+    ]);
 
-    const qaWhere = {
-      OR: [
-        { question: { contains: q, mode: "insensitive" as const } },
-        { answer: { contains: q, mode: "insensitive" as const } }
-      ]
-    };
+    const postWhere = { id: { in: postIds } };
+    const qaWhere = { id: { in: qaIds } };
 
     const postPromise = prisma.post.findMany({
       where: postWhere,

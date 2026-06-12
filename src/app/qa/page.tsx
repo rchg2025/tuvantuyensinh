@@ -24,14 +24,16 @@ export default async function QaPage({
     where: { type: "MAJOR" },
   });
 
+  let qCondition = {};
+  if (q) {
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const matchedIds = await searchUnaccent('Question', ['question', 'answer'], q);
+    qCondition = { id: { in: matchedIds } };
+  }
+
   const queryWhere = {
     ...(tab !== "all" ? { isFromSchool: tab === "school" } : {}),
-    ...(q ? {
-      OR: [
-        { question: { contains: q, mode: "insensitive" as const } },
-        { answer: { contains: q, mode: "insensitive" as const } },
-      ],
-    } : {}),
+    ...qCondition,
   };
 
   const [totalQuestions, questions] = await Promise.all([

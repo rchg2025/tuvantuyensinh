@@ -24,14 +24,12 @@ export default async function AdminQaPage({
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
   const pageSize = 10;
 
-  const searchFilter = q
-    ? {
-        OR: [
-          { question: { contains: q, mode: "insensitive" as const } },
-          { answer: { contains: q, mode: "insensitive" as const } },
-        ],
-      }
-    : {};
+  let searchFilter = {};
+  if (q) {
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const matchedIds = await searchUnaccent('Question', ['question', 'answer'], q);
+    searchFilter = { id: { in: matchedIds } };
+  }
 
   const statusFilter =
     status === "answered"

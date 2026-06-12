@@ -16,11 +16,10 @@ const program = searchParams.program || "";
 
   let where: any = {};
   if (q) {
-    where.OR = [
-      { name: { contains: q, mode: 'insensitive' } },
-      { phone: { contains: q, mode: 'insensitive' } },
-      { email: { contains: q, mode: 'insensitive' } },
-    ];
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const matchedIds = await searchUnaccent('ConsultationRequest', ['name', 'phone', 'email'], q);
+    // If q exists but no matches, where.id = { in: [] } correctly returns 0 records
+    where.id = { in: matchedIds };
   }
   if (status) {
     where.status = status;

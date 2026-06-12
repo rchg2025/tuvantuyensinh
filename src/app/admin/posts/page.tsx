@@ -29,11 +29,9 @@ export default async function AdminPostsPage({
 
   const where: any = {};
   if (q) {
-    where.OR = [
-      { title: { contains: q, mode: 'insensitive' } },
-      { content: { contains: q, mode: 'insensitive' } },
-      { authorName: { contains: q, mode: 'insensitive' } }
-    ];
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const matchedIds = await searchUnaccent('Post', ['title', 'content', 'authorName'], q);
+    where.id = { in: matchedIds };
   }
   if (categoryId) {
     where.categoryId = categoryId;

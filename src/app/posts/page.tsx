@@ -13,12 +13,11 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
   const categorySlug = resolvedParams.categorySlug || "";
   const limit = 12;
 
-  const whereCondition: any = {};
+  let whereCondition: any = {};
   if (q) {
-    whereCondition.OR = [
-      { title: { contains: q, mode: "insensitive" } },
-      { content: { contains: q, mode: "insensitive" } }
-    ];
+    const { searchUnaccent } = await import("@/lib/searchUtils");
+    const matchedIds = await searchUnaccent('Post', ['title', 'content'], q);
+    whereCondition.id = { in: matchedIds };
   }
   if (categorySlug) {
     const category = await prisma.category.findFirst({
