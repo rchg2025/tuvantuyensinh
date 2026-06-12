@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -19,49 +19,26 @@ interface Post {
 }
 
 export default function PostSlider({ posts }: { posts: Post[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) setItemsPerPage(4);
-      else if (window.innerWidth >= 768) setItemsPerPage(2);
-      else setItemsPerPage(1);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const totalPages = Math.ceil(posts.length / itemsPerPage);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % totalPages);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
-  };
-
-  useEffect(() => {
-    if (totalPages <= 1) return;
-    timerRef.current = setInterval(nextSlide, 4000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [totalPages]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   if (posts.length === 0) return null;
 
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { clientWidth } = scrollRef.current;
+      const scrollAmount = direction === "left" ? -clientWidth : clientWidth;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="relative group overflow-hidden -mx-2">
+    <div className="relative group -mx-2">
       <div 
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        ref={scrollRef}
+        className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {posts.map((post, index) => (
-          <div key={post.id} className="w-full md:w-1/2 lg:w-1/4 flex-shrink-0 px-2">
+          <div key={post.id} className="w-full md:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)] flex-shrink-0 snap-start">
             <div className="relative h-64 md:h-72 rounded-2xl overflow-hidden shadow-sm border border-blue-50 bg-white">
               {post.thumbnailUrl ? (
                 <Image 
@@ -69,7 +46,7 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
                   alt={post.title} 
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  priority={index < 4}
+                  priority={index === 0}
                   className="object-cover"
                 />
               ) : (
@@ -97,28 +74,20 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <>
-          <button 
-            onClick={() => {
-              if (timerRef.current) clearInterval(timerRef.current);
-              prevSlide();
-            }} 
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
-          >
-            &#10094;
-          </button>
-          <button 
-            onClick={() => {
-              if (timerRef.current) clearInterval(timerRef.current);
-              nextSlide();
-            }} 
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
-          >
-            &#10095;
-          </button>
-        </>
-      )}
+      <button 
+        onClick={() => scroll("left")} 
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
+        aria-label="Previous slide"
+      >
+        &#10094;
+      </button>
+      <button 
+        onClick={() => scroll("right")} 
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/50 backdrop-blur shadow-sm hover:bg-white flex items-center justify-center text-blue-600 opacity-0 group-hover:opacity-100 transition-all font-bold z-10"
+        aria-label="Next slide"
+      >
+        &#10095;
+      </button>
     </div>
   );
 }
