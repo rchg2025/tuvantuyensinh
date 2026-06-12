@@ -21,6 +21,7 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [previewFile, setPreviewFile] = useState<DriveFile | null>(null);
   const itemsPerPage = 16;
 
   const isMedia = (mimeType: string) => {
@@ -83,8 +84,14 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
     return (b / (1024 * 1024 * 1024)).toFixed(1) + " GB";
   };
 
+  const getPreviewUrl = (file: DriveFile) => {
+    if (!file.webViewLink) return "";
+    // Google Drive webViewLink thường có đuôi /view?usp=drivesdk, thay bằng /preview để nhúng iframe
+    return file.webViewLink.replace(/\/view.*$/, "/preview");
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
       <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar">
           <button
@@ -158,15 +165,13 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
                   )}
                   
                   <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
-                    <a 
-                      href={file.webViewLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
+                    <button 
+                      onClick={() => setPreviewFile(file)}
                       className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
-                      title="Mở tab mới"
+                      title="Xem trước"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
-                    </a>
+                    </button>
                     <button 
                       onClick={() => copyLink(file.webViewLink)}
                       className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
@@ -256,6 +261,52 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
           </div>
         )}
       </div>
+
+      {/* Preview Modal */}
+      {previewFile && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onClick={() => setPreviewFile(null)}></div>
+          <div className="relative bg-white rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50">
+              <h3 className="font-bold text-slate-800 truncate pr-4">{previewFile.name}</h3>
+              <div className="flex items-center gap-2">
+                <a 
+                  href={previewFile.webViewLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
+                  <span>Mở tab mới</span>
+                </a>
+                <button 
+                  onClick={() => setPreviewFile(null)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-200 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 bg-slate-100 relative w-full h-full">
+              {isMedia(previewFile.mimeType) ? (
+                <div className="w-full h-full flex items-center justify-center p-4">
+                  <img 
+                    src={previewFile.thumbnailLink?.replace('=s220', '=s1000') || previewFile.webContentLink} 
+                    alt={previewFile.name} 
+                    className="max-w-full max-h-full object-contain drop-shadow-md rounded"
+                  />
+                </div>
+              ) : (
+                <iframe 
+                  src={getPreviewUrl(previewFile)} 
+                  className="w-full h-full border-0"
+                  allow="autoplay"
+                ></iframe>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
