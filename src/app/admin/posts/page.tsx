@@ -8,6 +8,7 @@ import { deletePostAction } from "./actions";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import Pagination from "@/components/Pagination";
 import LiveSearch from "@/components/LiveSearch";
+import CategoryFilter from "./components/CategoryFilter";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,9 @@ export default async function AdminPostsPage({
   const where: any = {};
   if (q) {
     where.OR = [
-      { title: { contains: q } },
-      { content: { contains: q } },
-      { authorName: { contains: q } }
+      { title: { contains: q, mode: 'insensitive' } },
+      { content: { contains: q, mode: 'insensitive' } },
+      { authorName: { contains: q, mode: 'insensitive' } }
     ];
   }
   if (categoryId) {
@@ -104,18 +105,7 @@ export default async function AdminPostsPage({
              <form action="/admin/posts" method="GET" className="w-full md:w-64">
                 <input type="hidden" name="tab" value="manage" />
                 {q && <input type="hidden" name="q" value={q} />}
-                <select 
-                  name="categoryId" 
-                  title="Lọc theo danh mục"
-                  className="w-full text-slate-800 bg-white border border-slate-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
-                  onChange={(e) => e.target.form?.submit()}
-                  defaultValue={categoryId || ""}
-                >
-                  <option value="">Tất cả danh mục</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                <CategoryFilter categories={categories} defaultCategoryId={categoryId || ""} />
              </form>
           </div>
           <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
