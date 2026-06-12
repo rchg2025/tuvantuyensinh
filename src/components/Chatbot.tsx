@@ -208,7 +208,7 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           >
             <div className="flex items-center gap-2">
               {logoUrl && (
-                <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-full border border-white/20 p-0.5 object-cover bg-white" />
+                <img src={logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-full border border-white/20 p-0.5 object-cover bg-white" />
               )}
               <h3 className="font-bold text-sm leading-tight text-white line-clamp-2 max-w-[220px]">
                 {siteTitle || "Tư vấn tuyển sinh và giới thiệu về nhà trường"}
@@ -219,6 +219,7 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
                 onClick={() => setIsOpen(false)}
                 className="text-white/80 hover:text-white focus:outline-none ml-2 transition-colors"
                 title="Thu nhỏ"
+                aria-label="Thu nhỏ"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -228,6 +229,7 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
                 onClick={handleCloseClick}
                 className="text-white/80 hover:text-white focus:outline-none ml-2 transition-colors"
                 title="Kết thúc trò chuyện"
+                aria-label="Kết thúc trò chuyện"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -317,8 +319,9 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           <button
             className="relative text-white rounded-full shadow-2xl transition-all transform group-hover:scale-110 flex items-center justify-center h-16 w-16 overflow-hidden border-2 border-white"
             style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+            aria-label="Mở chat"
           >
-            <img src="/chatbot-avatar.png" alt="AI Avatar" className="w-full h-full object-cover bg-white" />
+            <img src="/chatbot-avatar.png" alt="AI Avatar" width={64} height={64} className="w-full h-full object-cover bg-white" />
           </button>
         </div>
       )}

@@ -237,7 +237,7 @@ export default async function RootLayout({
               <Link href={isLoggedIn ? "/admin" : "/login"} className={isLoggedIn ? "text-white hover:bg-white/10 p-1.5 rounded-full transition" : "text-sm border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 font-medium transition whitespace-nowrap"} title={isLoggedIn ? (authName || "Trang cá nhân") : "Đăng nhập"}>
                 {isLoggedIn ? (
                   authAvatar ? (
-                    <img src={authAvatar} alt="Avatar" className="w-6 h-6 rounded-full object-cover bg-white" />
+                    <img src={authAvatar} alt="Avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover bg-white" />
                   ) : (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 m-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

@@ -35,13 +35,14 @@ export default function MobileHeaderClient({
             onClick={toggleSidebar}
             className="text-white p-1 hover:bg-blue-700 rounded transition" 
             title="Menu Sidebar"
+            aria-label="Menu Sidebar"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
             </svg>
           </button>
           
-          <Link href="/search" className="text-white p-1 hover:bg-blue-700 rounded transition" title="Tìm kiếm">
+          <Link href="/search" className="text-white p-1 hover:bg-blue-700 rounded transition" title="Tìm kiếm" aria-label="Tìm kiếm">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -54,7 +55,7 @@ export default function MobileHeaderClient({
             <div className="flex items-center justify-center gap-2">
               <Link href="/admin" className="flex items-center justify-center gap-1.5 truncate text-white hover:text-blue-200 transition">
                 {authAvatar && (
-                  <img src={authAvatar} alt="Avatar" className="w-5 h-5 rounded-full object-cover border border-white/30 shrink-0" />
+                  <img src={authAvatar} alt="Avatar" width={20} height={20} className="w-5 h-5 rounded-full object-cover border border-white/30 shrink-0" />
                 )}
                 <span className="truncate">{authName || "Trang cá nhân"}</span>
               </Link>
@@ -63,6 +64,7 @@ export default function MobileHeaderClient({
                   type="submit"
                   className="text-red-300 hover:text-red-100 p-1 bg-red-900/30 rounded-full transition" 
                   title="Thoát đăng nhập"
+                  aria-label="Thoát đăng nhập"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -85,6 +87,7 @@ export default function MobileHeaderClient({
         }}
           className={`text-white p-1 hover:bg-blue-700 rounded transition ${isHeaderMenuOpen ? "bg-blue-700" : ""}`} 
           title="Menu Header"
+          aria-label="Menu Header"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />

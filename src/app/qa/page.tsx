@@ -213,7 +213,7 @@ export default async function QaPage({
                 {/* Question */}
                 <div className="p-5 flex items-start gap-4">
                   {q.isFromSchool && adminAvatars[q.askerName] ? (
-                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
+                    <img src={adminAvatars[q.askerName]!} alt={q.askerName} width={40} height={40} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
                   ) : (
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
                       {q.askerName.charAt(0).toUpperCase()}
@@ -244,7 +244,7 @@ export default async function QaPage({
                 {q.answer ? (
                   <div className="bg-blue-50 border-t border-blue-100 px-5 py-4 flex items-start gap-4">
                     {adminAvatars[q.answeredBy || ""] ? (
-                      <img src={adminAvatars[q.answeredBy || ""]!} alt={q.answeredBy || "Chuyên viên tư vấn"} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-600" />
+                      <img src={adminAvatars[q.answeredBy || ""]!} alt={q.answeredBy || "Chuyên viên tư vấn"} width={40} height={40} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-600" />
                     ) : (
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
                         {q.answeredBy ? q.answeredBy.charAt(0).toUpperCase() : "TV"}

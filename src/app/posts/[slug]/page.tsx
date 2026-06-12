@@ -121,7 +121,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
             return (
               <div className="mt-10 pt-6 border-t border-gray-100 bg-gray-50 p-6 rounded-xl">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><span>📎</span> File đính kèm / Tài liệu</h3>
-                <a href={post.attachments} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm mb-6">
+                <a href={post.attachments} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm mb-6">
                     ⬇️ Tải xuống file đính kèm
                 </a>
                 

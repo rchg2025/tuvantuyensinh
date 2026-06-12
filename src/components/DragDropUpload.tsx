@@ -138,7 +138,7 @@ export default function DragDropUpload({ name, defaultValue = "", accept = "imag
           {accept.includes("image") ? (
             <img src={fileUrl.includes('drive.google.com/') ? fileUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w256') : fileUrl} alt="Preview" className="h-20 object-contain rounded border border-gray-200 bg-gray-50" />
           ) : (
-            <a href={fileUrl} target="_blank" rel="noreferrer" className="text-blue-600 text-sm hover:underline break-words">
+            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline break-words">
               {fileUrl}
             </a>
           )}
