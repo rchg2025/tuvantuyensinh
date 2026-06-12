@@ -47,7 +47,7 @@ export default async function Home() {
 
   const latestPosts = rawLatestPosts.map(post => ({
     ...post,
-    thumbnailUrl: post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl) : null
+    thumbnailUrl: post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl, 400) : null
   }));
 
   return (

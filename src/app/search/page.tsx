@@ -119,7 +119,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                     {post.thumbnailUrl && (
                       <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-40 flex-shrink-0 relative">
                         <Image 
-                          src={getDirectImageUrl(post.thumbnailUrl)} 
+                          src={getDirectImageUrl(post.thumbnailUrl, 400)} 
                           alt={post.title} 
                           fill
                           unoptimized

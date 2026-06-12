@@ -71,7 +71,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
       <div className="bg-white rounded-2xl border border-blue-100 shadow-sm w-full overflow-hidden">
         {post.thumbnailUrl && (
-          <img src={getDirectImageUrl(post.thumbnailUrl)} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
+          <img src={getDirectImageUrl(post.thumbnailUrl, 800)} alt={post.title} className="w-full h-auto max-h-[500px] object-cover" />
         )}
         <div className="p-6 md:p-10 w-full overflow-hidden">
           <div className="flex items-center justify-between text-sm text-gray-500 font-medium border-b border-gray-200 pb-4 mb-6">

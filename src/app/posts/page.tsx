@@ -97,7 +97,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
                 {post.thumbnailUrl && (
                   <Link href={`/posts/${post.slug || post.id}`} className="block w-full h-48 flex-shrink-0 relative">
                     <Image 
-                      src={getDirectImageUrl(post.thumbnailUrl)} 
+                      src={getDirectImageUrl(post.thumbnailUrl, 400)} 
                       alt={post.title} 
                       fill
                       unoptimized
