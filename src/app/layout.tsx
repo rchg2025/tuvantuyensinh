@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import "./globals.css";
@@ -164,7 +165,29 @@ export default async function RootLayout({
       lang="vi"
       className={`${roboto.variable} font-sans h-full antialiased`}
     >
+      <head>
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M8RND5MP');`
+        }} />
+        {/* Google Analytics */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-HZRVKSY02C" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-HZRVKSY02C');`
+        }} />
+      </head>
       <body className="min-h-full flex flex-col bg-[#f0f6ff] text-gray-900">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8RND5MP" height="0" width="0" style={{ display: "none", visibility: "hidden" }}></iframe>
+        </noscript>
         <header className="bg-blue-700 text-white shadow-lg sticky top-0 z-50">
           <div className="w-full px-4 md:px-8 flex justify-between items-center min-h-[4rem] py-2">
             {/* Logo */}
