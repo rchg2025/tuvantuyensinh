@@ -7,6 +7,7 @@ import PostForm from "./components/PostForm";
 import { deletePostAction } from "./actions";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import Pagination from "@/components/Pagination";
+import LiveSearch from "@/components/LiveSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,26 @@ export default async function AdminPostsPage({
   const resolvedSearchParams = await searchParams;
   const tab = typeof resolvedSearchParams.tab === "string" ? resolvedSearchParams.tab : "manage"; // 'manage' or 'create'
   const page = typeof resolvedSearchParams.page === "string" ? parseInt(resolvedSearchParams.page) : 1;
+  const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : undefined;
+  const categoryId = typeof resolvedSearchParams.categoryId === "string" ? resolvedSearchParams.categoryId : undefined;
   const pageSize = 10;
 
+  const where: any = {};
+  if (q) {
+    where.OR = [
+      { title: { contains: q } },
+      { content: { contains: q } },
+      { authorName: { contains: q } }
+    ];
+  }
+  if (categoryId) {
+    where.categoryId = categoryId;
+  }
+
   const [totalPosts, posts] = await Promise.all([
-    prisma.post.count(),
+    prisma.post.count({ where }),
     prisma.post.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -76,6 +92,32 @@ export default async function AdminPostsPage({
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row gap-3">
+             <form action="/admin/posts" method="GET" className="relative flex items-center w-full md:w-96">
+                <input type="hidden" name="tab" value="manage" />
+                <LiveSearch 
+                  placeholder="Tìm kiếm tiêu đề, nội dung..." 
+                  className="w-full text-slate-800 bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                  additionalParams={{ tab: "manage", ...(categoryId ? { categoryId } : {}) }}
+                />
+             </form>
+             <form action="/admin/posts" method="GET" className="w-full md:w-64">
+                <input type="hidden" name="tab" value="manage" />
+                {q && <input type="hidden" name="q" value={q} />}
+                <select 
+                  name="categoryId" 
+                  title="Lọc theo danh mục"
+                  className="w-full text-slate-800 bg-white border border-slate-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                  onChange={(e) => e.target.form?.submit()}
+                  defaultValue={categoryId || ""}
+                >
+                  <option value="">Tất cả danh mục</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+             </form>
+          </div>
           <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
             <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
               <tr>
