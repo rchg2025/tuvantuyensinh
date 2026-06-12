@@ -35,8 +35,9 @@ export async function searchUnaccent(
     
     for (const field of fields) {
       // Coalesce the field to empty string to prevent unaccent(NULL) errors
+      // Use double quotes around the field to preserve camelCase in Postgres
       fieldConditions.push(
-        Prisma.sql`unaccent(COALESCE(${Prisma.raw(field)}, '')) ILIKE unaccent(${wordParam})`
+        Prisma.sql`unaccent(COALESCE("${Prisma.raw(field)}", '')) ILIKE unaccent(${wordParam})`
       );
     }
     
