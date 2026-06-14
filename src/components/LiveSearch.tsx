@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { useVoiceRecognition } from "@/hooks/useVoiceRecognition";
 
 export default function LiveSearch({
@@ -23,39 +23,35 @@ export default function LiveSearch({
     handleSearch(text);
   });
 
-  // Minimal hook for debounce without lodash/use-debounce
-  const debounce = (func: (...args: any[]) => void, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func(...args);
-      }, delay);
-    };
-  };
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearch = useCallback(
-    debounce((nextValue: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (nextValue) {
-        params.set("q", nextValue);
-      } else {
-        params.delete("q");
-      }
+    (nextValue: string) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
       
-      // Auto reset page map for UX
-      if (params.has("page")) params.delete("page");
-
-      // Inject any additional params (like tab=all)
-      Object.entries(additionalParams).forEach(([k, v]) => {
-        if (!params.has(k)) {
-          params.set(k, v);
+      timeoutRef.current = setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (nextValue) {
+          params.set("q", nextValue);
+        } else {
+          params.delete("q");
         }
-      });
+        
+        // Auto reset page map for UX
+        if (params.has("page")) params.delete("page");
 
-      router.push(`${pathname}?${params.toString()}`);
-    }, 400),
-    [pathname, router, searchParams, additionalParams]
+        // Inject any additional params (like tab=all)
+        Object.entries(additionalParams).forEach(([k, v]) => {
+          if (!params.has(k)) {
+            params.set(k, v);
+          }
+        });
+
+        router.push(`${pathname}?${params.toString()}`);
+      }, 400);
+    },
+    // We omit additionalParams from deps or stringify it to prevent infinite re-renders/re-creations
+    [pathname, router, searchParams] 
   );
 
   return (
