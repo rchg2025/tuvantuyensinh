@@ -34,11 +34,18 @@ export default function MediaLibraryModal({
   const [loading, setLoading] = useState(false);
   const [nextPageToken, setNextPageToken] = useState<string | undefined>();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [searchInput, setSearchInput] = useState("");
 
-  const loadMedia = useCallback(async (token?: string) => {
+  const loadMedia = useCallback(async (token?: string, search?: string) => {
     setLoading(true);
     try {
-      const query = accept.includes("image") ? "mimeType contains 'image/'" : "";
+      let query = accept.includes("image") ? "mimeType contains 'image/'" : "";
+      const currentSearch = search !== undefined ? search : searchInput;
+      if (currentSearch.trim()) {
+        const searchParam = `name contains '${currentSearch.trim().replace(/'/g, "\\'")}'`;
+        query = query ? `${query} and ${searchParam}` : searchParam;
+      }
+      
       const res = await listMediaAction(token, query);
       if (res.success && res.files) {
         setFiles(prev => token ? [...prev, ...res.files] : res.files);
@@ -49,13 +56,19 @@ export default function MediaLibraryModal({
     } finally {
       setLoading(false);
     }
-  }, [accept]);
+  }, [accept, searchInput]);
 
   useEffect(() => {
-    if (isOpen && activeTab === "library" && files.length === 0) {
-      loadMedia();
+    if (isOpen && activeTab === "library") {
+      const delayDebounceFn = setTimeout(() => {
+        setFiles([]);
+        setNextPageToken(undefined);
+        loadMedia(undefined, searchInput);
+      }, searchInput ? 500 : 0); // 0 delay for initial/empty load
+      
+      return () => clearTimeout(delayDebounceFn);
     }
-  }, [isOpen, activeTab, files.length, loadMedia]);
+  }, [searchInput, isOpen, activeTab, loadMedia]);
 
   const toggleSelect = (file: MediaFile) => {
     const newSet = new Set(selectedIds);
@@ -108,7 +121,31 @@ export default function MediaLibraryModal({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 relative">
+          {activeTab === "library" && (
+            <div className="mb-6">
+              <div className="relative max-w-md w-full">
+                <input 
+                  type="text" 
+                  placeholder="Tìm kiếm tệp tin..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                />
+                <svg className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {searchInput && (
+                  <button 
+                    onClick={() => setSearchInput("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
           {activeTab === "upload" ? (
             <div>{children}</div>
           ) : (
