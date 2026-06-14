@@ -73,12 +73,12 @@ export async function listMediaAction(pageToken?: string, query?: string) {
       const finalUrl = isImage ? getDirectImageUrl("https://drive.google.com/uc?export=view&id=" + file.id) : url;
 
       return {
-        id: file.id,
-        name: file.name,
-        mimeType: file.mimeType,
+        id: file.id || "",
+        name: file.name || "Unknown",
+        mimeType: file.mimeType || "application/octet-stream",
         url: finalUrl,
         thumbnail: file.thumbnailLink || finalUrl, // use thumbnailLink if available
-        createdTime: file.createdTime
+        createdTime: file.createdTime || ""
       };
     });
 

@@ -42,7 +42,7 @@ export default function MediaLibraryModal({
       const res = await listMediaAction(token, query);
       if (res.success && res.files) {
         setFiles(prev => token ? [...prev, ...res.files] : res.files);
-        setNextPageToken(res.nextPageToken);
+        setNextPageToken(res.nextPageToken || undefined);
       }
     } catch (error) {
       console.error("Failed to load media", error);
