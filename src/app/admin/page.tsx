@@ -5,7 +5,7 @@ import { DashboardCharts } from "./components/DashboardCharts";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [postCount, questionCount, answeredCount, consultationCount, pendingConsultationCount, recentConsultations] = await Promise.all([
+  const [postCount, questionCount, answeredCount, consultationCount, pendingConsultationCount, recentConsultations, topPosts] = await Promise.all([
     prisma.post.count(),
     prisma.question.count(),
     prisma.question.count({ where: { answer: { not: null } } }),
@@ -14,6 +14,11 @@ export default async function AdminDashboard() {
     prisma.consultationRequest.findMany({
       orderBy: { createdAt: "desc" },
       take: 5
+    }),
+    prisma.post.findMany({
+      orderBy: { viewCount: "desc" },
+      take: 5,
+      select: { id: true, title: true, slug: true, viewCount: true, createdAt: true, category: { select: { name: true } } }
     })
   ]);
 
@@ -84,40 +89,74 @@ export default async function AdminDashboard() {
 
       <DashboardCharts consultationsByProgram={consultationsByProgram} qaStatus={qaStatus} />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mt-8">
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-slate-800">Đăng ký tư vấn gần đây</h3>
-          <Link href="/admin/consultations" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả &rarr;</Link>
-        </div>
-        <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[800px]">
-          <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
-            <tr>
-              <th className="p-4">Tên</th>
-              <th className="p-4">SĐT</th>
-              <th className="p-4">Thời gian</th>
-              <th className="p-4">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-sm">
-            {recentConsultations.map((c: any) => (
-              <tr key={c.id} className="hover:bg-slate-50 transition-colors">
-                <td className="p-4 align-top font-bold text-slate-800">{c.name}</td>
-                <td className="p-4 align-middle text-slate-600">{c.phone}</td>
-                <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
-                <td className="p-4 align-middle">
-                  <span className={`${statusColors[c.status || "Cần tư vấn"] || statusColors["Cần tư vấn"]} font-semibold px-2 py-1 rounded text-xs block w-max`}>
-                    {c.status || "Cần tư vấn"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {recentConsultations.length === 0 && (
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+            <h3 className="text-lg font-bold text-slate-800">Đăng ký tư vấn gần đây</h3>
+            <Link href="/admin/consultations" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả &rarr;</Link>
+          </div>
+          <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[600px]">
+            <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
               <tr>
-                <td colSpan={4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
+                <th className="p-4">Tên</th>
+                <th className="p-4">SĐT</th>
+                <th className="p-4">Thời gian</th>
+                <th className="p-4">Trạng thái</th>
               </tr>
-            )}
-          </tbody>
-        </table></div>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm">
+              {recentConsultations.map((c: any) => (
+                <tr key={c.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 align-top font-bold text-slate-800">{c.name}</td>
+                  <td className="p-4 align-middle text-slate-600">{c.phone}</td>
+                  <td className="p-4 align-middle text-slate-500">{new Date(c.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                  <td className="p-4 align-middle">
+                    <span className={`${statusColors[c.status || "Cần tư vấn"] || statusColors["Cần tư vấn"]} font-semibold px-2 py-1 rounded text-xs block w-max`}>
+                      {c.status || "Cần tư vấn"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {recentConsultations.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-slate-500">Chưa có đăng ký nào.</td>
+                </tr>
+              )}
+            </tbody>
+          </table></div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+            <h3 className="text-lg font-bold text-slate-800">Top bài viết xem nhiều nhất</h3>
+            <Link href="/admin/posts" className="text-sm text-blue-600 hover:text-blue-800 font-semibold">Xem tất cả &rarr;</Link>
+          </div>
+          <div className="overflow-x-auto w-full"><table className="w-full text-left min-w-[600px]">
+            <thead className="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
+              <tr>
+                <th className="p-4">Tiêu đề</th>
+                <th className="p-4 text-center">Lượt xem</th>
+                <th className="p-4">Ngày đăng</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-sm">
+              {topPosts.map((p: any) => (
+                <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 align-middle font-bold text-slate-800 max-w-xs truncate">
+                    <Link href={`/posts/${p.slug || p.id}`} target="_blank" className="hover:text-blue-600 transition-colors" title={p.title}>{p.title}</Link>
+                  </td>
+                  <td className="p-4 align-middle text-center text-slate-500 font-semibold">{p.viewCount || 0}</td>
+                  <td className="p-4 align-middle text-slate-500">{new Date(p.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                </tr>
+              ))}
+              {topPosts.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="p-8 text-center text-slate-500">Chưa có bài viết nào.</td>
+                </tr>
+              )}
+            </tbody>
+          </table></div>
+        </div>
       </div>
     </div>
   );
