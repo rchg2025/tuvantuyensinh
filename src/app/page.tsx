@@ -4,6 +4,7 @@ import LiveSearch from "@/components/LiveSearch";
 import PostSlider from "@/components/PostSlider";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import LinkifyText from "@/components/LinkifyText";
+import HomeSearchForm from "./HomeSearchForm";
 export const revalidate = 60;
 
 export default async function Home() {
@@ -71,18 +72,7 @@ export default async function Home() {
           
           {/* Smart Search Bar */}
           <div className="max-w-xl mx-auto mt-8">
-            <form action="/search" method="GET" className="relative flex items-center">
-              <span className="absolute left-4 text-gray-400 text-xl">🔍</span>
-              <input 
-                type="text" 
-                name="q"
-                placeholder="Tìm kiếm câu hỏi, bài viết..." 
-                className="w-full text-gray-900 bg-white shadow-xl rounded-full py-4 pl-12 pr-32 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-all text-sm font-medium"
-              />
-              <button type="submit" className="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold transition-colors">
-                Tìm kiếm
-              </button>
-            </form>
+            <HomeSearchForm />
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
