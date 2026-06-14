@@ -64,13 +64,34 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
         fileTag = `<a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
       }
 
-      if (editorRef.current && typeof editorRef.current.selection?.insertHTML === "function") {
-        editorRef.current.selection.insertHTML(fileTag);
-        setContent(editorRef.current.value);
-      } else if (editorRef.current && typeof editorRef.current.s?.insertHTML === "function") {
-        editorRef.current.s.insertHTML(fileTag);
-        setContent(editorRef.current.value);
-      } else {
+      try {
+        let inserted = false;
+        if (editorRef.current) {
+          // Thử nhiều cách lấy instance của Jodit
+          const editorInstance = editorRef.current.editor || editorRef.current;
+          
+          if (typeof editorInstance.selection?.insertHTML === "function") {
+            editorInstance.selection.insertHTML(fileTag);
+            inserted = true;
+          } else if (typeof editorInstance.s?.insertHTML === "function") {
+            editorInstance.s.insertHTML(fileTag);
+            inserted = true;
+          }
+          
+          if (inserted) {
+            // Cập nhật lại state content ngay lập tức
+            const newValue = editorInstance.value || editorInstance.getEditorValue?.();
+            if (newValue) {
+              setContent(newValue);
+            }
+          }
+        }
+        
+        if (!inserted) {
+          setContent((prev: string) => prev + fileTag);
+        }
+      } catch (err) {
+        console.warn("Lỗi chèn Jodit, chèn vào cuối bài", err);
         setContent((prev: string) => prev + fileTag);
       }
       
