@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Định nghĩa types cho Web Speech API để không bị lỗi TypeScript
 declare global {
@@ -23,6 +23,11 @@ export function useVoiceRecognition(
   const [transcript, setTranscript] = useState('');
   const [recognition, setRecognition] = useState<any>(null);
 
+  const onResultRef = useRef(onResult);
+  useEffect(() => {
+    onResultRef.current = onResult;
+  }, [onResult]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -40,8 +45,8 @@ export function useVoiceRecognition(
           setTranscript(currentTranscript);
           
           // Khi nhận diện xong một cụm
-          if (event.results[0].isFinal && onResult) {
-            onResult(currentTranscript.trim());
+          if (event.results[0].isFinal && onResultRef.current) {
+            onResultRef.current(currentTranscript.trim());
           }
         };
 
@@ -57,7 +62,7 @@ export function useVoiceRecognition(
         setRecognition(recognitionInstance);
       }
     }
-  }, [onResult]);
+  }, []);
 
   const startListening = useCallback(() => {
     if (recognition && !isListening) {
