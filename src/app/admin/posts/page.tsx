@@ -144,6 +144,7 @@ export default async function AdminPostsPage({
                 <th className="p-4 w-1/4">Tiêu đề</th>
                 <th className="p-4">Danh mục</th>
                 <th className="p-4">Người đăng</th>
+                <th className="p-4 text-center">Lượt xem</th>
                 <th className="p-4">Ngày đăng</th>
                 <th className="p-4 text-center">Hành động</th>
               </tr>
@@ -161,7 +162,8 @@ export default async function AdminPostsPage({
                   </td>
                   <td className="p-4 align-middle text-slate-500">{post.category?.name || "Không có"}</td>
                   <td className="p-4 align-middle text-slate-500">{(post as any).authorName || "Không có"}</td>
-                  <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</td>
+                  <td className="p-4 align-middle text-center text-slate-500 font-semibold">{post.viewCount || 0}</td>
+                  <td className="p-4 align-middle text-slate-500">{new Date(post.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" })}</td>
                   <td className="p-4 align-middle text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Link href={`/posts/${post.slug || post.id}`} target="_blank" className="text-green-600 hover:text-green-800 font-bold px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition text-xs">Xem</Link>                                        <a href={`/admin/posts/${post.id}/edit`} className="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition text-xs">
