@@ -48,3 +48,43 @@ export async function finalizeUploadAction(fileId: string, mimeType: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function listMediaAction(pageToken?: string, query?: string) {
+  try {
+    const { listDriveFiles, getDirectImageUrl } = await import("@/lib/gdrive");
+    const result = await listDriveFiles(pageToken, query);
+    
+    // Transform URLs to direct image URLs if they are images
+    const files = result.files.map(file => {
+      const isImage = file.mimeType?.startsWith("image/");
+      const webViewLink = file.webViewLink || "";
+      let url = webViewLink;
+      
+      if (webViewLink.includes('drive.google.com/file/d/')) {
+         const id = webViewLink.split('/d/')[1]?.split('/')[0];
+         if (id) {
+             url = "https://drive.google.com/uc?export=view&id=" + id;
+         }
+      } else if (file.webContentLink) {
+         // Alternatively use webContentLink if available
+         url = file.webContentLink;
+      }
+
+      const finalUrl = isImage ? getDirectImageUrl("https://drive.google.com/uc?export=view&id=" + file.id) : url;
+
+      return {
+        id: file.id,
+        name: file.name,
+        mimeType: file.mimeType,
+        url: finalUrl,
+        thumbnail: file.thumbnailLink || finalUrl, // use thumbnailLink if available
+        createdTime: file.createdTime
+      };
+    });
+
+    return { success: true, files, nextPageToken: result.nextPageToken };
+  } catch (error: any) {
+    console.error("Lỗi listMediaAction:", error);
+    return { success: false, error: error.message };
+  }
+}

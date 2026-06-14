@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { uploadFileAction } from "@/app/admin/uploadAction";
+import MediaLibraryModal from "@/components/MediaLibraryModal";
 
 interface GalleryConfig {
   style: string;
@@ -83,8 +84,8 @@ export default function GalleryUploader({
   };
 
   const [showSettings, setShowSettings] = useState(false);
-
   const [isDragging, setIsDragging] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -100,6 +101,20 @@ export default function GalleryUploader({
       handleFileChange(e.dataTransfer.files);
     }
   };
+
+  const renderUploadUI = () => (
+    <div 
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      onClick={() => !isUploading && fileInputRef.current?.click()}
+      className={`w-full transition-colors border-2 border-dashed rounded-lg p-8 text-center cursor-pointer ${isDragging ? "border-blue-500 bg-blue-50" : "border-slate-300 hover:bg-slate-50 bg-slate-50/50"}`}
+    >
+       <div className="text-slate-500 pointer-events-none">
+          {isDragging ? "Thả ảnh vào đây..." : "Kéo thả ảnh vào đây hoặc click để tải lên."}
+       </div>
+    </div>
+  );
 
   return (
     <div className="w-full space-y-4">
@@ -119,7 +134,7 @@ export default function GalleryUploader({
            <button
              type="button"
              disabled={isUploading}
-             onClick={() => fileInputRef.current?.click()}
+             onClick={() => setIsModalOpen(true)}
              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-600 border border-blue-200 hover:bg-blue-50 rounded bg-white transition-colors disabled:opacity-50"
            >
              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +149,10 @@ export default function GalleryUploader({
           ref={fileInputRef} 
           className="hidden" 
           accept="image/*"
-          onChange={(e) => handleFileChange(e.target.files)}
+          onChange={(e) => {
+            handleFileChange(e.target.files);
+            setIsModalOpen(false);
+          }}
         />
       </div>
 
@@ -209,7 +227,7 @@ export default function GalleryUploader({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
-        onClick={() => { if (images.length === 0 && !isUploading) fileInputRef.current?.click(); }}
+        onClick={() => { if (images.length === 0 && !isUploading) setIsModalOpen(true); }}
         className={`w-full transition-colors ${images.length === 0 ? "border-2 border-dashed rounded-lg p-8 text-center cursor-pointer" : "cursor-default"} ${isDragging ? "border-blue-500 bg-blue-50" : images.length === 0 ? "border-slate-300 hover:bg-slate-50 bg-slate-50/50" : ""}`}
       >
 
@@ -242,6 +260,25 @@ export default function GalleryUploader({
         </div>
       )}
       </div>
+
+      {isModalOpen && (
+        <MediaLibraryModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelect={(selectedFiles) => {
+             const newUrls = selectedFiles.map(f => f.url);
+             setImages(prev => [...prev, ...newUrls]);
+             toast.success(`Đã thêm ${newUrls.length} ảnh từ thư viện!`);
+          }}
+          multiSelect={true}
+          accept="image/*"
+        >
+          <div className="p-4">
+             <h4 className="text-sm font-semibold text-slate-700 mb-2">Tải ảnh mới lên:</h4>
+             {renderUploadUI()}
+          </div>
+        </MediaLibraryModal>
+      )}
     </div>
   );
 }

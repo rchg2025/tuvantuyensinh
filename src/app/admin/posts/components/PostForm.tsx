@@ -7,12 +7,14 @@ import { createPostAction } from "../actions";
 import DragDropUpload from "@/components/DragDropUpload";
 import { uploadFileAction } from "@/app/admin/uploadAction";
 import GalleryUploader from "./GalleryUploader";
+import MediaLibraryModal from "@/components/MediaLibraryModal";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 export default function PostForm({ defaultValues, categories = [] }: { defaultValues?: any, categories?: any[] }) {
   const [content, setContent] = useState(defaultValues?.content || "");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<any>(null);
@@ -57,17 +59,30 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
       }
 
       // Insert to content
+      insertToEditor(uploadedUrl, file.name, file.type);
+      
+      toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
+      setIsEditorModalOpen(false);
+
+    } catch (error: any) {
+      toast.error("Lỗi: " + (error?.message || "Đã xảy ra lỗi khi tải tệp!"), { id: toastId });
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const insertToEditor = (uploadedUrl: string, fileName: string, fileType: string) => {
       let fileTag = "";
-      if (file.type.startsWith("image/")) {
-        fileTag = `<img src="${uploadedUrl}" alt="${file.name}" />`;
+      if (fileType.startsWith("image/")) {
+        fileTag = `<img src="${uploadedUrl}" alt="${fileName}" />`;
       } else {
-        fileTag = `<a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${file.name}</a>`;
+        fileTag = `<a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${fileName}</a>`;
       }
 
       try {
         let inserted = false;
         if (editorRef.current) {
-          // Thử nhiều cách lấy instance của Jodit
           const editorInstance = editorRef.current.editor || editorRef.current;
           
           if (typeof editorInstance.selection?.insertHTML === "function") {
@@ -79,7 +94,6 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
           }
           
           if (inserted) {
-            // Cập nhật lại state content ngay lập tức
             const newValue = editorInstance.value || editorInstance.getEditorValue?.();
             if (newValue) {
               setContent(newValue);
@@ -94,15 +108,6 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
         console.warn("Lỗi chèn Jodit, chèn vào cuối bài", err);
         setContent((prev: string) => prev + fileTag);
       }
-      
-      toast.success("Đã chèn tệp vào bài viết!", { id: toastId });
-
-    } catch (error: any) {
-      toast.error("Lỗi: " + (error?.message || "Đã xảy ra lỗi khi tải tệp!"), { id: toastId });
-    } finally {
-      setIsUploadingImage(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
   };
 
   const handleSubmit = async (formData: FormData) => {
@@ -193,7 +198,7 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
                 type="button"
                 disabled={isUploadingImage}
                 onClick={() => {
-                  if (!isUploadingImage) fileInputRef.current?.click();
+                  if (!isUploadingImage) setIsEditorModalOpen(true);
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 rounded bg-white transition-colors disabled:opacity-50"
               >
@@ -224,6 +229,32 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
           {defaultValues ? "Cập nhật bài viết" : "Đăng bài viết"}
         </button>
       </form>
+
+      {isEditorModalOpen && (
+        <MediaLibraryModal
+          isOpen={isEditorModalOpen}
+          onClose={() => setIsEditorModalOpen(false)}
+          onSelect={(selectedFiles) => {
+            selectedFiles.forEach(f => {
+              insertToEditor(f.url, f.name, f.mimeType);
+            });
+            toast.success(`Đã chèn ${selectedFiles.length} tệp!`);
+          }}
+          multiSelect={true}
+          accept="*/*"
+        >
+          <div className="p-8 text-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50">
+             <div className="text-slate-500 mb-4">Click nút dưới đây để chọn file từ máy tính của bạn.</div>
+             <button 
+               type="button" 
+               onClick={() => fileInputRef.current?.click()} 
+               className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"
+             >
+               Chọn file từ máy tính
+             </button>
+          </div>
+        </MediaLibraryModal>
+      )}
     </div>
   );
 }

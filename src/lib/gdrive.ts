@@ -169,3 +169,34 @@ export async function makeFilePublic(fileId: string) {
   });
   return "https://drive.google.com/uc?export=view&id=" + fileId;
 }
+
+export async function listDriveFiles(pageToken?: string, query?: string) {
+  const auth = await getDriveAuth();
+  const { folderId } = await getDriveConfig();
+  const drive = google.drive({ version: "v3", auth });
+
+  if (!folderId) {
+    throw new Error("Chua cau hinh Folder ID");
+  }
+
+  // Mặc định chỉ lấy các file trong folderId, không bị xoá
+  let q = `'${folderId}' in parents and trashed = false`;
+  if (query) {
+    q += ` and ${query}`;
+  }
+
+  const res = await drive.files.list({
+    q: q,
+    pageSize: 30, // 30 files per page
+    pageToken: pageToken,
+    fields: "nextPageToken, files(id, name, mimeType, webViewLink, webContentLink, thumbnailLink, createdTime)",
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    orderBy: "createdTime desc" // Mới nhất lên trước
+  });
+
+  return {
+    files: res.data.files || [],
+    nextPageToken: res.data.nextPageToken
+  };
+}
