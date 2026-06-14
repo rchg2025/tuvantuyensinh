@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { listMediaAction } from "@/app/admin/uploadAction";
+import { useVoiceRecognition } from "@/hooks/useVoiceRecognition";
 
 interface MediaFile {
   id: string;
@@ -35,6 +36,10 @@ export default function MediaLibraryModal({
   const [nextPageToken, setNextPageToken] = useState<string | undefined>();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchInput, setSearchInput] = useState("");
+
+  const { isListening, startListening, stopListening, hasRecognitionSupport } = useVoiceRecognition((text) => {
+    setSearchInput(text);
+  });
 
   const loadMedia = useCallback(async (token?: string, search?: string) => {
     setLoading(true);
@@ -124,25 +129,51 @@ export default function MediaLibraryModal({
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50 relative">
           {activeTab === "library" && (
             <div className="mb-6">
-              <div className="relative max-w-md w-full">
+              <div className="relative w-full">
                 <input 
                   type="text" 
-                  placeholder="Tìm kiếm tệp tin..."
+                  placeholder={isListening ? "Đang nghe..." : "Tìm kiếm tệp tin bằng văn bản hoặc giọng nói..."}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
+                  className={`w-full pl-10 ${hasRecognitionSupport ? 'pr-20' : 'pr-10'} py-2.5 rounded-xl border ${isListening ? 'border-blue-400 ring-2 ring-blue-100 bg-blue-50/30' : 'border-slate-200'} focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white transition-all`}
                 />
-                <svg className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${isListening ? 'text-blue-500' : 'text-slate-400'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                {searchInput && (
-                  <button 
-                    onClick={() => setSearchInput("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                )}
+                
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {searchInput && (
+                    <button 
+                      onClick={() => setSearchInput("")}
+                      className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+                      title="Xóa tìm kiếm"
+                    >
+                      <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                  )}
+                  {hasRecognitionSupport && (
+                    <button
+                      onClick={isListening ? stopListening : startListening}
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        isListening 
+                          ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                          : 'text-blue-500 hover:bg-blue-50'
+                      }`}
+                      title={isListening ? "Dừng ghi âm" : "Tìm kiếm bằng giọng nói"}
+                    >
+                      {isListening ? (
+                        <svg className="w-5 h-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
