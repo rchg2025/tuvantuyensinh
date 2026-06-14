@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -20,6 +20,25 @@ interface Post {
 
 export default function PostSlider({ posts }: { posts: Post[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered || posts.length === 0) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { clientWidth, scrollLeft, scrollWidth } = scrollRef.current;
+        // Nếu đã cuộn đến cuối, quay lại từ đầu
+        if (scrollLeft + clientWidth >= scrollWidth - 10) {
+          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          scrollRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
+        }
+      }
+    }, 4000); // Tự động trượt mỗi 4 giây
+
+    return () => clearInterval(interval);
+  }, [isHovered, posts.length]);
 
   if (posts.length === 0) return null;
 
@@ -32,7 +51,11 @@ export default function PostSlider({ posts }: { posts: Post[] }) {
   };
 
   return (
-    <div className="relative group -mx-2">
+    <div 
+      className="relative group -mx-2"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div 
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
