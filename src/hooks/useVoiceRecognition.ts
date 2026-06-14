@@ -20,74 +20,74 @@ export function useVoiceRecognition(
   onResult?: (text: string) => void
 ): UseVoiceRecognitionReturn {
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [recognition, setRecognition] = useState<any>(null);
-
+  const [hasSupport, setHasSupport] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  
   const onResultRef = useRef(onResult);
   useEffect(() => {
     onResultRef.current = onResult;
   }, [onResult]);
 
   useEffect(() => {
+    // Chỉ kiểm tra xem trình duyệt có hỗ trợ không trên lần render đầu tiên
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRecognition) {
-        const recognitionInstance = new SpeechRecognition();
-        recognitionInstance.continuous = false; // Chỉ nhận diện 1 câu rồi dừng
-        recognitionInstance.interimResults = true; // Lấy kết quả tạm thời
-        recognitionInstance.lang = 'vi-VN';
-
-        recognitionInstance.onresult = (event: any) => {
-          let currentTranscript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-             currentTranscript += event.results[i][0].transcript;
-          }
-          setTranscript(currentTranscript);
-          
-          // Khi nhận diện xong một cụm
-          if (event.results[0].isFinal && onResultRef.current) {
-            onResultRef.current(currentTranscript.trim());
-          }
-        };
-
-        recognitionInstance.onerror = (event: any) => {
-          console.error('Speech recognition error', event.error);
-          setIsListening(false);
-        };
-
-        recognitionInstance.onend = () => {
-          setIsListening(false);
-        };
-
-        setRecognition(recognitionInstance);
+        setHasSupport(true);
       }
     }
   }, []);
 
   const startListening = useCallback(() => {
-    if (recognition && !isListening) {
-      setTranscript('');
-      try {
-        recognition.start();
-        setIsListening(true);
-      } catch (e) {
-        console.error('Lỗi khi bắt đầu nhận diện:', e);
-      }
+    if (!hasSupport) return;
+    
+    // Khởi tạo lười (lazy initialization) để tối ưu hiệu năng
+    if (!recognitionRef.current) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false; 
+      recognition.interimResults = false; // Tối ưu: Tắt nhận diện tạm thời để tránh giật lag do render quá nhiều
+      recognition.lang = 'vi-VN';
+
+      recognition.onresult = (event: any) => {
+        const currentTranscript = event.results[0][0].transcript;
+        if (onResultRef.current) {
+          onResultRef.current(currentTranscript.trim());
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
     }
-  }, [recognition, isListening]);
+
+    try {
+      recognitionRef.current.start();
+      setIsListening(true);
+    } catch (e) {
+      console.error('Lỗi khi bắt đầu nhận diện:', e);
+    }
+  }, [hasSupport]);
 
   const stopListening = useCallback(() => {
-    if (recognition && isListening) {
-      recognition.stop();
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
       setIsListening(false);
     }
-  }, [recognition, isListening]);
+  }, [isListening]);
 
   return {
     isListening,
-    transcript,
+    transcript: '', // Bỏ sử dụng transcript state để giảm re-render
     startListening,
     stopListening,
-    hasRecognitionSupport: !!recognition,
+    hasRecognitionSupport: hasSupport,
   };
 }
