@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
+import { useVoiceRecognition } from "@/hooks/useVoiceRecognition";
 
 export default function LiveSearch({
   placeholder = "Tìm kiếm thông minh...",
@@ -16,6 +17,11 @@ export default function LiveSearch({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [term, setTerm] = useState(searchParams.get("q") || "");
+
+  const { isListening, hasRecognitionSupport, startListening, stopListening } = useVoiceRecognition((text) => {
+    setTerm(text);
+    handleSearch(text);
+  });
 
   // Minimal hook for debounce without lodash/use-debounce
   const debounce = (func: (...args: any[]) => void, delay: number) => {
@@ -68,7 +74,20 @@ export default function LiveSearch({
         }}
         placeholder={placeholder}
         className={className}
+        style={hasRecognitionSupport ? { paddingRight: '2.5rem' } : undefined}
       />
+      {hasRecognitionSupport && (
+        <button
+          type="button"
+          onClick={isListening ? stopListening : startListening}
+          className={`absolute right-3 top-1/2 -translate-y-1/2 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-blue-500'} transition-colors`}
+          title={isListening ? "Đang nghe..." : "Tìm kiếm bằng giọng nói"}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+          </svg>
+        </button>
+      )}
     </>
   );
 }

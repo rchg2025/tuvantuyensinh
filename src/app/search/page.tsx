@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import Image from "next/image";
 import Pagination from "@/components/Pagination";
+import SearchForm from "./SearchForm";
 export const revalidate = 60;
 
 function LinkifyText({ text }: { text: string }) {
@@ -81,18 +82,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           Hiển thị kết quả tìm kiếm cho từ khóa: <span className="font-bold text-yellow-300">"{q}"</span>
         </p>
         
-        <form action="/search" method="GET" className="mt-6 flex items-center relative w-full">
-          <input 
-            type="text" 
-            name="q"
-            defaultValue={q}
-            placeholder="Tìm kiếm câu hỏi, bài viết..." 
-            className="w-full text-gray-900 bg-white shadow-sm rounded-full py-3 pl-5 pr-32 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all text-sm font-medium"
-          />
-          <button type="submit" className="absolute right-1 top-1 bottom-1 bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-full font-semibold transition-colors">
-            Tìm
-          </button>
-        </form>
+        <SearchForm initialQuery={q} />
       </div>
 
       {!q.trim() ? (

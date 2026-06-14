@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import { useVoiceRecognition } from "@/hooks/useVoiceRecognition";
 
 export default function Chatbot({ color = "#2563eb", position = "right", width = "360px", height = "500px", logoUrl, siteTitle }: { color?: string; position?: string; width?: string; height?: string; logoUrl?: string; siteTitle?: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,10 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
   const [feedback, setFeedback] = useState('');
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { isListening, hasRecognitionSupport, startListening, stopListening } = useVoiceRecognition((text) => {
+    setInput((prev) => (prev ? prev + ' ' + text : text));
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -279,14 +284,26 @@ export default function Chatbot({ color = "#2563eb", position = "right", width =
           </div>
 
           <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-white">
-            <div className="flex gap-2">
+            <div className="flex gap-2 relative">
               <input
-                className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${hasRecognitionSupport ? 'pr-10' : ''}`}
                 value={input}
                 placeholder="Nhập câu hỏi của bạn..."
                 onChange={handleInputChange}
                 disabled={isLoading}
               />
+              {hasRecognitionSupport && (
+                <button
+                  type="button"
+                  onClick={isListening ? stopListening : startListening}
+                  className={`absolute right-[4.5rem] top-1/2 -translate-y-1/2 p-1.5 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-blue-500'} transition-colors`}
+                  title={isListening ? "Đang nghe..." : "Nhập bằng giọng nói"}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              )}
               <button 
                 type="submit" 
                 className="text-white rounded-md px-3 py-2 text-sm transition disabled:opacity-50"
