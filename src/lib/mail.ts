@@ -323,3 +323,55 @@ async function getAdminEmails() {
   }
   return emails;
 }
+
+export async function notifyChatbotError(errorDetails: any) {
+  const adminEmails = await getAdminEmails();
+  if (adminEmails.length === 0) return;
+
+  const errorMessage = errorDetails?.message || String(errorDetails);
+  const errorStack = errorDetails?.stack || '';
+
+  const html = `
+    <html>
+      <head>
+        <style>${styles}</style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+            <h1>⚠️ Cảnh báo Lỗi Chatbot AI</h1>
+          </div>
+          <div class="content">
+            <h2>Chi tiết lỗi</h2>
+            <p>Hệ thống Chatbot AI vừa ghi nhận một lỗi trong quá trình xử lý yêu cầu:</p>
+            <div class="info-box">
+              <div class="info-row">
+                <div class="info-label">Thời gian:</div>
+                <div class="info-value">${new Date().toLocaleString('vi-VN')}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Nội dung lỗi:</div>
+                <div class="info-value" style="color: #ef4444; font-family: monospace; font-size: 14px; background: #fee2e2; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-break: break-all;">
+                  ${errorMessage}
+                </div>
+              </div>
+              ${errorStack ? `
+              <div class="info-row" style="margin-top: 15px;">
+                <div class="info-label">Stack Trace:</div>
+                <div class="info-value" style="font-family: monospace; font-size: 12px; background: #f1f5f9; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-break: break-all;">
+                  ${errorStack}
+                </div>
+              </div>
+              ` : ''}
+            </div>
+            <p>Vui lòng kiểm tra lại cấu hình API Key (đặc biệt là lỗi 403 - Quota Exceeded / Permission Denied) hoặc kết nối mạng.</p>
+          </div>
+          <div class="footer">
+            Đây là hệ thống gửi mail tự động từ Hệ Thống Tư Vấn Tuyển Sinh.
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+  await sendEmail({ to: adminEmails, subject: \`[Cảnh báo] Lỗi Chatbot AI - API/Kết nối\`, html });
+}

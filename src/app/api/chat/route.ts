@@ -2,6 +2,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, tool } from 'ai';
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { notifyChatbotError } from '@/lib/mail';
 
 export const maxDuration = 30;
 
@@ -111,8 +112,21 @@ ${postContext}
       response.headers.set(key, value);
     }
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat API error:', error);
+    
+    // Gửi email thông báo nếu là lỗi API/403/Kết nối
+    const errorMessage = error?.message || String(error);
+    if (
+      errorMessage.includes('403') || 
+      errorMessage.toLowerCase().includes('fetch') || 
+      errorMessage.toLowerCase().includes('network') || 
+      errorMessage.toLowerCase().includes('api') || 
+      error?.status === 403
+    ) {
+      await notifyChatbotError(error).catch(console.error);
+    }
+    
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500, headers: corsHeaders() });
   }
 }
