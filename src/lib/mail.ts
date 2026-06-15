@@ -373,5 +373,5 @@ export async function notifyChatbotError(errorDetails: any) {
       </body>
     </html>
   `;
-  await sendEmail({ to: adminEmails, subject: \`[Cảnh báo] Lỗi Chatbot AI - API/Kết nối\`, html });
+  await sendEmail({ to: adminEmails, subject: `[Cảnh báo] Lỗi Chatbot AI - API/Kết nối`, html });
 }
