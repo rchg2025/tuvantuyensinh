@@ -35,7 +35,7 @@ export async function updateConfigAction(formData: FormData) {
       "logo_url", "default_og_image", "footer_description", "footer_email",
       "footer_phone", "zalo_oa_widget",
       "chatbot_gemini_key", "chatbot_color", "chatbot_position",
-      "chatbot_width", "chatbot_height"
+      "chatbot_width", "chatbot_height", "google_client_id", "google_client_secret"
     ];
 
     for (const key of ALLOWED_KEYS) {
@@ -55,6 +55,13 @@ export async function updateConfigAction(formData: FormData) {
       where: { key: "chatbot_enabled" },
       update: { value: chatbot_enabled },
       create: { key: "chatbot_enabled", value: chatbot_enabled },
+    });
+
+    const google_login_enabled = formData.get("google_login_enabled") === "true" ? "true" : "false";
+    await prisma.systemConfig.upsert({
+      where: { key: "google_login_enabled" },
+      update: { value: google_login_enabled },
+      create: { key: "google_login_enabled", value: google_login_enabled },
     });
 
     revalidatePath("/admin/settings");
