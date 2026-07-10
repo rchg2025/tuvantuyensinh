@@ -8,7 +8,7 @@ import DragDropUpload from "@/components/DragDropUpload";
 
 export default function SettingsForm({ configMap }: { configMap: Record<string, string> }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [activeTab, setActiveTab] = useState<"seo" | "footer" | "drive" | "smtp" | "scripts" | "chatbot">("seo");
+  const [activeTab, setActiveTab] = useState<"seo" | "footer" | "drive" | "smtp" | "scripts" | "chatbot" | "google">("seo");
 
   const handleSubmit = async (formData: FormData) => {
     const loadingToast = toast.loading("Đang lưu cấu hình...");
@@ -30,7 +30,8 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
     { id: "drive", label: "📁 Google Drive" },
     { id: "smtp", label: "📧 SMTP Email" },
     { id: "scripts", label: "💬 Mã nhúng" },
-    { id: "chatbot", label: "🤖 AI Chatbot" }
+    { id: "chatbot", label: "🤖 AI Chatbot" },
+    { id: "google", label: "🔑 Google Login" }
   ] as const;
 
   return (
@@ -397,6 +398,58 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
           </div>
         </div>
 </div>
+        {/* Google Login Config */}
+        <div className={activeTab === "google" ? "block" : "hidden"}>
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <span>🔑</span> Cấu hình Đăng nhập bằng Google
+          </h2>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="md:col-span-1">
+              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer w-fit p-2 hover:bg-slate-50 rounded">
+                <input 
+                  type="checkbox" 
+                  name="google_login_enabled" 
+                  defaultChecked={configMap["google_login_enabled"] === "true"} 
+                  value="true"
+                  className="w-4 h-4 text-blue-600 rounded cursor-pointer" 
+                />
+                Kích hoạt tính năng Đăng nhập bằng Google
+              </label>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Google Client ID</label>
+              <input 
+                name="google_client_id" 
+                defaultValue={configMap["google_client_id"] || ""}
+                placeholder="VD: 123456789-xxxxxx.apps.googleusercontent.com"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">Google Client Secret</label>
+              <input 
+                name="google_client_secret" 
+                type="password"
+                defaultValue={configMap["google_client_secret"] || ""}
+                placeholder="VD: GOCSPX-xxxxxx"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+              />
+            </div>
+          </div>
+          <div className="mt-8 pt-6 border-t border-slate-100">
+            <h4 className="text-sm font-semibold text-slate-800 mb-2">Thông tin cấu hình trên Google Cloud Console</h4>
+            <p className="text-sm text-slate-500 mb-2">Để tính năng này hoạt động, bạn cần cấu hình <b>Authorized redirect URIs</b> trên Google Cloud Console như sau:</p>
+            <div className="relative">
+              <input 
+                readOnly
+                className="w-full px-4 py-3 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value="https://ts26.nsg.edu.vn/api/auth/google/callback"
+              />
+            </div>
+          </div>
+        </div>
+        </div>
         <div className="pt-6 border-t border-slate-100 flex justify-end">
           <SubmitButtons showTestDriveBtn={activeTab === "drive"} showPingSitemapBtn={activeTab === "seo"} />
         </div>
