@@ -106,16 +106,7 @@ export async function getOrCreateDriveFolder(drive: any, parentId: string, folde
   return createRes.data.id!;
 }
 
-export async function getUploadFolderId(drive: any, rootFolderId: string): Promise<string> {
-  const date = new Date();
-  const year = date.getFullYear().toString();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
 
-  const yearFolderId = await getOrCreateDriveFolder(drive, rootFolderId, year);
-  const monthFolderId = await getOrCreateDriveFolder(drive, yearFolderId, month);
-  
-  return monthFolderId;
-}
 
 export async function uploadToDrive(file: File, fileName: string, mimeType: string) {
   const auth = await getDriveAuth();
@@ -126,15 +117,13 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
     throw new Error("Chua cau hinh Folder ID");
   }
 
-  const targetFolderId = await getUploadFolderId(drive, folderId);
-
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
   const { data } = await drive.files.create({
     requestBody: {
       name: fileName,
-      parents: [targetFolderId],
+      parents: [folderId],
       mimeType: mimeType,
     },
     media: {
@@ -183,14 +172,12 @@ export async function createResumableUpload(fileName: string, mimeType: string, 
     throw new Error("Chua cau hinh Folder ID");
   }
 
-  const targetFolderId = await getUploadFolderId(drive, folderId);
-
   const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true", {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
       name: fileName,
-      parents: [targetFolderId],
+      parents: [folderId],
     })
   });
 
@@ -224,8 +211,8 @@ export async function listDriveFiles(pageToken?: string, query?: string) {
     throw new Error("Chua cau hinh Folder ID");
   }
 
-  // Loại bỏ điều kiện bắt buộc folderId để có thể lấy file trong các folder con (năm/tháng)
-  let q = `trashed = false and mimeType != 'application/vnd.google-apps.folder'`;
+  // Chỉ lấy file nằm trong đúng thư mục cài đặt
+  let q = `'${folderId}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder'`;
   if (query) {
     q += ` and ${query}`;
   }
