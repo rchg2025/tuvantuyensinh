@@ -106,7 +106,16 @@ export async function getOrCreateDriveFolder(drive: any, parentId: string, folde
   return createRes.data.id!;
 }
 
+export async function getUploadFolderId(drive: any, rootFolderId: string): Promise<string> {
+  const date = new Date();
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
 
+  const yearFolderId = await getOrCreateDriveFolder(drive, rootFolderId, year);
+  const monthFolderId = await getOrCreateDriveFolder(drive, yearFolderId, month);
+  
+  return monthFolderId;
+}
 
 export async function uploadToDrive(file: File, fileName: string, mimeType: string) {
   const auth = await getDriveAuth();
@@ -117,13 +126,15 @@ export async function uploadToDrive(file: File, fileName: string, mimeType: stri
     throw new Error("Chua cau hinh Folder ID");
   }
 
+  const targetFolderId = await getUploadFolderId(drive, folderId);
+
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
   const { data } = await drive.files.create({
     requestBody: {
       name: fileName,
-      parents: [folderId],
+      parents: [targetFolderId],
       mimeType: mimeType,
     },
     media: {
@@ -172,12 +183,14 @@ export async function createResumableUpload(fileName: string, mimeType: string, 
     throw new Error("Chua cau hinh Folder ID");
   }
 
+  const targetFolderId = await getUploadFolderId(drive, folderId);
+
   const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true", {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
       name: fileName,
-      parents: [folderId],
+      parents: [targetFolderId],
     })
   });
 
@@ -211,8 +224,38 @@ export async function listDriveFiles(pageToken?: string, query?: string) {
     throw new Error("Chua cau hinh Folder ID");
   }
 
-  // Chỉ lấy file nằm trong đúng thư mục cài đặt
-  let q = `'${folderId}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder'`;
+  // Get all subfolders up to 2 levels deep (year -> month)
+  let folderIds = [folderId];
+  try {
+    const res1 = await drive.files.list({
+      q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: "files(id)",
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+    if (res1.data.files && res1.data.files.length > 0) {
+      const yearIds = res1.data.files.map(f => f.id!);
+      folderIds.push(...yearIds);
+      
+      const parts = yearIds.map(id => `'${id}' in parents`);
+      const q2 = `(${parts.join(' or ')}) and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+      const res2 = await drive.files.list({
+        q: q2,
+        fields: "files(id)",
+        supportsAllDrives: true,
+        includeItemsFromAllDrives: true,
+      });
+      if (res2.data.files && res2.data.files.length > 0) {
+        folderIds.push(...res2.data.files.map(f => f.id!));
+      }
+    }
+  } catch (e) {
+    console.error("Lỗi khi tìm thư mục con:", e);
+  }
+
+  const parentQuery = folderIds.map(id => `'${id}' in parents`).join(' or ');
+  let q = `(${parentQuery}) and trashed = false and mimeType != 'application/vnd.google-apps.folder'`;
+  
   if (query) {
     q += ` and ${query}`;
   }
