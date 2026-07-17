@@ -95,7 +95,7 @@ export default function CommentSection({
   const visibleComments = comments.slice(0, visibleCount);
 
   return (
-    <div className="mt-12 bg-white rounded-2xl border border-blue-100 shadow-sm p-6 md:p-10 w-full">
+    <div className="mt-8 bg-white rounded-2xl border border-blue-100 shadow-sm p-4 md:p-6 w-full">
       <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
         <span>💬</span> Bình luận & Thảo luận ({comments.length})
       </h3>

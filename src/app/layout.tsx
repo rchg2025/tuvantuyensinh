@@ -291,12 +291,12 @@ gtag('config', 'G-VJBSWELMM3');`
           />
         </header>
         
-        <main className="flex-1 w-full px-4 md:px-8 py-10">
+        <main className="flex-1 w-full px-2 md:px-4 py-4 md:py-6">
           {children}
         </main>
 
-        <footer className="bg-blue-900 text-blue-300 text-sm py-12 mt-auto">
-          <div className="w-full px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <footer className="bg-blue-900 text-blue-300 text-sm py-8 mt-auto">
+          <div className="w-full px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <div className="flex items-center gap-2 mb-4 text-white">
                 <Image src={logoUrl.includes('drive.google.com/uc') ? logoUrl.replace('/uc?export=view&id=', '/thumbnail?id=').concat('&sz=w128') : logoUrl} alt="Logo" width={24} height={24} className="w-6 h-6 rounded-md object-cover bg-white p-0.5" />
