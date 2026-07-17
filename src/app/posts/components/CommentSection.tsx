@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { submitComment } from "../actions/comment";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,11 @@ export default function CommentSection({
 }) {
   const router = useRouter();
   const [comments, setComments] = useState<CommentType[]>(initialComments);
+  
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
   const [successMsg, setSuccessMsg] = useState("");

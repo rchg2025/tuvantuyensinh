@@ -6,7 +6,7 @@ import { approveComment, deleteComment, replyComment } from "./actions";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-type CommentWithPost = {
+export type CommentWithPost = {
   id: string;
   name: string;
   email: string;
@@ -17,6 +17,7 @@ type CommentWithPost = {
   adminReply: string | null;
   repliedAt: Date | null;
   repliedBy: string | null;
+  parentId: string | null;
   post: {
     title: string;
     slug: string | null;
@@ -25,6 +26,10 @@ type CommentWithPost = {
     name: string;
     content: string;
   } | null;
+};
+
+type Thread = CommentWithPost & {
+  replies: CommentWithPost[];
 };
 
 export default function CommentManagerClient({ initialComments }: { initialComments: CommentWithPost[] }) {
@@ -41,30 +46,45 @@ export default function CommentManagerClient({ initialComments }: { initialComme
     setComments(initialComments);
   }, [initialComments]);
 
-  const filteredComments = comments.filter(c => {
+  // Group into threads
+  const threads: Thread[] = [];
+  const rootComments = comments.filter(c => !c.parentId);
+  rootComments.forEach(root => {
+    const replies = comments
+      .filter(c => c.parentId === root.id)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    threads.push({ ...root, replies });
+  });
+
+  const filteredThreads = threads.filter(thread => {
     // 1. Filter by status
-    if (filter === "PENDING" && c.isApproved) return false;
-    if (filter === "APPROVED" && !c.isApproved) return false;
-    
+    const matchesStatus = (c: CommentWithPost) => {
+      if (filter === "ALL") return true;
+      if (filter === "PENDING" && !c.isApproved) return true;
+      if (filter === "APPROVED" && c.isApproved) return true;
+      return false;
+    };
+
     // 2. Filter by search query
-    if (searchQuery) {
+    const matchesSearch = (c: CommentWithPost) => {
+      if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
-      const matchesSearch = 
-        c.name.toLowerCase().includes(q) ||
+      return c.name.toLowerCase().includes(q) ||
         c.email.toLowerCase().includes(q) ||
         (c.phone && c.phone.includes(q)) ||
         c.content.toLowerCase().includes(q) ||
         c.post.title.toLowerCase().includes(q);
-      
-      if (!matchesSearch) return false;
-    }
+    };
 
-    return true;
+    const rootMatches = matchesStatus(thread) && matchesSearch(thread);
+    const anyReplyMatches = thread.replies.some(r => matchesStatus(r) && matchesSearch(r));
+
+    return rootMatches || anyReplyMatches;
   });
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredComments.length / itemsPerPage);
-  const paginatedComments = filteredComments.slice(
+  const totalPages = Math.ceil(filteredThreads.length / itemsPerPage);
+  const paginatedThreads = filteredThreads.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -109,13 +129,56 @@ export default function CommentManagerClient({ initialComments }: { initialComme
     if (res.success) {
       toast.success("Đã gửi phản hồi và duyệt bình luận", { id: "reply" });
       router.refresh();
-      // Let the refresh handle the UI update instead of manual state because it creates a new comment now
       setReplyingId(null);
       setReplyContent("");
     } else {
       toast.error(res.error || "Lỗi", { id: "reply" });
     }
   };
+
+  const CommentItem = ({ comment, rootId, isReply = false }: { comment: CommentWithPost, rootId: string, isReply?: boolean }) => (
+    <div className={`flex flex-col md:flex-row justify-between md:items-start gap-4 mb-4 ${isReply ? "" : ""}`}>
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-bold text-gray-900">{comment.name}</span>
+          <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</span>
+          {!comment.isApproved && (
+            <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">Chờ duyệt</span>
+          )}
+        </div>
+        <div className="text-sm text-gray-600 mb-2">
+          <a href={`mailto:${comment.email}`} className="text-blue-600 hover:underline">{comment.email}</a>
+          {comment.phone && <span className="ml-2">| {comment.phone}</span>}
+        </div>
+        {!isReply && (
+          <p className="text-sm text-gray-500 mt-2">
+            Bài viết:{" "}
+            {comment.post.slug ? (
+              <Link href={`/posts/${comment.post.slug}`} target="_blank" className="font-medium text-slate-700 hover:text-blue-600 transition-colors">
+                {comment.post.title} ↗
+              </Link>
+            ) : (
+              <span className="font-medium text-slate-700">{comment.post.title}</span>
+            )}
+          </p>
+        )}
+      </div>
+      
+      <div className="flex gap-2 shrink-0">
+        {!comment.isApproved && (
+          <button onClick={() => handleApprove(comment.id)} className="px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-sm font-medium transition-colors">
+            Duyệt
+          </button>
+        )}
+        <button onClick={() => setReplyingId(rootId)} className="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-sm font-medium transition-colors">
+          Phản hồi
+        </button>
+        <button onClick={() => handleDelete(comment.id)} className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors">
+          Xóa
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -153,73 +216,56 @@ export default function CommentManagerClient({ initialComments }: { initialComme
       </div>
 
       <div className="space-y-6">
-        {paginatedComments.length === 0 ? (
+        {paginatedThreads.length === 0 ? (
           <p className="text-gray-500 text-center py-10">Không có bình luận nào.</p>
         ) : (
-          paginatedComments.map(comment => (
-            <div key={comment.id} className={`border rounded-xl p-5 transition-colors ${!comment.isApproved ? "border-amber-200 bg-amber-50" : "border-gray-200 bg-white"}`}>
-              <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-gray-900">{comment.name}</span>
-                    <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</span>
-                    {!comment.isApproved && (
-                      <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-medium">Chờ duyệt</span>
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-600 mb-2">
-                    <a href={`mailto:${comment.email}`} className="text-blue-600 hover:underline">{comment.email}</a>
-                    {comment.phone && <span className="ml-2">| {comment.phone}</span>}
-                  </div>
-                  {comment.parent && (
-                    <div className="mt-2 mb-2 p-3 bg-slate-50 border-l-2 border-slate-300 rounded text-sm text-slate-600">
-                      <span className="font-semibold">Đang phản hồi {comment.parent.name}:</span>
-                      <p className="italic truncate">"{comment.parent.content}"</p>
-                    </div>
-                  )}
-                  <p className="text-sm text-gray-500 mt-2">
-                    Bài viết:{" "}
-                    {comment.post.slug ? (
-                      <Link href={`/posts/${comment.post.slug}`} target="_blank" className="font-medium text-slate-700 hover:text-blue-600 transition-colors">
-                        {comment.post.title} ↗
-                      </Link>
-                    ) : (
-                      <span className="font-medium text-slate-700">{comment.post.title}</span>
-                    )}
-                  </p>
-                </div>
-                
-                <div className="flex gap-2 shrink-0">
-                  {!comment.isApproved && (
-                    <button onClick={() => handleApprove(comment.id)} className="px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-lg text-sm font-medium transition-colors">
-                      Duyệt
-                    </button>
-                  )}
-                  <button onClick={() => setReplyingId(comment.id)} className="px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-sm font-medium transition-colors">
-                    Phản hồi
-                  </button>
-                  <button onClick={() => handleDelete(comment.id)} className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium transition-colors">
-                    Xóa
-                  </button>
-                </div>
-              </div>
-
+          paginatedThreads.map(thread => (
+            <div key={thread.id} className={`border rounded-xl p-5 transition-colors ${!thread.isApproved ? "border-amber-200 bg-amber-50" : "border-gray-200 bg-white"}`}>
+              {/* Root Comment */}
+              <CommentItem comment={thread} rootId={thread.id} />
+              
               <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
-                <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
+                <p className="text-gray-800 whitespace-pre-wrap">{thread.content}</p>
               </div>
 
-              {comment.adminReply && (
+              {/* Old adminReply */}
+              {thread.adminReply && (
                 <div className="mt-4 bg-blue-50/50 border border-blue-100 p-4 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-blue-700 text-sm">Phản hồi từ Admin ({comment.repliedBy})</span>
-                    <span className="text-xs text-gray-500">{comment.repliedAt ? new Date(comment.repliedAt).toLocaleString("vi-VN") : ""}</span>
+                    <span className="font-semibold text-blue-700 text-sm">Phản hồi từ Admin ({thread.repliedBy})</span>
+                    <span className="text-xs text-gray-500">{thread.repliedAt ? new Date(thread.repliedAt).toLocaleString("vi-VN") : ""}</span>
                   </div>
-                  <p className="text-gray-700 whitespace-pre-wrap">{comment.adminReply}</p>
+                  <p className="text-gray-700 whitespace-pre-wrap">{thread.adminReply}</p>
                 </div>
               )}
 
-              {replyingId === comment.id && (
-                <div className="mt-4 border border-blue-200 bg-white p-4 rounded-lg">
+              {/* Replies */}
+              {thread.replies.length > 0 && (
+                <div className="mt-4 ml-4 md:ml-8 space-y-4 border-l-2 border-blue-100 pl-4 py-2">
+                  {thread.replies.map(reply => (
+                    <div key={reply.id} className="last:mb-0">
+                      <CommentItem comment={reply} rootId={thread.id} isReply={true} />
+                      
+                      <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+                        <p className="text-gray-800 whitespace-pre-wrap">{reply.content}</p>
+                      </div>
+
+                      {reply.adminReply && (
+                        <div className="mt-3 bg-blue-50/50 border border-blue-100 p-3 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-blue-700 text-xs">Phản hồi từ Admin ({reply.repliedBy})</span>
+                          </div>
+                          <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.adminReply}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Reply Box */}
+              {replyingId === thread.id && (
+                <div className="mt-4 border border-blue-200 bg-white p-4 rounded-lg ml-0 md:ml-8 shadow-sm">
                   <textarea
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
@@ -229,7 +275,7 @@ export default function CommentManagerClient({ initialComments }: { initialComme
                   ></textarea>
                   <div className="flex justify-end gap-2">
                     <button onClick={() => { setReplyingId(null); setReplyContent(""); }} className="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium">Hủy</button>
-                    <button onClick={() => handleReply(comment.id)} className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium">Gửi phản hồi</button>
+                    <button onClick={() => handleReply(thread.id)} className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-medium shadow-sm">Gửi phản hồi</button>
                   </div>
                 </div>
               )}
