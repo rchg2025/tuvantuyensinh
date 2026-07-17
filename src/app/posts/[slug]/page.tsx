@@ -117,7 +117,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   }));
 
   return (
-    <div className="max-w-[1100px] mx-auto space-y-8">
+    <div className="w-full mx-auto space-y-8">
       <Link href="/posts" className="inline-flex items-center text-blue-600 hover:underline font-medium">
         ← Quay lại danh sách
       </Link>
