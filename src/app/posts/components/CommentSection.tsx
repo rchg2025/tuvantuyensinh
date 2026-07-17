@@ -15,6 +15,8 @@ type CommentType = {
   repliedBy: string | null;
   replies?: CommentType[];
   isAdmin?: boolean;
+  adminAvatar?: string | null;
+  repliedByAvatar?: string | null;
 };
 
 export default function CommentSection({
@@ -105,45 +107,61 @@ export default function CommentSection({
         ) : (
           visibleComments.map((comment) => (
             <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center flex-wrap gap-2 mb-1">
-                  <span className="font-semibold text-gray-900 text-sm">{comment.name}</span>
-                  {comment.isAdmin && (
-                    <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
-                      Quản trị viên / Chuyên viên tư vấn
-                    </span>
-                  )}
-                  <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</span>
-                </div>
-              </div>
-              <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
-              
-              <div className="mt-2">
-                <button 
-                  onClick={() => handleReplyClick(comment.id, comment.name)}
-                  className="text-sm text-blue-600 font-medium hover:underline"
-                >
-                  Trả lời
-                </button>
-              </div>
-              
-              {/* Cũ: adminReply */}
-              {comment.adminReply && (
-                <div className="mt-4 ml-6 md:ml-10 bg-gray-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-blue-700 text-sm">👨‍🏫 Quản trị viên ({comment.repliedBy || 'Admin'})</span>
-                    {comment.repliedAt && (
-                      <span className="text-xs text-gray-500">{new Date(comment.repliedAt).toLocaleString("vi-VN")}</span>
-                    )}
+              <div className="flex items-start gap-4 mb-2">
+                {comment.isAdmin && comment.adminAvatar ? (
+                  <img src={comment.adminAvatar} alt={comment.name} width={40} height={40} className="flex-shrink-0 w-10 h-10 rounded-full object-cover bg-blue-100" />
+                ) : (
+                  <div className={`flex-shrink-0 w-10 h-10 rounded-full ${comment.isAdmin ? 'bg-blue-600 text-white' : 'bg-gray-100 text-blue-700'} flex items-center justify-center font-bold text-lg`}>
+                    {comment.name.charAt(0).toUpperCase()}
                   </div>
-                  <p className="text-gray-700 text-sm whitespace-pre-wrap italic">{comment.adminReply}</p>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center flex-wrap gap-2 mb-1">
+                    <span className="font-semibold text-gray-900 text-sm">{comment.name}</span>
+                    {comment.isAdmin && (
+                      <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                        Quản trị viên / Chuyên viên tư vấn
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</span>
+                  </div>
+                  <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
+                  
                   <div className="mt-2">
                     <button 
-                      onClick={() => handleReplyClick(comment.id, comment.repliedBy || 'Admin')}
-                      className="text-xs text-blue-600 font-medium hover:underline"
+                      onClick={() => handleReplyClick(comment.id, comment.name)}
+                      className="text-sm text-blue-600 font-medium hover:underline"
                     >
                       Trả lời
                     </button>
+                  </div>
+              
+              {/* Cũ: adminReply */}
+              {comment.adminReply && (
+                <div className="mt-4 ml-6 md:ml-10 bg-gray-50 border-l-4 border-blue-500 p-4 rounded-r-lg flex items-start gap-3">
+                  {comment.repliedByAvatar ? (
+                    <img src={comment.repliedByAvatar} alt={comment.repliedBy || 'Admin'} width={32} height={32} className="flex-shrink-0 w-8 h-8 rounded-full object-cover bg-blue-600" />
+                  ) : (
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                      {comment.repliedBy ? comment.repliedBy.charAt(0).toUpperCase() : 'TV'}
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-blue-700 text-sm">👨‍🏫 Quản trị viên ({comment.repliedBy || 'Admin'})</span>
+                      {comment.repliedAt && (
+                        <span className="text-xs text-gray-500">{new Date(comment.repliedAt).toLocaleString("vi-VN")}</span>
+                      )}
+                    </div>
+                    <p className="text-gray-700 text-sm whitespace-pre-wrap italic">{comment.adminReply}</p>
+                    <div className="mt-2">
+                      <button 
+                        onClick={() => handleReplyClick(comment.id, comment.repliedBy || 'Admin')}
+                        className="text-xs text-blue-600 font-medium hover:underline"
+                      >
+                        Trả lời
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -152,41 +170,60 @@ export default function CommentSection({
               {comment.replies && comment.replies.length > 0 && (
                 <div className="mt-4 ml-6 md:ml-10 space-y-4">
                   {comment.replies.map(reply => (
-                    <div key={reply.id} className="bg-gray-50 p-4 rounded-lg">
-                       <div className="flex items-center flex-wrap gap-2 mb-1">
-                        <span className="font-semibold text-gray-900 text-sm">{reply.name}</span>
-                        {reply.isAdmin && (
-                          <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
-                            Quản trị viên / Chuyên viên tư vấn
-                          </span>
-                        )}
-                        <span className="text-xs text-gray-500">{new Date(reply.createdAt).toLocaleString("vi-VN")}</span>
-                      </div>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>
-                      
-                      {/* Có thể mở rộng trả lời cho reply ở đây nếu cần, nhưng tạm thời trỏ về comment gốc để tránh lồng nhau quá sâu */}
-                      <div className="mt-2">
-                        <button 
-                          onClick={() => handleReplyClick(comment.id, reply.name)}
-                          className="text-xs text-blue-600 font-medium hover:underline"
-                        >
-                          Trả lời
-                        </button>
-                      </div>
-
-                      {/* Hiển thị adminReply của reply nếu có */}
-                      {reply.adminReply && (
-                        <div className="mt-3 ml-4 bg-white border-l-2 border-blue-400 p-3 rounded-r">
-                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-blue-700 text-xs">👨‍🏫 {reply.repliedBy || 'Quản trị viên'}</span>
-                          </div>
-                          <p className="text-gray-700 text-xs whitespace-pre-wrap italic">{reply.adminReply}</p>
+                    <div key={reply.id} className="bg-gray-50 p-4 rounded-lg flex items-start gap-4">
+                      {reply.isAdmin && reply.adminAvatar ? (
+                        <img src={reply.adminAvatar} alt={reply.name} width={36} height={36} className="flex-shrink-0 w-9 h-9 rounded-full object-cover bg-blue-100" />
+                      ) : (
+                        <div className={`flex-shrink-0 w-9 h-9 rounded-full ${reply.isAdmin ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'} flex items-center justify-center font-bold text-sm`}>
+                          {reply.name.charAt(0).toUpperCase()}
                         </div>
                       )}
+                      <div className="flex-1 min-w-0">
+                         <div className="flex items-center flex-wrap gap-2 mb-1">
+                          <span className="font-semibold text-gray-900 text-sm">{reply.name}</span>
+                          {reply.isAdmin && (
+                            <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                              Quản trị viên / Chuyên viên tư vấn
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-500">{new Date(reply.createdAt).toLocaleString("vi-VN")}</span>
+                        </div>
+                        <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>
+                        
+                        <div className="mt-2">
+                          <button 
+                            onClick={() => handleReplyClick(comment.id, reply.name)}
+                            className="text-xs text-blue-600 font-medium hover:underline"
+                          >
+                            Trả lời
+                          </button>
+                        </div>
+
+                        {/* Hiển thị adminReply của reply nếu có */}
+                        {reply.adminReply && (
+                          <div className="mt-3 bg-white border-l-2 border-blue-400 p-3 rounded-r flex items-start gap-2">
+                            {reply.repliedByAvatar ? (
+                              <img src={reply.repliedByAvatar} alt={reply.repliedBy || 'Quản trị viên'} width={24} height={24} className="flex-shrink-0 w-6 h-6 rounded-full object-cover bg-blue-600" />
+                            ) : (
+                              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">
+                                {reply.repliedBy ? reply.repliedBy.charAt(0).toUpperCase() : 'TV'}
+                              </div>
+                            )}
+                            <div>
+                               <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold text-blue-700 text-xs">👨‍🏫 {reply.repliedBy || 'Quản trị viên'}</span>
+                              </div>
+                              <p className="text-gray-700 text-xs whitespace-pre-wrap italic">{reply.adminReply}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
+                </div>
+              </div>
             </div>
           ))
         )}

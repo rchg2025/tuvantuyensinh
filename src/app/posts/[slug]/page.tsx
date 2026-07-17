@@ -93,16 +93,26 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
     data: { viewCount: post.viewCount + 1 }
   });
 
-  // Get admin emails
-  const admins = await prisma.systemUser.findMany({ select: { email: true } });
+  // Get admin users
+  const admins = await prisma.systemUser.findMany({ select: { email: true, name: true, avatar: true } });
   const adminEmails = admins.map(a => a.email);
+  
+  const adminAvatars = admins.reduce((acc, user) => {
+    if (user.name) acc[user.name] = user.avatar;
+    acc[user.email] = user.avatar;
+    return acc;
+  }, {} as Record<string, string | null>);
 
   const commentsWithRoles = post.comments.map(c => ({
     ...c,
     isAdmin: adminEmails.includes(c.email),
+    adminAvatar: adminAvatars[c.email] || adminAvatars[c.name] || null,
+    repliedByAvatar: c.repliedBy ? adminAvatars[c.repliedBy] : null,
     replies: c.replies.map(r => ({
       ...r,
-      isAdmin: adminEmails.includes(r.email)
+      isAdmin: adminEmails.includes(r.email),
+      adminAvatar: adminAvatars[r.email] || adminAvatars[r.name] || null,
+      repliedByAvatar: r.repliedBy ? adminAvatars[r.repliedBy] : null,
     }))
   }));
 
