@@ -93,6 +93,19 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
     data: { viewCount: post.viewCount + 1 }
   });
 
+  // Get admin emails
+  const admins = await prisma.systemUser.findMany({ select: { email: true } });
+  const adminEmails = admins.map(a => a.email);
+
+  const commentsWithRoles = post.comments.map(c => ({
+    ...c,
+    isAdmin: adminEmails.includes(c.email),
+    replies: c.replies.map(r => ({
+      ...r,
+      isAdmin: adminEmails.includes(r.email)
+    }))
+  }));
+
   return (
     <div className="max-w-[1100px] mx-auto space-y-8">
       <Link href="/posts" className="inline-flex items-center text-blue-600 hover:underline font-medium">
@@ -176,7 +189,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
       <div className="mt-12 w-full">
         <CommentSection 
           postId={post.id} 
-          initialComments={post.comments as any} 
+          initialComments={commentsWithRoles as any} 
           currentUser={currentUser}
         />
       </div>

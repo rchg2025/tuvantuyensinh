@@ -14,6 +14,7 @@ type CommentType = {
   repliedAt: Date | null;
   repliedBy: string | null;
   replies?: CommentType[];
+  isAdmin?: boolean;
 };
 
 export default function CommentSection({
@@ -100,9 +101,14 @@ export default function CommentSection({
           visibleComments.map((comment) => (
             <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
               <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="font-semibold text-gray-900">{comment.name}</h4>
-                  <p className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</p>
+                <div className="flex items-center flex-wrap gap-2 mb-1">
+                  <span className="font-semibold text-gray-900 text-sm">{comment.name}</span>
+                  {comment.isAdmin && (
+                    <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                      Quản trị viên / Chuyên viên tư vấn
+                    </span>
+                  )}
+                  <span className="text-xs text-gray-500">{new Date(comment.createdAt).toLocaleString("vi-VN")}</span>
                 </div>
               </div>
               <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
@@ -142,8 +148,13 @@ export default function CommentSection({
                 <div className="mt-4 ml-6 md:ml-10 space-y-4">
                   {comment.replies.map(reply => (
                     <div key={reply.id} className="bg-gray-50 p-4 rounded-lg">
-                       <div className="flex items-center gap-2 mb-1">
+                       <div className="flex items-center flex-wrap gap-2 mb-1">
                         <span className="font-semibold text-gray-900 text-sm">{reply.name}</span>
+                        {reply.isAdmin && (
+                          <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                            Quản trị viên / Chuyên viên tư vấn
+                          </span>
+                        )}
                         <span className="text-xs text-gray-500">{new Date(reply.createdAt).toLocaleString("vi-VN")}</span>
                       </div>
                       <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>

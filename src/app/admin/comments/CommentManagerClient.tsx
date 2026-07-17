@@ -37,6 +37,10 @@ export default function CommentManagerClient({ initialComments }: { initialComme
   const [replyingId, setReplyingId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
 
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
   const filteredComments = comments.filter(c => {
     // 1. Filter by status
     if (filter === "PENDING" && c.isApproved) return false;
