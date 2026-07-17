@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trashDriveFile } from "./actions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,12 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
   const [previewFile, setPreviewFile] = useState<DriveFile | null>(null);
   const router = useRouter();
   const itemsPerPage = 16;
+
+  useEffect(() => {
+    setFiles(initialFiles);
+    setCurrentPage(1);
+    setSearchQuery("");
+  }, [initialFiles]);
 
   const isMedia = (mimeType: string) => {
     return mimeType.startsWith("image/") || mimeType.startsWith("video/");
