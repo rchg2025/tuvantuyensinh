@@ -15,6 +15,12 @@ export default async function CommentsAdminPage() {
           title: true,
           slug: true
         }
+      },
+      parent: {
+        select: {
+          name: true,
+          content: true
+        }
       }
     }
   });

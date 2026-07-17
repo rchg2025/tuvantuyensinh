@@ -63,6 +63,11 @@ model Comment {
   repliedAt  DateTime?
   repliedBy  String?
   
+  // Hỗ trợ phản hồi đa cấp (Threaded replies)
+  parentId   String?
+  parent     Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[] @relation("CommentToComment")
+  
   isApproved Boolean   @default(false) // Cần admin duyệt
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

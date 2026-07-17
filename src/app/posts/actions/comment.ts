@@ -9,6 +9,7 @@ export async function submitComment(data: {
   email: string;
   phone?: string;
   content: string;
+  parentId?: string;
 }) {
   try {
     if (!data.name || !data.email || !data.content) {
@@ -30,6 +31,7 @@ export async function submitComment(data: {
         email: data.email,
         phone: data.phone || null,
         content: data.content,
+        parentId: data.parentId || null,
         isApproved: false // Admin duyệt
       }
     });

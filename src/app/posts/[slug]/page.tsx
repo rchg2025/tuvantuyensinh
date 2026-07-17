@@ -54,8 +54,14 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
     where: { slug },
     include: {
       comments: {
-        where: { isApproved: true },
-        orderBy: { createdAt: "desc" }
+        where: { isApproved: true, parentId: null },
+        orderBy: { createdAt: "desc" },
+        include: {
+          replies: {
+            where: { isApproved: true },
+            orderBy: { createdAt: "asc" }
+          }
+        }
       }
     }
   });

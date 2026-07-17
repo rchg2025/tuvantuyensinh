@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { submitComment } from "../actions/comment";
 import toast from "react-hot-toast";
 
@@ -12,6 +12,7 @@ type CommentType = {
   adminReply: string | null;
   repliedAt: Date | null;
   repliedBy: string | null;
+  replies?: CommentType[];
 };
 
 export default function CommentSection({
@@ -23,6 +24,11 @@ export default function CommentSection({
 }) {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [replyingTo, setReplyingTo] = useState<{ id: string, name: string } | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,6 +40,14 @@ export default function CommentSection({
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleReplyClick = (commentId: string, authorName: string) => {
+    setReplyingTo({ id: commentId, name: authorName });
+    setSuccessMsg("");
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.content) {
@@ -42,19 +56,26 @@ export default function CommentSection({
     }
 
     setIsSubmitting(true);
+    setSuccessMsg("");
+    
     const result = await submitComment({
       postId,
-      ...formData
+      ...formData,
+      parentId: replyingTo?.id
     });
+    
     setIsSubmitting(false);
 
     if (result.success) {
-      toast.success(result.message || "Đã gửi bình luận thành công");
+      setSuccessMsg("Gửi bình luận thành công! Bình luận của bạn đang được duyệt và sẽ sớm hiển thị.");
       setFormData({ name: "", email: "", phone: "", content: "" });
+      setReplyingTo(null);
     } else {
       toast.error(result.error || "Có lỗi xảy ra");
     }
   };
+
+  const visibleComments = comments.slice(0, visibleCount);
 
   return (
     <div className="mt-12 bg-white rounded-2xl border border-blue-100 shadow-sm p-6 md:p-10 w-full">
@@ -67,7 +88,7 @@ export default function CommentSection({
         {comments.length === 0 ? (
           <p className="text-gray-500 italic text-center py-4">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
         ) : (
-          comments.map((comment) => (
+          visibleComments.map((comment) => (
             <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -77,15 +98,68 @@ export default function CommentSection({
               </div>
               <p className="text-gray-800 whitespace-pre-wrap">{comment.content}</p>
               
+              <div className="mt-2">
+                <button 
+                  onClick={() => handleReplyClick(comment.id, comment.name)}
+                  className="text-sm text-blue-600 font-medium hover:underline"
+                >
+                  Trả lời
+                </button>
+              </div>
+              
+              {/* Cũ: adminReply */}
               {comment.adminReply && (
-                <div className="mt-4 bg-gray-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                <div className="mt-4 ml-6 md:ml-10 bg-gray-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-blue-700 text-sm">👨‍🏫 Quản trị viên</span>
+                    <span className="font-semibold text-blue-700 text-sm">👨‍🏫 Quản trị viên ({comment.repliedBy || 'Admin'})</span>
                     {comment.repliedAt && (
                       <span className="text-xs text-gray-500">{new Date(comment.repliedAt).toLocaleString("vi-VN")}</span>
                     )}
                   </div>
                   <p className="text-gray-700 text-sm whitespace-pre-wrap italic">{comment.adminReply}</p>
+                  <div className="mt-2">
+                    <button 
+                      onClick={() => handleReplyClick(comment.id, comment.repliedBy || 'Admin')}
+                      className="text-xs text-blue-600 font-medium hover:underline"
+                    >
+                      Trả lời
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Mới: Các phản hồi đa cấp */}
+              {comment.replies && comment.replies.length > 0 && (
+                <div className="mt-4 ml-6 md:ml-10 space-y-4">
+                  {comment.replies.map(reply => (
+                    <div key={reply.id} className="bg-gray-50 p-4 rounded-lg">
+                       <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900 text-sm">{reply.name}</span>
+                        <span className="text-xs text-gray-500">{new Date(reply.createdAt).toLocaleString("vi-VN")}</span>
+                      </div>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>
+                      
+                      {/* Có thể mở rộng trả lời cho reply ở đây nếu cần, nhưng tạm thời trỏ về comment gốc để tránh lồng nhau quá sâu */}
+                      <div className="mt-2">
+                        <button 
+                          onClick={() => handleReplyClick(comment.id, reply.name)}
+                          className="text-xs text-blue-600 font-medium hover:underline"
+                        >
+                          Trả lời
+                        </button>
+                      </div>
+
+                      {/* Hiển thị adminReply của reply nếu có */}
+                      {reply.adminReply && (
+                        <div className="mt-3 ml-4 bg-white border-l-2 border-blue-400 p-3 rounded-r">
+                           <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-blue-700 text-xs">👨‍🏫 {reply.repliedBy || 'Quản trị viên'}</span>
+                          </div>
+                          <p className="text-gray-700 text-xs whitespace-pre-wrap italic">{reply.adminReply}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -93,9 +167,38 @@ export default function CommentSection({
         )}
       </div>
 
+      {/* Nút phân trang */}
+      {comments.length > visibleCount && (
+        <div className="text-center mb-10 border-b border-gray-100 pb-10">
+          <button 
+            onClick={() => setVisibleCount(prev => prev + 5)}
+            className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-full transition-colors"
+          >
+            Xem thêm bình luận
+          </button>
+        </div>
+      )}
+
       {/* Form bình luận */}
-      <div className="bg-blue-50/50 p-6 rounded-xl border border-blue-100">
-        <h4 className="font-semibold text-gray-800 mb-4">Gửi bình luận của bạn</h4>
+      <div ref={formRef} className="bg-blue-50/50 p-6 rounded-xl border border-blue-100">
+        <h4 className="font-semibold text-gray-800 mb-4">
+          {replyingTo ? (
+            <div className="flex items-center justify-between bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm">
+              <span>Đang trả lời: <strong>{replyingTo.name}</strong></span>
+              <button onClick={() => setReplyingTo(null)} className="text-blue-600 hover:text-blue-900 font-bold px-2">✕ Hủy</button>
+            </div>
+          ) : "Gửi bình luận của bạn"}
+        </h4>
+
+        {successMsg && (
+          <div className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-start gap-3">
+            <span className="text-emerald-500 mt-0.5">✅</span>
+            <div>
+              <p className="font-medium text-sm">{successMsg}</p>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -153,7 +256,7 @@ export default function CommentSection({
               isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md"
             }`}
           >
-            {isSubmitting ? "Đang gửi..." : "Gửi bình luận"}
+            {isSubmitting ? "Đang gửi..." : (replyingTo ? "Gửi phản hồi" : "Gửi bình luận")}
           </button>
         </form>
       </div>

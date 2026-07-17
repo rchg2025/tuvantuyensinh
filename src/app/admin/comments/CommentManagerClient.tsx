@@ -4,6 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { approveComment, deleteComment, replyComment } from "./actions";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type CommentWithPost = {
   id: string;
@@ -20,9 +21,14 @@ type CommentWithPost = {
     title: string;
     slug: string | null;
   };
+  parent?: {
+    name: string;
+    content: string;
+  } | null;
 };
 
 export default function CommentManagerClient({ initialComments }: { initialComments: CommentWithPost[] }) {
+  const router = useRouter();
   const [comments, setComments] = useState<CommentWithPost[]>(initialComments);
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "APPROVED">("ALL");
   const [replyingId, setReplyingId] = useState<string | null>(null);
@@ -39,6 +45,7 @@ export default function CommentManagerClient({ initialComments }: { initialComme
     const res = await approveComment(id);
     if (res.success) {
       toast.success("Đã duyệt bình luận", { id: "approve" });
+      router.refresh();
       setComments(prev => prev.map(c => c.id === id ? { ...c, isApproved: true } : c));
     } else {
       toast.error(res.error || "Lỗi", { id: "approve" });
@@ -51,6 +58,7 @@ export default function CommentManagerClient({ initialComments }: { initialComme
     const res = await deleteComment(id);
     if (res.success) {
       toast.success("Đã xóa bình luận", { id: "delete" });
+      router.refresh();
       setComments(prev => prev.filter(c => c.id !== id));
     } else {
       toast.error(res.error || "Lỗi", { id: "delete" });
@@ -66,12 +74,8 @@ export default function CommentManagerClient({ initialComments }: { initialComme
     const res = await replyComment(id, replyContent);
     if (res.success) {
       toast.success("Đã gửi phản hồi và duyệt bình luận", { id: "reply" });
-      setComments(prev => prev.map(c => c.id === id ? { 
-        ...c, 
-        adminReply: replyContent, 
-        isApproved: true, 
-        repliedAt: new Date() 
-      } : c));
+      router.refresh();
+      // Let the refresh handle the UI update instead of manual state because it creates a new comment now
       setReplyingId(null);
       setReplyContent("");
     } else {
@@ -121,6 +125,12 @@ export default function CommentManagerClient({ initialComments }: { initialComme
                     <a href={`mailto:${comment.email}`} className="text-blue-600 hover:underline">{comment.email}</a>
                     {comment.phone && <span className="ml-2">| {comment.phone}</span>}
                   </div>
+                  {comment.parent && (
+                    <div className="mt-2 mb-2 p-3 bg-slate-50 border-l-2 border-slate-300 rounded text-sm text-slate-600">
+                      <span className="font-semibold">Đang phản hồi {comment.parent.name}:</span>
+                      <p className="italic truncate">"{comment.parent.content}"</p>
+                    </div>
+                  )}
                   <p className="text-sm text-gray-500 mt-2">
                     Bài viết:{" "}
                     {comment.post.slug ? (
