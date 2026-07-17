@@ -7,6 +7,7 @@ import linkifyHtml from "linkify-html";
 import ShareButtons from "@/components/ShareButtons";
 import GalleryDisplay from "@/components/GalleryDisplay";
 import CommentSection from "../components/CommentSection";
+import { cookies } from "next/headers";
 
 export const revalidate = 60;
 
@@ -68,6 +69,22 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
 
   if (!post) {
     notFound();
+  }
+
+  // Get current logged in user (if any)
+  const cookieStore = await cookies();
+  const authId = cookieStore.get("auth_token")?.value;
+  const authName = cookieStore.get("auth_name")?.value;
+  
+  let currentUser = null;
+  if (authId && authName) {
+    const user = await prisma.systemUser.findUnique({ where: { id: authId } });
+    if (user) {
+      currentUser = {
+        name: decodeURIComponent(authName),
+        email: user.email
+      };
+    }
   }
 
   // Update view count
@@ -156,7 +173,13 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
         </div>
       </div>
       
-      <CommentSection postId={post.id} initialComments={post.comments} />
+      <div className="mt-12 w-full max-w-4xl mx-auto px-4">
+        <CommentSection 
+          postId={post.id} 
+          initialComments={post.comments as any} 
+          currentUser={currentUser}
+        />
+      </div>
     </div>
   );
 }

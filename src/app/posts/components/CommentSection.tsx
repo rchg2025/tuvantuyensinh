@@ -17,10 +17,12 @@ type CommentType = {
 
 export default function CommentSection({
   postId,
-  initialComments
+  initialComments,
+  currentUser
 }: {
   postId: string;
   initialComments: CommentType[];
+  currentUser?: { name: string; email: string } | null;
 }) {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,8 +32,8 @@ export default function CommentSection({
   const formRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: currentUser?.name || "",
+    email: currentUser?.email || "",
     phone: "",
     content: ""
   });
@@ -68,7 +70,7 @@ export default function CommentSection({
 
     if (result.success) {
       setSuccessMsg("Gửi bình luận thành công! Bình luận của bạn đang được duyệt và sẽ sớm hiển thị.");
-      setFormData({ name: "", email: "", phone: "", content: "" });
+      setFormData(prev => ({ ...prev, phone: "", content: "" }));
       setReplyingTo(null);
     } else {
       toast.error(result.error || "Có lỗi xảy ra");
@@ -200,32 +202,39 @@ export default function CommentSection({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Họ tên <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder="Nhập họ tên"
-              />
+          {!currentUser ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Họ tên <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Nhập họ tên"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Nhập email để nhận phản hồi"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder="Nhập email để nhận phản hồi"
-              />
+          ) : (
+            <div className="bg-blue-100/50 p-3 rounded-lg border border-blue-200 text-sm text-blue-800">
+              Bạn đang bình luận dưới tư cách: <strong>{currentUser.name}</strong> ({currentUser.email})
             </div>
-          </div>
+          )}
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại (Không bắt buộc)</label>
             <input

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { approveComment, deleteComment, replyComment } from "./actions";
 import Link from "next/link";

@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { notifyNewComment } from "@/lib/mail";
+import { cookies } from "next/headers";
 
 export async function submitComment(data: {
   postId: string;
@@ -24,6 +25,9 @@ export async function submitComment(data: {
       return { success: false, error: "Bài viết không tồn tại" };
     }
 
+    const cookieStore = await cookies();
+    const isAdmin = !!cookieStore.get("auth_token")?.value;
+
     const comment = await prisma.comment.create({
       data: {
         postId: data.postId,
@@ -32,17 +36,18 @@ export async function submitComment(data: {
         phone: data.phone || null,
         content: data.content,
         parentId: data.parentId || null,
-        isApproved: false // Admin duyệt
+        isApproved: isAdmin // Admin bình luận thì tự động duyệt luôn
       }
     });
 
-    // Gửi email cho admin
-    await notifyNewComment({
-      postTitle: post.title,
-      name: comment.name,
-      email: comment.email,
-      content: comment.content
-    });
+    if (!isAdmin) {
+      await notifyNewComment({
+        postTitle: post.title,
+        name: data.name,
+        email: data.email,
+        content: data.content
+      });
+    }
 
     return { success: true, message: "Gửi bình luận thành công! Bình luận của bạn đang chờ quản trị viên duyệt." };
   } catch (error) {
