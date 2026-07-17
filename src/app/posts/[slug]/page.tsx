@@ -173,7 +173,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
         </div>
       </div>
       
-      <div className="mt-12 w-full max-w-4xl mx-auto px-4">
+      <div className="mt-12 w-full">
         <CommentSection 
           postId={post.id} 
           initialComments={post.comments as any} 

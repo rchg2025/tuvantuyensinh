@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { submitComment } from "../actions/comment";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type CommentType = {
   id: string;
@@ -24,6 +25,7 @@ export default function CommentSection({
   initialComments: CommentType[];
   currentUser?: { name: string; email: string } | null;
 }) {
+  const router = useRouter();
   const [comments, setComments] = useState<CommentType[]>(initialComments);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
@@ -69,7 +71,12 @@ export default function CommentSection({
     setIsSubmitting(false);
 
     if (result.success) {
-      setSuccessMsg("Gửi bình luận thành công! Bình luận của bạn đang được duyệt và sẽ sớm hiển thị.");
+      if (currentUser) {
+        setSuccessMsg("Bình luận của bạn đã được đăng thành công!");
+        router.refresh();
+      } else {
+        setSuccessMsg("Gửi bình luận thành công! Bình luận của bạn đang được duyệt và sẽ sớm hiển thị.");
+      }
       setFormData(prev => ({ ...prev, phone: "", content: "" }));
       setReplyingTo(null);
     } else {
