@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trashDriveFile } from "./actions";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface DriveFile {
   id: string;
@@ -22,6 +23,7 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [previewFile, setPreviewFile] = useState<DriveFile | null>(null);
+  const router = useRouter();
   const itemsPerPage = 16;
 
   const isMedia = (mimeType: string) => {
@@ -157,7 +159,8 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
                     <img src={file.thumbnailLink.replace('=s220', '=s400')} alt={file.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-5xl">
-                      {file.mimeType.includes("pdf") ? "📕" :
+                      {file.mimeType === "application/vnd.google-apps.folder" ? "📁" :
+                       file.mimeType.includes("pdf") ? "📕" :
                        file.mimeType.includes("word") ? "📘" :
                        file.mimeType.includes("excel") || file.mimeType.includes("spreadsheet") ? "📗" :
                        file.mimeType.includes("zip") || file.mimeType.includes("rar") ? "📦" : "📄"}
@@ -165,13 +168,23 @@ export default function FileManagerClient({ initialFiles }: { initialFiles: Driv
                   )}
                   
                   <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
-                    <button 
-                      onClick={() => setPreviewFile(file)}
-                      className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
-                      title="Xem trước"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
-                    </button>
+                    {file.mimeType === "application/vnd.google-apps.folder" ? (
+                      <button 
+                        onClick={() => router.push(`/admin/files?folderId=${file.id}`)}
+                        className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                        title="Mở thư mục"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={() => setPreviewFile(file)}
+                        className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"
+                        title="Xem trước"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
+                      </button>
+                    )}
                     <button 
                       onClick={() => copyLink(file.webViewLink)}
                       className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center hover:scale-110 transition-transform shadow-sm"

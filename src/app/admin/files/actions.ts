@@ -3,21 +3,23 @@
 import { google } from "googleapis";
 import { getDriveAuth, getDriveConfig } from "@/lib/gdrive";
 
-export async function getDriveFiles() {
+export async function getDriveFiles(targetFolderId?: string) {
   try {
     const auth = await getDriveAuth();
-    const { folderId } = await getDriveConfig();
+    const config = await getDriveConfig();
     const drive = google.drive({ version: "v3", auth });
 
-    if (!folderId) {
+    const folderToFetch = targetFolderId || config.folderId;
+
+    if (!folderToFetch) {
       throw new Error("Chưa cấu hình Folder ID trong Cấu hình hệ thống");
     }
 
     // Lấy các file trong folderId và không nằm trong thùng rác
     const res = await drive.files.list({
-      q: `'${folderId}' in parents and trashed = false`,
+      q: `'${folderToFetch}' in parents and trashed = false`,
       fields: "files(id, name, mimeType, webViewLink, webContentLink, createdTime, thumbnailLink, size)",
-      orderBy: "createdTime desc",
+      orderBy: "folder, createdTime desc",
       supportsAllDrives: true,
       includeItemsFromAllDrives: true,
       pageSize: 1000,
