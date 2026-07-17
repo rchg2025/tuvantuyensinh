@@ -171,7 +171,7 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-1">File đính kèm (Tùy chọn)</label>
-            <DragDropUpload name="attachments" defaultValue={defaultValues?.attachments || ""} accept="*/*" label="Kéo thả file đính kèm vào đây (PDF, DOCX...)" />
+            <DragDropUpload name="attachments" defaultValue={defaultValues?.attachments || ""} accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" label="Kéo thả file đính kèm vào đây (PDF, DOCX...)" />
           </div>
         </div>
 

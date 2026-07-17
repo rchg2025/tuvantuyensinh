@@ -44,7 +44,12 @@ export default function MediaLibraryModal({
   const loadMedia = useCallback(async (token?: string, search?: string) => {
     setLoading(true);
     try {
-      let query = accept.includes("image") ? "mimeType contains 'image/'" : "";
+      let query = "";
+      if (accept.includes("image") && !accept.includes("*/*")) {
+        query = "mimeType contains 'image/'";
+      } else if (!accept.includes("image") && !accept.includes("*/*")) {
+        query = "not mimeType contains 'image/'";
+      }
       const currentSearch = search !== undefined ? search : searchInput;
       if (currentSearch.trim()) {
         const searchParam = `name contains '${currentSearch.trim().replace(/'/g, "\\'")}'`;
