@@ -38,7 +38,13 @@ export async function replyComment(id: string, reply: string) {
   try {
     const cookieStore = await cookies();
     const adminName = decodeURIComponent(cookieStore.get("auth_name")?.value || "Admin");
-    const adminEmail = "admin@nsg.edu.vn"; // Default email for admin replies if not found in token
+    const adminId = cookieStore.get("auth_token")?.value;
+    
+    let adminEmail = "admin@nsg.edu.vn";
+    if (adminId) {
+      const user = await prisma.systemUser.findUnique({ where: { id: adminId } });
+      if (user?.email) adminEmail = user.email;
+    }
 
     // Get the parent comment to know the post ID
     const parentComment = await prisma.comment.findUnique({

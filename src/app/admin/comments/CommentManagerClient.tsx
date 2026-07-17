@@ -31,14 +31,44 @@ export default function CommentManagerClient({ initialComments }: { initialComme
   const router = useRouter();
   const [comments, setComments] = useState<CommentWithPost[]>(initialComments);
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "APPROVED">("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const [replyingId, setReplyingId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
 
   const filteredComments = comments.filter(c => {
-    if (filter === "PENDING") return !c.isApproved;
-    if (filter === "APPROVED") return c.isApproved;
+    // 1. Filter by status
+    if (filter === "PENDING" && c.isApproved) return false;
+    if (filter === "APPROVED" && !c.isApproved) return false;
+    
+    // 2. Filter by search query
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = 
+        c.name.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q) ||
+        (c.phone && c.phone.includes(q)) ||
+        c.content.toLowerCase().includes(q) ||
+        c.post.title.toLowerCase().includes(q);
+      
+      if (!matchesSearch) return false;
+    }
+
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredComments.length / itemsPerPage);
+  const paginatedComments = filteredComments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchQuery]);
 
   const handleApprove = async (id: string) => {
     toast.loading("Đang xử lý...", { id: "approve" });
@@ -85,32 +115,44 @@ export default function CommentManagerClient({ initialComments }: { initialComme
 
   return (
     <div>
-      <div className="flex gap-2 mb-6 border-b border-gray-100 pb-4">
-        <button
-          onClick={() => setFilter("ALL")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "ALL" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-        >
-          Tất cả
-        </button>
-        <button
-          onClick={() => setFilter("PENDING")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "PENDING" ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-        >
-          Chờ duyệt ({comments.filter(c => !c.isApproved).length})
-        </button>
-        <button
-          onClick={() => setFilter("APPROVED")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "APPROVED" ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-        >
-          Đã duyệt ({comments.filter(c => c.isApproved).length})
-        </button>
+      <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-gray-100 pb-4">
+        <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => setFilter("ALL")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "ALL" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+          >
+            Tất cả
+          </button>
+          <button
+            onClick={() => setFilter("PENDING")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "PENDING" ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+          >
+            Chờ duyệt ({comments.filter(c => !c.isApproved).length})
+          </button>
+          <button
+            onClick={() => setFilter("APPROVED")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === "APPROVED" ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
+          >
+            Đã duyệt ({comments.filter(c => c.isApproved).length})
+          </button>
+        </div>
+        
+        <div className="flex-1 min-w-[200px]">
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm theo tên, email, SĐT, nội dung..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
       </div>
 
       <div className="space-y-6">
-        {filteredComments.length === 0 ? (
+        {paginatedComments.length === 0 ? (
           <p className="text-gray-500 text-center py-10">Không có bình luận nào.</p>
         ) : (
-          filteredComments.map(comment => (
+          paginatedComments.map(comment => (
             <div key={comment.id} className={`border rounded-xl p-5 transition-colors ${!comment.isApproved ? "border-amber-200 bg-amber-50" : "border-gray-200 bg-white"}`}>
               <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 mb-4">
                 <div>
@@ -191,6 +233,29 @@ export default function CommentManagerClient({ initialComments }: { initialComme
           ))
         )}
       </div>
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
+          <button 
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-sm font-medium"
+          >
+            Trước
+          </button>
+          <span className="text-sm text-gray-600 font-medium">
+            Trang {currentPage} / {totalPages}
+          </span>
+          <button 
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-sm font-medium"
+          >
+            Sau
+          </button>
+        </div>
+      )}
     </div>
   );
 }
