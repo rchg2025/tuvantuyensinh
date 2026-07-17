@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import linkifyHtml from "linkify-html";
 import ShareButtons from "@/components/ShareButtons";
 import GalleryDisplay from "@/components/GalleryDisplay";
+import CommentSection from "../components/CommentSection";
 
 export const revalidate = 60;
 
@@ -51,6 +52,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   
   const post = await prisma.post.findUnique({
     where: { slug },
+    include: {
+      comments: {
+        where: { isApproved: true },
+        orderBy: { createdAt: "desc" }
+      }
+    }
   });
 
   if (!post) {
@@ -142,6 +149,8 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           <ShareButtons title={post.title} />
         </div>
       </div>
+      
+      <CommentSection postId={post.id} initialComments={post.comments} />
     </div>
   );
 }

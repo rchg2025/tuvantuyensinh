@@ -40,12 +40,35 @@ model Post {
   viewCount    Int       @default(0)
   categoryId   String?
   category     Category? @relation(fields: [categoryId], references: [id])
+  comments     Comment[]
   authorName   String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
   @@index([createdAt])
   @@index([categoryId])
+}
+
+model Comment {
+  id         String    @id @default(cuid())
+  postId     String
+  post       Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String?
+  email      String
+  content    String
+  
+  // Dành cho Admin phản hồi
+  adminReply String?
+  repliedAt  DateTime?
+  repliedBy  String?
+  
+  isApproved Boolean   @default(false) // Cần admin duyệt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([postId])
+  @@index([createdAt])
 }
 
 model ConsultationRequest {

@@ -49,6 +49,10 @@ export default async function AdminLayout({
     }
   });
 
+  const pendingComments = await prisma.comment.count({
+    where: { isApproved: false }
+  });
+
   const sidebar = (
     <>
         <div className="p-6 border-b border-slate-100 text-center relative group">
@@ -99,6 +103,13 @@ export default async function AdminLayout({
             <span>💬 Hỏi đáp & Tư vấn</span>
             {pendingQuestions > 0 && (
               <span className="bg-red-100 text-red-600 text-xs py-0.5 px-2 rounded-full">{pendingQuestions}</span>
+            )}
+          </Link>
+          
+          <Link href="/admin/comments" className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between">
+            <span>📝 Quản lý bình luận</span>
+            {pendingComments > 0 && (
+              <span className="bg-red-100 text-red-600 text-xs py-0.5 px-2 rounded-full">{pendingComments}</span>
             )}
           </Link>
           

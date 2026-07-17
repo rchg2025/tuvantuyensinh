@@ -375,3 +375,88 @@ export async function notifyChatbotError(errorDetails: any) {
   `;
   await sendEmail({ to: adminEmails, subject: `[Cảnh báo] Lỗi Chatbot AI - API/Kết nối`, html });
 }
+
+export async function notifyNewComment(data: { postTitle: string, name: string, email: string, content: string }) {
+  const adminEmails = await getAdminAndCVDEmails();
+  if (adminEmails.length === 0) return;
+
+  const html = `
+    <html>
+      <head>
+        <style>${styles}</style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>💬 Có bình luận mới</h1>
+          </div>
+          <div class="content">
+            <h2>Chi tiết bình luận</h2>
+            <p>Bài viết <strong>"${data.postTitle}"</strong> vừa nhận được một bình luận mới đang chờ duyệt:</p>
+            <div class="info-box">
+              <div class="info-row">
+                <div class="info-label">Người gửi:</div>
+                <div class="info-value">${data.name}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">Email:</div>
+                <div class="info-value"><a href="mailto:${data.email}" style="color: #2563eb; text-decoration: none;">${data.email}</a></div>
+              </div>
+              <div class="info-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
+                <div class="info-label">Nội dung:</div>
+                <div class="info-value" style="font-size: 16px; font-weight: 500; font-style: italic; color: #0f172a;">"${data.content}"</div>
+              </div>
+            </div>
+            <div class="button-container">
+              <a href="${getSiteUrl()}/admin/comments" class="button">Quản lý bình luận</a>
+            </div>
+          </div>
+          <div class="footer">
+            Đây là email tự động từ Hệ Thống Tư Vấn Tuyển Sinh. Vui lòng không trả lời email này.
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+  await sendEmail({ to: adminEmails, subject: `[Bình luận mới] Từ ${data.name}`, html });
+}
+
+export async function notifyCommentReplied(userEmail: string, data: { postTitle: string, postSlug: string, name: string, comment: string, reply: string }) {
+  const html = `
+    <html>
+      <head>
+        <style>${styles}</style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <h1>✨ Bình luận của bạn đã được phản hồi</h1>
+          </div>
+          <div class="content">
+            <p style="font-size: 16px;">Chào bạn <strong>${data.name}</strong>,</p>
+            <p>Bình luận của bạn tại bài viết <strong>"${data.postTitle}"</strong> đã được duyệt và phản hồi. Dưới đây là thông tin chi tiết:</p>
+            
+            <div class="info-box" style="margin-top: 20px;">
+              <span class="info-label">Bình luận của bạn:</span>
+              <p style="color: #475569; font-weight: 500; font-style: italic; margin-top: 8px;">"${data.comment}"</p>
+            </div>
+            
+            <div class="reply-box">
+              <span class="reply-label">👨‍🏫 Quản trị viên phản hồi:</span>
+              <p class="reply-content">${data.reply}</p>
+            </div>
+
+            <div class="button-container">
+              <a href="${getSiteUrl()}/posts/${data.postSlug}" class="button" style="background-color: #059669; box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);">Xem bài viết</a>
+            </div>
+          </div>
+          <div class="footer">
+            Đây là email tự động từ Hệ Thống Tư Vấn Tuyển Sinh.
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+  await sendEmail({ to: userEmail, subject: `Re: Bình luận của bạn đã được phản hồi`, html });
+}
+
