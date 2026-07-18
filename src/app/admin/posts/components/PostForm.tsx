@@ -165,8 +165,8 @@ export default function PostForm({ defaultValues, categories = [] }: { defaultVa
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1">Ảnh đại diện (Thumbnail)</label>
-            <DragDropUpload name="thumbnailUrl" defaultValue={defaultValues?.thumbnailUrl || ""} accept="image/*" label="Kéo thả ảnh Thumbnail vào đây" />
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Ảnh bìa (Thumbnail - Cloudinary)</label>
+            <DragDropUpload name="thumbnailUrl" defaultValue={defaultValues?.thumbnailUrl || ""} accept="image/*" label="Kéo thả ảnh Thumbnail vào đây" uploadTarget="cloudinary" />
           </div>
 
           <div>

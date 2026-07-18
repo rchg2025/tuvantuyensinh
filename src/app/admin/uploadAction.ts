@@ -20,6 +20,44 @@ export async function uploadFileAction(formData: FormData) {
   }
 }
 
+import { v2 as cloudinary } from "cloudinary";
+
+// Cấu hình Cloudinary (nếu đã có biến môi trường CLOUDINARY_URL thì thư viện tự động nhận)
+cloudinary.config({
+  secure: true,
+});
+
+export async function uploadToCloudinaryAction(formData: FormData) {
+  try {
+    const file = formData.get("file") as File;
+    if (!file) throw new Error("Không tìm thấy file");
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { 
+          folder: "tuvantuyensinh_thumbnails",
+          format: "webp",
+          quality: "auto"
+        },
+        (error, result) => {
+          if (error) {
+            console.error("Lỗi Cloudinary:", error);
+            reject({ success: false, error: error.message });
+          } else {
+            resolve({ success: true, url: result?.secure_url });
+          }
+        }
+      ).end(buffer);
+    });
+  } catch (error: any) {
+    console.error("Lỗi upload Cloudinary:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 import { headers } from "next/headers";
 
 export async function getResumableUrlAction(fileName: string, mimeType: string) {

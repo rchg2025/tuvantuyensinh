@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { uploadFileAction, getResumableUrlAction, finalizeUploadAction } from "@/app/admin/uploadAction";
+import { uploadFileAction, getResumableUrlAction, finalizeUploadAction, uploadToCloudinaryAction } from "@/app/admin/uploadAction";
 import MediaLibraryModal from "./MediaLibraryModal";
 
 interface DragDropUploadProps {
@@ -10,9 +10,10 @@ interface DragDropUploadProps {
   defaultValue?: string;
   accept?: string;
   label?: string;
+  uploadTarget?: 'gdrive' | 'cloudinary';
 }
 
-export default function DragDropUpload({ name, defaultValue = "", accept = "image/*", label = "Kéo thả file vào đây hoặc click để chọn" }: DragDropUploadProps) {
+export default function DragDropUpload({ name, defaultValue = "", accept = "image/*", label = "Kéo thả file vào đây hoặc click để chọn", uploadTarget = "gdrive" }: DragDropUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [fileUrl, setFileUrl] = useState(defaultValue);
@@ -27,7 +28,19 @@ export default function DragDropUpload({ name, defaultValue = "", accept = "imag
     const toastId = toast.loading("Đang khởi tạo tải lên...");
     
     try {
-      if (file.size > 4.5 * 1024 * 1024) {
+      if (uploadTarget === "cloudinary") {
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        const res = await (uploadToCloudinaryAction(formData) as any);
+        if (res.success && res.url) {
+          setFileUrl(res.url);
+          toast.success("Tải lên Cloudinary thành công!", { id: toastId });
+          setIsModalOpen(false); // Close modal if open
+        } else {
+          toast.error("Lỗi: " + (res.error || "Không thể tải lên Cloudinary"), { id: toastId });
+        }
+      } else if (file.size > 4.5 * 1024 * 1024) {
         toast.loading("File lớn đang được tải lên trực tiếp...", { id: toastId });
         
         // 1. Get Resumable URL
