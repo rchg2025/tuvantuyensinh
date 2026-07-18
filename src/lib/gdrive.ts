@@ -69,6 +69,7 @@ export async function testDriveConnection() {
 
 export function getDirectImageUrl(url: string | null | undefined, widthOrOgMode: number | boolean = false): string {
   if (!url) return "";
+  
   if (url.includes('drive.google.com/uc?export=view&id=')) {
     const id = url.split('id=')[1]?.split('&')[0];
     if (id) {
@@ -78,6 +79,17 @@ export function getDirectImageUrl(url: string | null | undefined, widthOrOgMode:
       return `https://lh3.googleusercontent.com/d/${id}=w${widthOrOgMode}`;
     }
   }
+
+  // Handle Cloudinary URLs
+  if (url.includes('res.cloudinary.com')) {
+    let finalUrl = url;
+    // Replace .webp with .jpg for Open Graph (social media sharing)
+    if (widthOrOgMode === true && finalUrl.endsWith('.webp')) {
+      finalUrl = finalUrl.replace(/\.webp$/, '.jpg');
+    }
+    return finalUrl;
+  }
+
   return url;
 }
 
