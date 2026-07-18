@@ -35,10 +35,15 @@ export async function uploadToCloudinaryAction(formData: FormData) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    const date = new Date();
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const folderPath = `tuvantuyensinh_thumbnails/${year}/${month}`;
+
     return new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         { 
-          folder: "tuvantuyensinh_thumbnails",
+          folder: folderPath,
           format: "webp",
           quality: "auto"
         },
