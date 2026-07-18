@@ -49,7 +49,14 @@ const roboto = Roboto({
           default: siteTitle,
         },
         description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
-        images: [defaultOgImage],
+        images: [
+          {
+            url: defaultOgImage,
+            width: 1200,
+            height: 630,
+            alt: siteTitle,
+          }
+        ],
         type: "website",
         url: "https://ts26.nsg.edu.vn/",
       },

@@ -83,9 +83,17 @@ export function getDirectImageUrl(url: string | null | undefined, widthOrOgMode:
   // Handle Cloudinary URLs
   if (url.includes('res.cloudinary.com')) {
     let finalUrl = url;
-    // Replace .webp with .jpg for Open Graph (social media sharing)
-    if (widthOrOgMode === true && finalUrl.endsWith('.webp')) {
-      finalUrl = finalUrl.replace(/\.webp$/, '.jpg');
+    // For Open Graph (social media sharing)
+    if (widthOrOgMode === true) {
+      // 1. Replace .webp with .jpg
+      if (/\.webp(\?.*)?$/i.test(finalUrl)) {
+        finalUrl = finalUrl.replace(/\.webp(\?.*)?$/i, '.jpg$1');
+      }
+      // 2. Inject standard OG image dimensions (1200x630) for better compatibility
+      // Cloudinary URLs look like: .../image/upload/v1234/...
+      if (!finalUrl.includes('/c_fill,w_1200,h_630/')) {
+        finalUrl = finalUrl.replace('/upload/', '/upload/c_fill,w_1200,h_630/');
+      }
     }
     return finalUrl;
   }

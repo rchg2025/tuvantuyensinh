@@ -35,7 +35,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-      images: [finalImageUrl],
+      images: [
+        {
+          url: finalImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ],
       type: "article",
       url: `https://ts26.nsg.edu.vn/posts/${slug}`,
     },
