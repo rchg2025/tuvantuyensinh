@@ -45,7 +45,7 @@ export async function uploadToCloudinaryAction(formData: FormData) {
         (error, result) => {
           if (error) {
             console.error("Lỗi Cloudinary:", error);
-            reject({ success: false, error: error.message });
+            resolve({ success: false, error: error.message || "Upload thất bại" });
           } else {
             resolve({ success: true, url: result?.secure_url });
           }
