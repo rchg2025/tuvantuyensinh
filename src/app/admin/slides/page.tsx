@@ -16,10 +16,10 @@ export default async function SlidesPage() {
     redirect("/login");
   }
 
-  // Ensure only ADMIN can access this page
+  // Ensure only ADMIN or CONSULTANT can access this page
   if (auth !== "admin_logged_in") {
     const user = await prisma.systemUser.findUnique({ where: { id: auth } });
-    if (!user || user.role !== "ADMIN") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "CONSULTANT")) {
       redirect("/admin");
     }
   }

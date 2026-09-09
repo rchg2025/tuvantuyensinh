@@ -116,6 +116,12 @@ export default async function AdminLayout({
           <Link href="/admin/posts" className="px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between">
             <span>📰 Bài viết</span>
           </Link>
+          
+          {(role === "ADMIN" || role === "CONSULTANT") && (
+            <Link href="/admin/slides" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+              🖼️ Quản lý Slide
+            </Link>
+          )}
 
           {role === "ADMIN" && (
             <>
@@ -127,9 +133,6 @@ export default async function AdminLayout({
               </Link>
               <Link href="/admin/menus" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                 📝 Quản lý Menu
-              </Link>
-              <Link href="/admin/slides" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
-                🖼️ Quản lý Slide
               </Link>
               <Link href="/admin/files" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
                 📁 Quản lý tệp tin

@@ -25,7 +25,7 @@ export async function saveSlidesAction(slides: any[]) {
 
   if (auth !== "admin_logged_in") {
     const user = await prisma.systemUser.findUnique({ where: { id: auth } });
-    if (!user || user.role !== "ADMIN") return { success: false, message: "Unauthorized" };
+    if (!user || (user.role !== "ADMIN" && user.role !== "CONSULTANT")) return { success: false, message: "Unauthorized" };
   }
 
   await prisma.systemConfig.upsert({
