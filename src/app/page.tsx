@@ -2,13 +2,15 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import LiveSearch from "@/components/LiveSearch";
 import PostSlider from "@/components/PostSlider";
+import HeroSlider from "@/components/HeroSlider";
 import { getDirectImageUrl } from "@/lib/gdrive";
 import LinkifyText from "@/components/LinkifyText";
+import ExpandableContent from "@/components/ExpandableContent";
 import HomeSearchForm from "./HomeSearchForm";
 export const revalidate = 60;
 
 export default async function Home() {
-  const [postCount, questionCount, majorCount, latestQuestions, rawLatestPosts, adminUsers] = await Promise.all([
+  const [postCount, questionCount, majorCount, latestQuestions, rawLatestPosts, adminUsers, sliderConfig] = await Promise.all([
     prisma.post.count(),
     prisma.question.count(),
     prisma.category.count({ where: { type: "MAJOR" } }),
@@ -38,6 +40,9 @@ export default async function Home() {
     prisma.systemUser.findMany({
       select: { name: true, email: true, avatar: true },
     }),
+    prisma.systemConfig.findUnique({
+      where: { key: "HOMEPAGE_SLIDER" }
+    }),
   ]);
 
   const adminAvatars = adminUsers.reduce((acc, user) => {
@@ -51,8 +56,22 @@ export default async function Home() {
     thumbnailUrl: post.thumbnailUrl ? getDirectImageUrl(post.thumbnailUrl, 400) : null
   }));
 
+  let slides = [];
+  if (sliderConfig?.value) {
+    try {
+      slides = JSON.parse(sliderConfig.value);
+    } catch (e) {}
+  }
+
   return (
     <div className="space-y-12 md:space-y-16">
+      {/* Top Slider */}
+      {slides.length > 0 && (
+        <section>
+          <HeroSlider slides={slides} />
+        </section>
+      )}
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white rounded-3xl overflow-hidden shadow-2xl px-5 py-12 md:px-8 md:py-20 text-center">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent)]" />
@@ -169,9 +188,12 @@ export default async function Home() {
                         {q.createdAt.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                       </span>
                     </div>
-                    <Link href={`/qa?q=${encodeURIComponent(q.question)}`} className="text-base md:text-lg font-bold text-gray-800 hover:text-blue-700 transition-colors break-words block">
-                      {q.question}
-                    </Link>
+                    <ExpandableContent 
+                      content={q.question}
+                      maxLines={5}
+                      className="text-base md:text-lg font-bold text-gray-800"
+                      href={`/qa?q=${encodeURIComponent(q.question)}`}
+                    />
                   </div>
                 </div>
 
@@ -185,14 +207,18 @@ export default async function Home() {
                         {q.answeredBy ? q.answeredBy.charAt(0).toUpperCase() : "TV"}
                       </div>
                     )}
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center flex-wrap gap-2 mb-1">
                         <span className="text-xs font-semibold text-blue-700">{q.answeredBy || "Chuyên viên tư vấn"}</span>
                         <span className="bg-blue-100 text-blue-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
                           Quản trị viên / Chuyên viên tư vấn
                         </span>
                       </div>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap"><LinkifyText text={q.answer} /></p>
+                      <ExpandableContent 
+                        content={q.answer}
+                        maxLines={5}
+                        className="text-gray-700 text-sm"
+                      />
                     </div>
                   </div>
                 ) : (
