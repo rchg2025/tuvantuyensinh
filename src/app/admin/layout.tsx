@@ -117,7 +117,7 @@ export default async function AdminLayout({
             <span>📰 Bài viết</span>
           </Link>
           
-          {(role === "ADMIN" || role === "CONSULTANT") && (
+          {(role === "ADMIN" || role === "CVD") && (
             <Link href="/admin/slides" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
               🖼️ Quản lý Slide
             </Link>
