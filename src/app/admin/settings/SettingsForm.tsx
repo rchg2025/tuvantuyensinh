@@ -437,16 +437,41 @@ export default function SettingsForm({ configMap }: { configMap: Record<string, 
               />
             </div>
           </div>
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <h4 className="text-sm font-semibold text-slate-800 mb-2">Thông tin cấu hình trên Google Cloud Console</h4>
-            <p className="text-sm text-slate-500 mb-2">Để tính năng này hoạt động, bạn cần cấu hình <b>Authorized redirect URIs</b> trên Google Cloud Console như sau:</p>
-            <div className="relative">
-              <input 
-                readOnly
-                className="w-full px-4 py-3 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value="https://ts26.nsg.edu.vn/api/auth/google/callback"
-              />
+          <div className="mt-8 pt-6 border-t border-slate-100 space-y-4">
+            <h4 className="text-sm font-semibold text-slate-800">Thông tin cấu hình trên Google Cloud Console</h4>
+            
+            <div>
+              <p className="text-xs font-semibold text-slate-700 mb-1.5">1. Authorized JavaScript origins (Nguồn gốc JavaScript được phép):</p>
+              <div className="space-y-1.5 font-mono text-xs">
+                <input 
+                  readOnly
+                  className="w-full px-3 py-2 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg focus:outline-none"
+                  value="https://cokhi.namsaigon.edu.vn"
+                />
+                <input 
+                  readOnly
+                  className="w-full px-3 py-2 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg focus:outline-none"
+                  value="https://ts26.nsg.edu.vn"
+                />
+              </div>
             </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-700 mb-1.5">2. Authorized redirect URIs (URI chuyển hướng được phép):</p>
+              <div className="space-y-1.5 font-mono text-xs">
+                <input 
+                  readOnly
+                  className="w-full px-3 py-2 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg focus:outline-none"
+                  value="https://cokhi.namsaigon.edu.vn/api/auth/google/callback"
+                />
+                <input 
+                  readOnly
+                  className="w-full px-3 py-2 bg-slate-900 text-slate-100 border border-slate-700 rounded-lg focus:outline-none"
+                  value="https://ts26.nsg.edu.vn/api/auth/google/callback"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 italic">Thêm cả 2 địa chỉ trên vào Google Cloud Console để đăng nhập Google hoạt động mượt mà trên cả 2 tên miền.</p>
           </div>
         </div>
         </div>

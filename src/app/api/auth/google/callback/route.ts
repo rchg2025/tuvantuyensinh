@@ -5,11 +5,13 @@ import { cookies } from "next/headers";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const code = searchParams.get("code");
-  const origin = new URL(req.url).origin;
+  const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || new URL(req.url).host;
+  const proto = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
+  const origin = `${proto}://${host}`;
   const redirectUri = `${origin}/api/auth/google/callback`;
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=google_auth_failed", req.url));
+    return NextResponse.redirect(new URL("/login?error=google_auth_failed", origin));
   }
 
   const dbConfigs = await prisma.systemConfig.findMany({
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest) {
   const clientSecret = dbConfigs.find(c => c.key === "google_client_secret")?.value;
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(new URL("/login?error=google_config_missing", req.url));
+    return NextResponse.redirect(new URL("/login?error=google_config_missing", origin));
   }
 
   try {
@@ -38,7 +40,7 @@ export async function GET(req: NextRequest) {
     
     const tokenData = await tokenRes.json();
     if (tokenData.error) {
-      return NextResponse.redirect(new URL("/login?error=google_auth_failed", req.url));
+      return NextResponse.redirect(new URL("/login?error=google_auth_failed", origin));
     }
 
     const userRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
@@ -47,7 +49,7 @@ export async function GET(req: NextRequest) {
     const userData = await userRes.json();
     
     if (!userData || !userData.email) {
-      return NextResponse.redirect(new URL("/login?error=google_auth_failed", req.url));
+      return NextResponse.redirect(new URL("/login?error=google_auth_failed", origin));
     }
     
     const email = userData.email;
@@ -87,11 +89,11 @@ export async function GET(req: NextRequest) {
       } else {
         cookieStore.delete("auth_avatar");
       }
-      return NextResponse.redirect(new URL("/admin", req.url));
+      return NextResponse.redirect(new URL("/admin", origin));
     } else {
-      return NextResponse.redirect(new URL("/login?error=google_unlinked", req.url));
+      return NextResponse.redirect(new URL("/login?error=google_unlinked", origin));
     }
   } catch (error) {
-    return NextResponse.redirect(new URL("/login?error=google_auth_failed", req.url));
+    return NextResponse.redirect(new URL("/login?error=google_auth_failed", origin));
   }
 }
