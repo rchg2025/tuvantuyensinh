@@ -19,6 +19,16 @@ export default function MobileHeaderClient({
   handleLogout: () => void;
 }) {
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
+  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>({});
+
+  const toggleSubmenu = (menuId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenSubmenus(prev => ({
+      ...prev,
+      [menuId]: !prev[menuId]
+    }));
+  };
 
   const toggleSidebar = () => {
     setIsHeaderMenuOpen(false);
@@ -96,58 +106,108 @@ export default function MobileHeaderClient({
       </div>
 
       {isHeaderMenuOpen && (
-        <div className="lg:hidden bg-blue-700 border-t border-blue-600/50 py-2 w-full animate-in slide-in-from-top-2 absolute left-0 right-0 z-40 shadow-xl" style={{ top: "100%" }}>
+        <div 
+          className="lg:hidden bg-blue-700 border-t border-blue-600/50 py-2 w-full animate-in slide-in-from-top-2 absolute left-0 right-0 z-40 shadow-xl max-h-[80vh] overflow-y-auto overscroll-contain"
+          style={{ top: "100%" }}
+        >
           {menuTree.length > 0 ? (
-            menuTree.map((menu: any) => (
-              <div key={menu.id} className="block w-full">
-                <Link 
-                  href={menu.url} 
-                  className="block px-6 py-3 text-white hover:bg-white/10 transition-colors border-b border-white/5 last:border-0"
-                  onClick={() => setIsHeaderMenuOpen(false)}
-                >
-                  {menu.title}
-                </Link>
-                {menu.children?.length > 0 && (
-                  <div className="bg-blue-800/30">
-                    {menu.children.map((child: any) => (
+            menuTree.map((menu: any) => {
+              const hasChildren = menu.children && menu.children.length > 0;
+              const isSubOpen = !!openSubmenus[menu.id];
+
+              return (
+                <div key={menu.id} className="block w-full border-b border-white/5 last:border-0">
+                  <div className="flex items-center justify-between text-white hover:bg-white/10 transition-colors">
+                    <Link 
+                      href={menu.url} 
+                      className="flex-1 px-6 py-3"
+                      onClick={() => setIsHeaderMenuOpen(false)}
+                    >
+                      {menu.title}
+                    </Link>
+                    {hasChildren && (
+                      <button
+                        type="button"
+                        onClick={(e) => toggleSubmenu(menu.id, e)}
+                        className="px-5 py-3 text-blue-200 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+                        aria-label={`Mở menu con của ${menu.title}`}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className={`h-4 w-4 transition-transform duration-200 ${isSubOpen ? "rotate-180 text-yellow-300" : ""}`} 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {hasChildren && isSubOpen && (
+                    <div className="bg-blue-800/40 border-t border-white/5 animate-in slide-in-from-top-1 duration-150">
+                      {menu.children.map((child: any) => (
+                        <Link 
+                          key={child.id} 
+                          href={child.url} 
+                          className="block px-10 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 last:border-0 text-sm"
+                          onClick={() => setIsHeaderMenuOpen(false)}
+                        >
+                          ↳ {child.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <>
+              <div className="block w-full border-b border-white/5">
+                <div className="flex items-center justify-between text-white hover:bg-white/10 transition-colors">
+                  <Link href="/posts" className="flex-1 px-6 py-3" onClick={() => setIsHeaderMenuOpen(false)}>
+                    Bài viết
+                  </Link>
+                  {postCategories.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => toggleSubmenu("default_posts", e)}
+                      className="px-5 py-3 text-blue-200 hover:text-white hover:bg-white/10 transition-colors"
+                      aria-label="Mở danh mục bài viết"
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className={`h-4 w-4 transition-transform duration-200 ${openSubmenus["default_posts"] ? "rotate-180 text-yellow-300" : ""}`} 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {postCategories.length > 0 && openSubmenus["default_posts"] && (
+                  <div className="bg-blue-800/40 border-t border-white/5 animate-in slide-in-from-top-1 duration-150">
+                    {postCategories.map(cat => (
                       <Link 
-                        key={child.id} 
-                        href={child.url} 
-                        className="block px-10 py-3 text-blue-100 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 last:border-0 text-sm"
+                        key={cat.id} 
+                        href={`/posts?categorySlug=${cat.slug || cat.id}`} 
+                        className="block px-10 py-2.5 text-blue-100 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 text-sm"
                         onClick={() => setIsHeaderMenuOpen(false)}
                       >
-                        {child.title}
+                        ↳ {cat.name}
                       </Link>
                     ))}
                   </div>
                 )}
               </div>
-            ))
-          ) : (
-            <>
-              <Link href="/posts" className="block px-6 py-3 text-white hover:bg-white/10 transition-colors border-b border-white/5" onClick={() => setIsHeaderMenuOpen(false)}>
-                Bài viết
-              </Link>
-              {postCategories.length > 0 && (
-                <div className="bg-blue-800/30">
-                  {postCategories.map(cat => (
-                    <Link 
-                      key={cat.id} 
-                      href={`/posts?categorySlug=${cat.slug || cat.id}`} 
-                      className="block px-10 py-3 text-blue-100 hover:bg-white/10 hover:text-white transition-colors border-b border-white/5 text-sm"
-                      onClick={() => setIsHeaderMenuOpen(false)}
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
               <Link href="/qa" className="block px-6 py-3 text-white hover:bg-white/10 transition-colors border-b border-white/5" onClick={() => setIsHeaderMenuOpen(false)}>
                 Hỏi đáp
               </Link>
             </>
           )}
-          <div className="p-4 pt-2">
+          <div className="p-4 pt-3">
             <Link 
               href="/consultation" 
               className="block w-full text-center bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold text-sm px-4 py-3 rounded-lg shadow transition"
