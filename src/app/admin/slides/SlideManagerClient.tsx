@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { saveSlidesAction } from "./actions";
 import MediaLibraryModal from "@/components/MediaLibraryModal";
 import { getDirectImageUrlClient as getDirectImageUrl } from "@/lib/clientUtils";
+import { uploadFileAction, getResumableUrlAction, finalizeUploadAction } from "@/app/admin/uploadAction";
 
 export interface Slide {
   id: string;
@@ -17,6 +18,59 @@ export default function SlideManagerClient({ initialSlides }: { initialSlides: S
   const [slides, setSlides] = useState<Slide[]>(initialSlides || []);
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    const toastId = toast.loading("Đang tải ảnh lên...");
+
+    try {
+      let finalUrl = "";
+      if (file.size > 4.5 * 1024 * 1024) {
+        const initRes = await getResumableUrlAction(file.name, file.type || "application/octet-stream");
+        if (!initRes.success || !initRes.uploadUrl) throw new Error(initRes.error);
+
+        const uploadRes = await fetch(initRes.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/octet-stream" },
+          body: file,
+        });
+        if (!uploadRes.ok) throw new Error("Upload failed");
+
+        const fileData = await uploadRes.json();
+        const finalRes = await finalizeUploadAction(fileData.id, file.type || "application/octet-stream");
+        if (finalRes.success && finalRes.url) {
+          finalUrl = finalRes.url;
+        } else {
+          throw new Error(finalRes.error);
+        }
+      } else {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await uploadFileAction(formData);
+        if (res.success && res.url) {
+          finalUrl = res.url;
+        } else {
+          throw new Error(res.error);
+        }
+      }
+
+      if (finalUrl) {
+        handleAddSlide([{ url: finalUrl, name: file.name, mimeType: file.type }]);
+        toast.success("Tải ảnh lên thành công!", { id: toastId });
+        setIsModalOpen(false);
+      }
+    } catch (error: any) {
+      toast.error("Lỗi tải ảnh: " + error.message, { id: toastId });
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const handleAddSlide = (files: any[]) => {
     const newSlides = files.map((f: any) => ({
@@ -158,7 +212,26 @@ export default function SlideManagerClient({ initialSlides }: { initialSlides: S
         onSelect={handleAddSlide}
         multiSelect={true}
         accept="image/*"
-      />
+      >
+        <div className="p-8 text-center border-2 border-dashed border-slate-300 rounded-lg bg-slate-50">
+          <div className="text-slate-500 mb-4">Click nút dưới đây để chọn ảnh từ máy tính của bạn.</div>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+          <button 
+            type="button" 
+            onClick={() => fileInputRef.current?.click()} 
+            disabled={isUploadingImage}
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+          >
+            {isUploadingImage ? "Đang tải ảnh lên..." : "Chọn ảnh từ máy tính"}
+          </button>
+        </div>
+      </MediaLibraryModal>
     </div>
   );
 }

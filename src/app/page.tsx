@@ -64,7 +64,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="space-y-12 md:space-y-16">
+    <div className="space-y-8 md:space-y-10">
       {/* Top Slider */}
       {slides.length > 0 && (
         <section>
@@ -73,7 +73,7 @@ export default async function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white rounded-3xl overflow-hidden shadow-2xl px-5 py-12 md:px-8 md:py-20 text-center">
+      <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white rounded-3xl overflow-hidden shadow-2xl px-4 py-8 md:px-6 md:py-12 text-center">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent)]" />
         <div className="relative z-10 max-w-3xl mx-auto space-y-6">
           <div className="inline-block bg-white/20 backdrop-blur text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-2">

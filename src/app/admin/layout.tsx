@@ -88,7 +88,7 @@ export default async function AdminLayout({
             </form>
           </div>
         </div>
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
           <Link href="/admin" className="block px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
             🏠 Bảng điều khiển
           </Link>
