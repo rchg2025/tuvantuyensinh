@@ -4,17 +4,16 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { generateUniqueSlug } from "@/lib/unique-slug";
+import { notifyGoogleIndexingApi } from "@/lib/googleIndexing";
+import { getRequestBaseUrl } from "@/lib/urlUtils";
 
-const sitemapUrl = "https://ts26.nsg.edu.vn/sitemap.xml";
-const pingSearchEngines = () => {
+const pingSearchEngines = (baseUrl: string) => {
+  const sitemapUrl = `${baseUrl}/sitemap.xml`;
   Promise.allSettled([
     fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`, { method: "GET" }).catch(() => {}),
     fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`, { method: "GET" }).catch(() => {})
   ]);
 };
-
-import { notifyGoogleIndexingApi } from "@/lib/googleIndexing";
-const baseUrl = "https://ts26.nsg.edu.vn";
 
 export async function createPostAction(formData: FormData) {
   const id = formData.get("id")?.toString();
@@ -41,8 +40,9 @@ export async function createPostAction(formData: FormData) {
       where: { id },
       data: { title, content, thumbnailUrl, attachments, gallery, galleryConfig, categoryId, slug },
     });
+    const baseUrl = await getRequestBaseUrl();
     revalidatePath("/admin/posts");
-    pingSearchEngines();
+    pingSearchEngines(baseUrl);
     notifyGoogleIndexingApi(`${baseUrl}/posts/${slug}`, 'URL_UPDATED');
     return { success: true, message: "Cập nhật thành công!" };
   } else {
@@ -50,8 +50,9 @@ export async function createPostAction(formData: FormData) {
     await prisma.post.create({
       data: { title, content, thumbnailUrl, attachments, gallery, galleryConfig, categoryId, authorName, slug },
     });
+    const baseUrl = await getRequestBaseUrl();
     revalidatePath("/admin/posts");
-    pingSearchEngines();
+    pingSearchEngines(baseUrl);
     notifyGoogleIndexingApi(`${baseUrl}/posts/${slug}`, 'URL_UPDATED');
     return { success: true, message: "Đăng bài viết thành công!" };
   }
@@ -62,8 +63,9 @@ export async function deletePostAction(formData: FormData) {
   if (id) {
     const post = await prisma.post.findUnique({ where: { id }, select: { slug: true } });
     await prisma.post.delete({ where: { id } });
+    const baseUrl = await getRequestBaseUrl();
     revalidatePath("/admin/posts");
-    pingSearchEngines();
+    pingSearchEngines(baseUrl);
     if (post) {
       notifyGoogleIndexingApi(`${baseUrl}/posts/${post.slug || id}`, 'URL_DELETED');
     }

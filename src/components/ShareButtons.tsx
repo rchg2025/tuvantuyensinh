@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from "react";
 
-export default function ShareButtons({ title }: { title: string }) {
-  const [url, setUrl] = useState("");
+export default function ShareButtons({ title, postUrl }: { title: string; postUrl?: string }) {
+  const [url, setUrl] = useState(postUrl || "");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setUrl(window.location.href);
-  }, []);
+    if (postUrl) {
+      setUrl(postUrl);
+    } else if (typeof window !== "undefined") {
+      setUrl(window.location.href);
+    }
+  }, [postUrl]);
 
   if (!url) return null;
 

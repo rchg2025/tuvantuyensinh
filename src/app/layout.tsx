@@ -10,6 +10,7 @@ import MobileHeaderClient from "./MobileHeaderClient";
 import prisma from "@/lib/prisma";
 import dynamic from "next/dynamic";
 import { getDirectImageUrl } from "@/lib/gdrive";
+import { getRequestBaseUrl } from "@/lib/urlUtils";
 
 import DynamicWidgets from "@/components/DynamicWidgets";
 import VisitorCounter from "@/components/VisitorCounter";
@@ -35,9 +36,13 @@ const roboto = Roboto({
 
     let defaultOgImage = defaultOgImageConf?.value || logoConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
     defaultOgImage = getDirectImageUrl(defaultOgImage, true);
+    const baseUrl = await getRequestBaseUrl();
   
     return {
-      metadataBase: new URL('https://ts26.nsg.edu.vn'),
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: `${baseUrl}/`,
+      },
       title: {
         template: `%s | ${siteTitle}`,
         default: siteTitle,
@@ -58,7 +63,7 @@ const roboto = Roboto({
           }
         ],
         type: "website",
-        url: "https://ts26.nsg.edu.vn/",
+        url: `${baseUrl}/`,
       },
       twitter: {
         card: "summary_large_image",

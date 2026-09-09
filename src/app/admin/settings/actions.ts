@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { testDriveConnection } from "@/lib/gdrive";
+import { getRequestBaseUrl } from "@/lib/urlUtils";
 
 export async function testDriveAction() {
   return await testDriveConnection();
@@ -10,7 +11,8 @@ export async function testDriveAction() {
 
 export async function pingSitemapAction() {
   try {
-    const sitemapUrl = "https://ts26.nsg.edu.vn/sitemap.xml";
+    const baseUrl = await getRequestBaseUrl();
+    const sitemapUrl = `${baseUrl}/sitemap.xml`;
     const googleUrl = `https://www.google.com/ping?sitemap=${sitemapUrl}`;
     const bingUrl = `https://www.bing.com/ping?sitemap=${sitemapUrl}`;
     

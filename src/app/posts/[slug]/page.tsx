@@ -8,6 +8,7 @@ import ShareButtons from "@/components/ShareButtons";
 import GalleryDisplay from "@/components/GalleryDisplay";
 import CommentSection from "../components/CommentSection";
 import { cookies } from "next/headers";
+import { getRequestBaseUrl } from "@/lib/urlUtils";
 
 export const revalidate = 60;
 
@@ -29,9 +30,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const defaultOgImage = siteConfig?.value ? getDirectImageUrl(siteConfig.value, true) : "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
   const finalImageUrl = imageUrl || defaultOgImage;
 
+  const baseUrl = await getRequestBaseUrl();
+  const canonicalUrl = `${baseUrl}/posts/${slug}`;
+
   return {
     title: post.title,
     description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: post.title,
       description: post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
@@ -44,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         }
       ],
       type: "article",
-      url: `https://ts26.nsg.edu.vn/posts/${slug}`,
+      url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
@@ -57,6 +64,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function PostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const baseUrl = await getRequestBaseUrl();
+  const postUrl = `${baseUrl}/posts/${slug}`;
   
   const post = await prisma.post.findUnique({
     where: { slug },
@@ -199,7 +208,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
             );
           })()}
 
-          <ShareButtons title={post.title} />
+          <ShareButtons title={post.title} postUrl={postUrl} />
         </div>
       </div>
       

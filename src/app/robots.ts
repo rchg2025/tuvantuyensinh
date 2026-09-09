@@ -1,6 +1,10 @@
 import { MetadataRoute } from 'next'
- 
-export default function robots(): MetadataRoute.Robots {
+import { getRequestBaseUrl } from "@/lib/urlUtils";
+
+export const dynamic = 'force-dynamic';
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const baseUrl = await getRequestBaseUrl();
   return {
     rules: [
       {
@@ -12,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       }
     ],
-    sitemap: 'https://ts26.nsg.edu.vn/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
