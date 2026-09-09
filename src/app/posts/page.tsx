@@ -39,13 +39,32 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
   const [posts, totalPosts, categories] = await Promise.all([
     prisma.post.findMany({
       where: whereCondition,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        content: true,
+        thumbnailUrl: true,
+        authorName: true,
+        viewCount: true,
+        createdAt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        }
+      },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      include: { category: true }
     }),
     prisma.post.count({ where: whereCondition }),
-    prisma.category.findMany({ where: { type: "POST" } })
+    prisma.category.findMany({ 
+      where: { type: "POST" },
+      select: { id: true, name: true, slug: true }
+    })
   ]);
 
   const totalPages = Math.ceil(totalPosts / limit);

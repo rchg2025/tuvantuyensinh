@@ -23,20 +23,27 @@ const roboto = Roboto({
 });
 
   export async function generateMetadata(): Promise<Metadata> {
-    const titleConf = await prisma.systemConfig.findUnique({ where: { key: "seo_title" } });
-    const descConf = await prisma.systemConfig.findUnique({ where: { key: "seo_description" } });
-    const logoConf = await prisma.systemConfig.findUnique({ where: { key: "logo_url" } });
-    const defaultOgImageConf = await prisma.systemConfig.findUnique({ where: { key: "default_og_image" } });
-    const googleVerification = await prisma.systemConfig.findUnique({ where: { key: "google_site_verification" } });
-    const fbAppIdConf = await prisma.systemConfig.findUnique({ where: { key: "fb_app_id" } });
-    
-    const siteTitle = titleConf?.value || "Tư Vấn Tuyển Sinh";
-    let faviconUrl = logoConf?.value || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
+    const metaConfigs = await prisma.systemConfig.findMany({
+      where: {
+        key: {
+          in: ["seo_title", "seo_description", "logo_url", "default_og_image", "google_site_verification", "fb_app_id"]
+        }
+      }
+    });
+    const metaMap = metaConfigs.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    const siteTitle = metaMap["seo_title"] || "Tư Vấn Tuyển Sinh";
+    let faviconUrl = metaMap["logo_url"] || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";
     faviconUrl = getDirectImageUrl(faviconUrl);
 
-    let defaultOgImage = defaultOgImageConf?.value || logoConf?.value || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
+    let defaultOgImage = metaMap["default_og_image"] || metaMap["logo_url"] || "https://cover-talk.zadn.vn/f/d/8/d/2/a423757e2c651160a43bdd630334ecc7.jpg";
     defaultOgImage = getDirectImageUrl(defaultOgImage, true);
     const baseUrl = await getRequestBaseUrl();
+    const googleVerificationVal = metaMap["google_site_verification"];
+    const fbAppIdVal = metaMap["fb_app_id"];
   
     return {
       metadataBase: new URL(baseUrl),
@@ -47,13 +54,13 @@ const roboto = Roboto({
         template: `%s | ${siteTitle}`,
         default: siteTitle,
       },
-      description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+      description: metaMap["seo_description"] || "Trang thông tin tư vấn tuyển sinh",
       openGraph: {
         title: {
           template: `%s | ${siteTitle}`,
           default: siteTitle,
         },
-        description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+        description: metaMap["seo_description"] || "Trang thông tin tư vấn tuyển sinh",
         images: [
           {
             url: defaultOgImage,
@@ -67,17 +74,17 @@ const roboto = Roboto({
       },
       twitter: {
         card: "summary_large_image",
-        title: titleConf?.value || "Tư Vấn Tuyển Sinh",
-        description: descConf?.value || "Trang thông tin tư vấn tuyển sinh",
+        title: siteTitle,
+        description: metaMap["seo_description"] || "Trang thông tin tư vấn tuyển sinh",
         images: [defaultOgImage],
       },
       other: {
-        ...(fbAppIdConf?.value ? { "fb:app_id": fbAppIdConf.value } : { "fb:app_id": "1000000000000000" }), // Giá trị mặc định hoặc từ cấu hình
+        ...(fbAppIdVal ? { "fb:app_id": fbAppIdVal } : { "fb:app_id": "1000000000000000" }),
       },
     
-    ...(googleVerification?.value ? {
+    ...(googleVerificationVal ? {
       verification: {
-        google: googleVerification.value.replace(/.*content=["']([^"']+)["'].*/, '$1').replace('google-site-verification=', '').trim(),
+        google: googleVerificationVal.replace(/.*content=["']([^"']+)["'].*/, '$1').replace('google-site-verification=', '').trim(),
       }
     } : {}),
     icons: {
@@ -99,31 +106,40 @@ export default async function RootLayout({
   const authName = authNameEncoded ? decodeURIComponent(authNameEncoded) : "";
   const isLoggedIn = !!token;
 
+  const [userRecord, configs, headerMenusConfig, postCategories] = await Promise.all([
+    isLoggedIn && token && token !== "admin_logged_in"
+      ? prisma.systemUser.findUnique({ where: { id: token }, select: { avatar: true } })
+      : Promise.resolve(null),
+    prisma.systemConfig.findMany({
+      where: {
+        key: {
+          in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "zalo_enabled", "zalo_position", "chatbot_enabled", "chatbot_color", "chatbot_position", "chatbot_width", "chatbot_height", "fb_app_id"]
+        }
+      }
+    }),
+    prisma.systemConfig.findUnique({ where: { key: "header_menus" } }),
+    prisma.category.findMany({
+      where: { type: "POST" },
+      select: { id: true, name: true, slug: true },
+      orderBy: { createdAt: "desc" }
+    })
+  ]);
+
   let authAvatar = "";
   if (isLoggedIn && token) {
     if (token === "admin_logged_in") {
       const avatarCookie = cookieStore.get("auth_avatar")?.value;
       if (avatarCookie) authAvatar = decodeURIComponent(avatarCookie);
-    } else {
-      const user = await prisma.systemUser.findUnique({ where: { id: token } });
-      if (user) authAvatar = user.avatar || "";
+    } else if (userRecord) {
+      authAvatar = userRecord.avatar || "";
     }
   }
-
-  const configs = await prisma.systemConfig.findMany({
-    where: {
-      key: {
-        in: ["logo_url", "footer_phone", "footer_email", "footer_description", "seo_title", "zalo_oa_widget", "zalo_enabled", "zalo_position", "chatbot_enabled", "chatbot_color", "chatbot_position", "chatbot_width", "chatbot_height", "fb_app_id"]
-      }
-    }
-  });
 
   const configMap = configs.reduce((acc, curr) => {
     acc[curr.key] = curr.value;
     return acc;
   }, {} as Record<string, string>);
 
-  const headerMenusConfig = await prisma.systemConfig.findUnique({ where: { key: "header_menus" } });
   let headerMenus: any[] = [];
   try {
     if (headerMenusConfig?.value) {
@@ -141,11 +157,6 @@ export default async function RootLayout({
     } else {
       menuTree.push({ ...menu, children: [] });
     }
-  });
-
-  const postCategories = await prisma.category.findMany({
-    where: { type: "POST" },
-    orderBy: { createdAt: "desc" }
   });
 
   const logoUrl = configMap["logo_url"] || "https://drive.google.com/uc?export=view&id=160oXOcGp9tJa5b2_YKWx96VuoweujlOH";

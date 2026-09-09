@@ -23,14 +23,13 @@ export default function VisitorCounter() {
       sessionStorage.setItem("visitorSessionId", sessionId);
     }
     
-    // Function to track visit and fetch latest stats
+    // Function to track visit and fetch latest stats in a single request
     const trackAndFetch = async () => {
       try {
-        // Track visit
         const hasVisited = sessionStorage.getItem("hasVisited");
         const newVisit = !hasVisited;
         
-        await fetch("/api/visit", { 
+        const res = await fetch("/api/visit", { 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId, newVisit })
@@ -40,8 +39,6 @@ export default function VisitorCounter() {
           sessionStorage.setItem("hasVisited", "true");
         }
 
-        // Fetch stats
-        const res = await fetch("/api/visit");
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
@@ -58,16 +55,15 @@ export default function VisitorCounter() {
     // Ping every 2 minutes to keep session active
     const pingInterval = setInterval(async () => {
       try {
-        await fetch("/api/visit", { 
+        const res = await fetch("/api/visit", { 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sessionId, newVisit: false })
         });
-        const res = await fetch("/api/visit");
         if (res.ok) {
           const data = await res.json();
           if (data.success) {
-            setStats(prev => ({ ...prev, online: data.online }));
+            setStats(prev => ({ ...prev, online: data.online, today: data.today, total: data.total }));
           }
         }
       } catch (e) {}

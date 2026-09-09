@@ -31,7 +31,17 @@ export async function POST(req: NextRequest) {
       where: { updatedAt: { lt: fiveMinsAgo } }
     });
 
-    return NextResponse.json({ success: true });
+    // Return stats directly in the same request to save 1 full roundtrip & DB queries
+    const todayStat = await prisma.visitorStat.findUnique({ where: { date: today } });
+    const totalStat = await prisma.visitorStat.aggregate({ _sum: { count: true } });
+    const onlineCount = await prisma.activeSession.count({ where: { updatedAt: { gte: fiveMinsAgo } } });
+
+    return NextResponse.json({
+      success: true,
+      today: todayStat?.count || 0,
+      total: totalStat._sum.count || 0,
+      online: onlineCount || 0
+    });
   } catch (error) {
     console.error("Visitor tracking error:", error);
     return NextResponse.json({ success: false }, { status: 500 });
